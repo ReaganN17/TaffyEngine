@@ -26,6 +26,7 @@ long start;
 
 //Create Objects in order of depth, fartheset to closest if same Z level
 Object bob(0, 0, 50, 50, "resources/bob.png", CHARACTER, MIDDLE);
+Object jorge(0, 0, 30, 30, 0xff0000, CHARACTER, 1, BACK);
 
 internal void gameinit() {
 	start = GetTickCount64();

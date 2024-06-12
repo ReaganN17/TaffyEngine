@@ -17,7 +17,7 @@ struct Object {
 
 	ObjectType type = DEFAULT;
 	zLayer z = MIDDLE;
-	const char* file;
+	const char* file = "";
 
 	Object();
 	Object(float x, float y, zLayer z);
@@ -122,7 +122,8 @@ void Object::render(Camera cam) {
 }
 
 bool Object::isImg() {
-	return sizeof(file) != 0;
+
+	return strlen(file) > 0;
 }
 
 Object& Object::velocity(float xInput, float yInput, float dt) {

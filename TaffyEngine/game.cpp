@@ -25,7 +25,7 @@ float camera_x = 0, camera_y = 0, cameraspeed = 500, zoom = 1;
 long start;
 
 //Create Objects in order of depth, fartheset to closest
-Object rah(0, 0, "resources/please.png", CHARACTER, BACK);
+Object rah(0, 0, 1920, 1080, "resources/please.png", CHARACTER, BACK);
 Object bob(0, 0, "resources/bob.png", CHARACTER, MIDDLE);
 
 internal void gameinit() {
@@ -65,7 +65,6 @@ internal void gameloop(Input *input, float dt) {
 			if (isdown(E)) zoom /= 1.1;
 
 			camera.setPos(camera_x, camera_y, zoom);
-
 
 			bob.velocity(player_x, player_y, dt);
 

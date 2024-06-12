@@ -33,8 +33,11 @@ LRESULT CALLBACK window_callback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case WM_SIZE: {
 		RECT rect;
 		GetClientRect(hwnd, &rect);
+
 		renderWindow.width = rect.right - rect.left;
 		renderWindow.height = rect.bottom - rect.top;
+
+		updateValues();
 
 		renderWindow.sizeInBits = renderWindow.width * renderWindow.height * sizeof(u32);
 		renderWindow.bitS = sizeof(u32);
@@ -90,6 +93,10 @@ internal void loop(HWND window) {
 
 			} break;
 
+			case WM_SIZE: {
+				clearScreen(0x000000);
+			} break;
+
 			default: {
 				TranslateMessage(&message);
 				DispatchMessage(&message);
@@ -120,7 +127,7 @@ internal void loop(HWND window) {
 int main() {
 	
 	HINSTANCE hInstance = GetModuleHandle(nullptr);
-	ShowCursor(FALSE);
+	//ShowCursor(FALSE);
 
 	// Create Window Class
 	WNDCLASS window_class = {};
@@ -134,11 +141,12 @@ int main() {
 	// Create Window
 	HWND window = CreateWindow(window_class.lpszClassName, "Taffy Engine", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
 
+#ifdef FULLSCREEN
 	SetWindowLong(window, GWL_STYLE, GetWindowLong(window, GWL_STYLE) & ~WS_OVERLAPPEDWINDOW);
 	MONITORINFO mi = { sizeof(mi) };
 	GetMonitorInfo(MonitorFromWindow(window, MONITOR_DEFAULTTOPRIMARY), &mi);
 	SetWindowPos(window, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-
+#endif // FULLSCREEN
 
 	loop(window);
 }

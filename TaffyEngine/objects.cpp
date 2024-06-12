@@ -17,7 +17,7 @@ struct Object {
 
 	ObjectType type = DEFAULT;
 	zLayer z = MIDDLE;
-	Image img;
+	const char* file;
 
 	Object();
 	Object(float x, float y, zLayer z);
@@ -81,15 +81,15 @@ Object::Object(float x, float y, float w, float h, zLayer z = MIDDLE) :x(x), y(y
 
 //3 Constructors that should be used
 Object::Object(float x, float y, const char* filename, ObjectType t, zLayer z = MIDDLE) :Object(x, y, z) {
-	img.create(filename);
-	w = img.w;
-	h = img.h;
+	file = filename;
+	w = getWidth(filename);
+	h = getHeight(filename);
 	type = t;
 	alpha = 1;
 }
 
 Object::Object(float x, float y, float w, float h, const char* filename, ObjectType t, zLayer z = MIDDLE) :Object(x, y, w, h, z) {
-	img.create(filename);
+	file = filename;
 	alpha = 1;
 	type = t;
 }
@@ -101,8 +101,6 @@ Object::Object(float x, float y, float w, float h, u32 c, ObjectType t, float a 
 }
 
 Object::~Object() {
-	img.~Image();
-
 	switch (z) {
 		case FARBACK: { Z0.erase(itr); } break;
 		case BACK: { Z1.erase(itr); } break;
@@ -116,7 +114,7 @@ Object::~Object() {
 
 void Object::render(Camera cam) {
 	if (isImg()) {
-		renderImage(img, x, y, w / img.w, h / img.h, cam, alpha);
+		renderImage(file, x, y, w, h, cam, alpha);
 	}
 	else {
 		renderRect(x, y, w / 2, h / 2, color, alpha, cam);
@@ -124,7 +122,7 @@ void Object::render(Camera cam) {
 }
 
 bool Object::isImg() {
-	return img.data != NULL;
+	return sizeof(file) != 0;
 }
 
 Object& Object::velocity(float xInput, float yInput, float dt) {
@@ -147,9 +145,10 @@ Object& Object::setScale(float w, float h) {
 }
 
 Object& Object::changeImg(const char* filename, float newW, float newH) {
-	img.create(filename);
-	w = (newW<0)?img.w:newW;
-	h = (newH < 0) ? img.h : newH;
+	file = filename;
+	w = (newW < 0) ? getWidth(filename) : newW;
+	h = (newH < 0) ? getHeight(filename) : newH;
+	return *this;
 }
 
 //End of Class functions

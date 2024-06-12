@@ -24,3 +24,28 @@ internal void intro(Input* input, float dt) {
 
 	}
 }
+
+float customBGx = 0, customBGy = 0, change = 0;
+
+internal void renderCustomBG(float dt, bool stop) {
+	if (stop) { customBGx = 0, customBGy = 0, change = 0; }
+	else {
+		customBGx -= 1920 * dt * 0.2;
+		customBGy -= 1080 * dt * 0.2;
+		change += 1 * dt;
+		if (change >= 3) change = 0;
+		if (customBGx <= -1920) customBGx = 0;
+		if (customBGy <= -1080) customBGy = 0;
+		switch ((int)change % 3) {
+		case 0: {
+			renderMovingBG("resources/triangles.png", customBGx + 960, customBGy + 540, 2);
+		} break;
+		case 1: {
+			renderMovingBG("resources/squares.png", customBGx + 960, customBGy + 540, 2);
+		} break;
+		case 2: {
+			renderMovingBG("resources/circles.png", customBGx + 960, customBGy + 540, 2);
+		} break;
+		}
+	}
+}

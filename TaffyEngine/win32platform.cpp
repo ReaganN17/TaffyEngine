@@ -20,6 +20,7 @@ global_var RenderWindow renderWindow;
 //#include "testrender.cpp"
 //#include "testsimulate.cpp"
 #include "game.cpp"
+#define FULLSCREEN
 
 LRESULT CALLBACK window_callback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	LRESULT result = 0;
@@ -141,12 +142,10 @@ int main() {
 	// Create Window
 	HWND window = CreateWindow(window_class.lpszClassName, "Taffy Engine", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
 
-#ifdef FULLSCREEN
 	SetWindowLong(window, GWL_STYLE, GetWindowLong(window, GWL_STYLE) & ~WS_OVERLAPPEDWINDOW);
 	MONITORINFO mi = { sizeof(mi) };
 	GetMonitorInfo(MonitorFromWindow(window, MONITOR_DEFAULTTOPRIMARY), &mi);
 	SetWindowPos(window, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
-#endif // FULLSCREEN
 
 	loop(window);
 }

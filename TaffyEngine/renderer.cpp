@@ -54,6 +54,49 @@ internal void renderStaticBG(const char* file, float alpha, u32 background) {
 	}
 }
 
+internal void renderMovingBG(const char* file, float x, float y, float scale) {
+	Image img(file);
+
+	x *= screenHeight * render_scale;
+	y *= screenHeight * render_scale;
+
+	scale *= screenHeight * render_scale;
+
+	int size_x = img.w * scale;
+	int size_y = img.h * scale;
+
+	x += screenWidth / 2.f;
+	y += screenHeight / 2.f;
+
+	int x0 = x - (size_x / 2);
+	int y0 = y - (size_y / 2);
+
+	int offsetRight = max(0, x0 + size_x - screenWidth);
+	int offsetLeft = max(0, -x0);
+
+	int offsetBottom = max(0, -y0);
+	int offsetTop = max(0, y0 + size_y - screenHeight);
+
+	u32 src = 0;
+	RGB curPixel;
+
+	if (scale) {
+
+		for (int i = offsetTop; i < size_y - offsetBottom; i++) {
+			u32* pixel = (u32*)renderWindow.memory + x0 + offsetLeft + screenOffset + ((size_y - 1) - i + y0) * renderWindow.width;
+			for (int j = offsetLeft; j < size_x - offsetRight; j++) {
+				src = img.channels * ((int)(j / scale) + img.w * (int)(i / scale));
+
+				curPixel.r = img.data[src];
+				curPixel.g = img.data[src + 1];
+				curPixel.b = img.data[src + 2];
+
+				*pixel++ = RGBToHex(curPixel);
+			}
+		}
+	}
+}
+
 //render current BG that i use
 internal void renderBG(Camera cam) {
 	for (int i = 0; i < screenHeight; i++) {
@@ -93,7 +136,9 @@ internal void renderRect(float x, float y, float half_size_x, float half_size_y,
 }
 
 //renders an image
-internal void renderImage(Image img, float x, float y, float wscale, float hscale, Camera cam, float alpha = 1) {
+internal void renderImage(const char* filename, float x, float y, float w, float h, Camera cam, float alpha = 1) {
+	Image img(filename);
+
 	alpha = clampF(0, alpha, 1);
 
 	x -= cam.x;
@@ -102,8 +147,9 @@ internal void renderImage(Image img, float x, float y, float wscale, float hscal
 	x *= screenHeight * render_scale * cam.zoom;
 	y *= screenHeight * render_scale * cam.zoom;
 
-	wscale *= screenHeight * render_scale * cam.zoom;
-	hscale *= screenHeight * render_scale * cam.zoom;
+
+	float wscale = w * screenHeight * render_scale * cam.zoom / img.w;
+	float hscale = h * screenHeight * render_scale * cam.zoom / img.h;
 
 	int size_x = img.w * wscale;
 	int size_y = img.h * hscale;

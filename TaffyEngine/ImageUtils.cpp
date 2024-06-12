@@ -130,3 +130,15 @@ struct Image {
 		return *this;
 	}
 };
+
+internal int getWidth(const char* filename) {
+	Image img(filename);
+	img.~Image();
+	return img.w;
+}
+
+internal int getHeight(const char* filename) {
+	Image img(filename);
+	img.~Image();
+	return img.h;
+}

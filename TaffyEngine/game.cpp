@@ -24,9 +24,8 @@ float player_x = 0, player_y = 0;
 float camera_x = 0, camera_y = 0, cameraspeed = 500, zoom = 1;
 long start;
 
-//Create Objects in order of depth, fartheset to closest
-Object rah(0, 0, 1920, 1080, "resources/please.png", CHARACTER, BACK);
-Object bob(0, 0, "resources/bob.png", CHARACTER, MIDDLE);
+//Create Objects in order of depth, fartheset to closest if same Z level
+Object bob(0, 0, 50, 50, "resources/bob.png", CHARACTER, MIDDLE);
 
 internal void gameinit() {
 	start = GetTickCount64();
@@ -42,10 +41,8 @@ internal void gameloop(Input *input, float dt) {
 		} break;
 
 
-
-
 		case GAME: {
-			renderBG(camera);
+			renderCustomBG(dt, false);
 
 			if (isdown(W)) { player_y = 500; }
 			else if (isdown(S)) { player_y = -500; }
@@ -61,8 +58,8 @@ internal void gameloop(Input *input, float dt) {
 			if (isdown(LEFT)) camera_x -= cameraspeed * dt;
 			if (isdown(RIGHT)) camera_x += cameraspeed * dt;
 
-			if (isdown(Q)) zoom *= 1.1;
-			if (isdown(E)) zoom /= 1.1;
+			if (pressed(Q)) bob.changeImg("resources/please.png", bob.w, bob.h);
+			if (pressed(E)) bob.changeImg("resources/bob.png", -1 , -1);
 
 			camera.setPos(camera_x, camera_y, zoom);
 

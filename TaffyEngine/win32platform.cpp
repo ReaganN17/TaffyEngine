@@ -8,7 +8,7 @@
 
 
 
-#include "game.cpp"
+#include "game.cpp";
 
 LRESULT CALLBACK window_callback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	LRESULT result = 0;
@@ -69,7 +69,7 @@ internal void loop(HWND window) {
 	while (running) {
 		// Input
 		MSG message;
-
+		
 		setKeyUnchanged(&input);
 		updateMouse(window, &mouse);
 
@@ -94,6 +94,9 @@ internal void loop(HWND window) {
 			}
 
 		}
+
+		processMouseButtons(&input);
+
 
 		// Simulate
 		gameloop(delta_time);

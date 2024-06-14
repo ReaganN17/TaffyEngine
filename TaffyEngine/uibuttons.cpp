@@ -1,82 +1,84 @@
-enum ButtonType {
-	STICK, PULSE,
-};
-
-enum Shape {
-	CIRCLE, RECTA,
-};
-
-//There is a better way for this and it is to make more class inheriters of different types of buttons which i will do if i feel like it
-enum HoverType {
-	GLOW, EXPAND,
-};
-
-enum SelectType {
-	SHRINK, DARKEN,
-};
-
-
 struct Button : Object {
-	bool select = false;
+	bool down = false;
+	bool pressed = false;
+	bool released = false;
 	bool hover = false;
+	bool stick = false;
+	bool circle = false;
 
-	ButtonType bType = PULSE;
-	HoverType hType = EXPAND;
-	SelectType sType = DARKEN;
-	Shape shType = RECTA;
+	//only purpose is to be a switch for the pulse button so you cant click it if ur key was down before hovering
+	//god give me a better way to do this
+	bool erm = false;
 
-	Button(float x, float y, float w, float h, const char* filename, zLayer z);
-	Button(float x, float y, float w, float h, u32 color, float alpha, zLayer z);
+	Button(float x, float y, float w, float h, const char* filename, zLayer z, bool stick, bool circle);
+	Button(float x, float y, float w, float h, u32 color, float alpha, zLayer z, bool stick, bool circle);
 
-	Button& settings(ButtonType b, HoverType h, SelectType s, Shape sh);
+	Button& update(Inputs key);
 
 	virtual void render();
-	bool isMouseOver(POINT mouse);
+	bool isMouseOver();
 };
 
 //long ass constructor cause i dont feel like being neat
-Button::Button(float x, float y, float w, float h, const char* filename, zLayer z = MIDDLE) : Object(x, y, w, h, filename, z) {}
+Button::Button(float x, float y, float w, float h, const char* filename, zLayer z = MIDDLE, bool stick = false, bool circle = false) :
+	Object(x, y, w, h, filename, z), stick(stick), circle(circle) {}
 
-Button::Button(float x, float y, float w, float h, u32 color, float alpha, zLayer z = MIDDLE) : Object(x, y, w, h, color, alpha, z) {}
+Button::Button(float x, float y, float w, float h, u32 color, float alpha, zLayer z = MIDDLE, bool stick = false, bool circle = false) :
+	Object(x, y, w, h, color, alpha, z), stick(stick), circle(circle) {}
 
-Button& Button::settings(ButtonType b, HoverType h, SelectType s, Shape sh) {
-	bType = b;
-	hType = h;
-	sType = s;
-	shType = sh;
+//placed in the render function so it updates with the game loop
+Button& Button::update(Inputs key) {
+	pressed = false;
+	released = false;
+
+	hover = isMouseOver();
+
+	if (stick) {
+		if (hover && pressed(key) && !down) {
+			pressed = true;
+			down = true;
+		} else if (hover && pressed(key) && down) {
+			released = true;
+			down = false;
+		}
+	}
+	else {
+		down = false;
+		if (hover && pressed(key)) {
+			pressed = true;
+			erm = true;
+		}
+		if (erm && hover && isdown(key)) {
+			down = true;
+		}
+		if (erm && hover && released(key)) {
+			released = true;
+			erm = false;
+		}
+		if (!hover) {
+			erm = false;
+		}
+	}
+
+
 	return *this;
 }
 
 
 //UI Buttons coordinates are different from game coordinates but still have the same proportiions
-//to render all objects required camera parameter but we dont use it for buttons
-//if i get lazy enough im gonna combine them into one struct
 void Button::render() {
-	hover = isMouseOver(mouse);
-
+	update(LEFT_MOUSE);
+	
 	if (isImg()) {
-		if (hover) {
-			renderImage(file, x, y, w * 1.3, h * 1.3, alpha);
-		}
-		else if (select) {
-			renderImage(file, x, y, w, h, alpha);
-		}
-		else {
-			renderImage(file, x, y, w, h, alpha);
-		}
+		renderImage(file, x, y, (hover)?w*1.3:w, (hover) ? h * 1.3 : h, alpha, (down)?0.3:0);
+
 	}
 	else {
 		renderRect(x, y, w / 2, h / 2, color, alpha);
 	}
 }
 
-bool Button::isMouseOver(POINT mouse) {
-	switch (shType) {
-	case RECTA: {
-		return (mouse.x >= x - w / 2 && mouse.x <= x + w / 2) && (mouse.y >= y - h / 2 && mouse.y <= y + h / 2);
-	}break;
-	case CIRCLE: {
-		return (4 * (mouse.x * mouse.x) / (w * w) + 4 * (mouse.y * mouse.y) / (h * h)) <= 1;
-	}break;
-	}
+bool Button::isMouseOver() {
+	if(circle) return (4 * (mouse.x * mouse.x) / (w * w) + 4 * (mouse.y * mouse.y) / (h * h)) <= 1;
+	else return (mouse.x >= x - w / 2 && mouse.x <= x + w / 2) && (mouse.y >= y - h / 2 && mouse.y <= y + h / 2);
 }

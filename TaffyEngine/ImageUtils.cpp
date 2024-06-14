@@ -93,24 +93,6 @@ struct Image {
 		return *this;
 	}
 
-	Image& shade(u32 hex, float opac) {
-		RGB curPixel;
-		opac = clampF(0, opac, 1);
-		for (int i = 0; i < w * channels; i += channels) {
-			curPixel.r = data[i];
-			curPixel.g = data[i + 1];
-			curPixel.b = data[i + 2];
-
-			curPixel = hexToRGB(alphaPerPixel(RGBToHex(curPixel), hex, opac));
-
-			data[i] = curPixel.r;
-			data[i + 1] = curPixel.g;
-			data[i + 2] = curPixel.b;
-		}
-
-		return *this;
-	}
-
 	Image& create(const char* filename) {
 		if (read(filename)) {
 			size = w * h * channels;
@@ -121,6 +103,23 @@ struct Image {
 		return *this;
 	}
 
+	Image& shade(u32 hex, float opac) {
+		RGB curPixel;
+
+		for (int i = 0; i < w * h; i++) {
+			curPixel.r = data[channels * i];
+			curPixel.g = data[(channels * i) + 1];
+			curPixel.b = data[(channels * i) + 2];
+
+			curPixel = hexToRGB(alphaPerPixel(RGBToHex(curPixel), hex, opac));
+
+			data[channels * i] = curPixel.r;
+			data[(channels * i) + 1] = curPixel.g;
+			data[(channels * i) + 2] = curPixel.b;
+		}
+
+		return *this;
+	}
 
 	Image& crop(u16 cx, u16 cy, u16 cw, u16 ch) {
 		size = cw * ch * channels;

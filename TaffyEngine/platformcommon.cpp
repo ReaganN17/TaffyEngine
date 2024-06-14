@@ -58,10 +58,16 @@ void processButtons(u32 vkcode, Input *input, bool d) {
 		processButton(D, 'D', d);
 		processButton(Q, 'Q', d);
 		processButton(E, 'E', d);
-
-		processButton(LEFT_MOUSE, VK_LBUTTON, d);
-
 	}
+}
+
+
+#define processMButton(b, vk)\
+input->buttons[b].changed = (GetAsyncKeyState(vk) < 0) != input->buttons[b].down;\
+input->buttons[b].down = (GetAsyncKeyState(vk) < 0);
+
+void processMouseButtons(Input *input) {
+	processMButton(LEFT_MOUSE, VK_LBUTTON);
 }
 
 void setKeyUnchanged(Input *input) {

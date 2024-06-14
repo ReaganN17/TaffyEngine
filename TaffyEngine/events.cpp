@@ -33,9 +33,9 @@ internal void renderCustomBG(float dt, bool stop) {
 		customBGx -= 960 * dt * 0.2;
 		customBGy -= 540 * dt * 0.2;
 		change += 1 * dt;
-		if (change >= 3) change = 0;
-		if (customBGx <= -960) customBGx = 0;
-		if (customBGy <= -540) customBGy = 0;
+		if (change >= 3) change -= 3;
+		if (customBGx <= -960) customBGx += 960;
+		if (customBGy <= -540) customBGy += 540;
 		switch ((int)change % 3) {
 		case 0: {
 			renderMovingBG("resources/triangles.png", customBGx + 480, customBGy + 270, 1);

@@ -78,8 +78,7 @@ internal void renderMovingBG(const char* file, float x, float y, float scale) {
 	u32 src = 0;
 	RGB curPixel;
 
-	if (scale) {
-
+	if (scale > 0) {
 		for (int i = offsetTop; i < size_y - offsetBottom; i++) {
 			u32* pixel = (u32*)renderWindow.memory + x0 + offsetLeft + screenOffset + ((size_y - 1) - i + y0) * renderWindow.width;
 			for (int j = offsetLeft; j < size_x - offsetRight; j++) {
@@ -88,8 +87,8 @@ internal void renderMovingBG(const char* file, float x, float y, float scale) {
 				curPixel.r = img.data[src];
 				curPixel.g = img.data[src + 1];
 				curPixel.b = img.data[src + 2];
-
 				*pixel++ = RGBToHex(curPixel);
+				
 			}
 		}
 	}
@@ -141,7 +140,6 @@ internal void renderImage(const char* filename, float x, float y, float w, float
 	Image img(filename);
 
 	if (scale > 0) {
-		scale = clampF(0, scale, 1);
 		img.shade(color, scale);
 	}
 

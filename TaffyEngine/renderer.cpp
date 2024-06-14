@@ -1,8 +1,4 @@
-global_var float render_scale = 0.001f;
 
-global_var int screenWidth;
-global_var int screenHeight;
-global_var int screenOffset;
 
 //clears ENTIRE screen, used for when window size changes
 internal void clearScreen(u32 color) {
@@ -18,8 +14,9 @@ internal void clearScreen(u32 color) {
 internal void updateValues() {
 	screenWidth = min(renderWindow.height * 16 / 9, renderWindow.width);
 	screenHeight = min(renderWindow.width * 9 / 16, renderWindow.height);
-
-	screenOffset = max((renderWindow.width - screenWidth) / 2, 0) + max((renderWindow.height - screenHeight) / 2, 0) * renderWindow.width;
+	xOffset = max((renderWindow.width - screenWidth) / 2, 0);
+	yOffset = max((renderWindow.height - screenHeight) / 2, 0);
+	screenOffset = xOffset + yOffset * renderWindow.width;
 }
 
 //no matter the size will stretch the image to the boundaries
@@ -54,6 +51,7 @@ internal void renderStaticBG(const char* file, float alpha, u32 background) {
 	}
 }
 
+//renders moving BG, currently does not restrict empty space
 internal void renderMovingBG(const char* file, float x, float y, float scale) {
 	Image img(file);
 
@@ -108,15 +106,16 @@ internal void renderBG(Camera cam) {
 }
 
 //renders a rectangle
-internal void renderRect(float x, float y, float half_size_x, float half_size_y, u32 color, float alpha, Camera cam) {
-	x -= cam.x;
-	y -= cam.y;
+internal void renderRect(float x, float y, float half_size_x, float half_size_y, u32 color, float alpha = 1, float scale = 0, u32 shader = 0) {
+	alpha = clampF(0, alpha, 1);
+	scale = clampF(0, scale, 1);
 
-	x *= screenHeight * render_scale * cam.zoom;
-	y *= screenHeight * render_scale * cam.zoom;
 
-	half_size_x *= screenHeight * render_scale * cam.zoom;
-	half_size_y *= screenHeight * render_scale * cam.zoom;
+	x *= screenHeight * render_scale;
+	y *= screenHeight * render_scale;
+
+	half_size_x *= screenHeight * render_scale;
+	half_size_y *= screenHeight * render_scale;
 
 	x += screenWidth / 2.f;
 	y += screenHeight / 2.f;
@@ -130,26 +129,32 @@ internal void renderRect(float x, float y, float half_size_x, float half_size_y,
 	for (int i = y0; i < y1; i++) {
 		u32* pixel = (u32*)renderWindow.memory + x0 + screenOffset + i * renderWindow.width;
 		for (int j = x0; j < x1; j++) {
+			if (scale > 0) color = alphaPerPixel(color, shader, scale);
+
 			*pixel++ = alphaPerPixel(*pixel, color, alpha);
 		}
 	}
 }
 
 //renders an image
-internal void renderImage(const char* filename, float x, float y, float w, float h, Camera cam, float alpha = 1) {
+internal void renderImage(const char* filename, float x, float y, float w, float h, float alpha = 1, float scale = 0, u32 color = 0) {
 	Image img(filename);
 
+	if (scale > 0) {
+		scale = clampF(0, scale, 1);
+		img.shade(color, scale);
+	}
+
+
 	alpha = clampF(0, alpha, 1);
+	
 
-	x -= cam.x;
-	y -= cam.y;
-
-	x *= screenHeight * render_scale * cam.zoom;
-	y *= screenHeight * render_scale * cam.zoom;
+	x *= screenHeight * render_scale;
+	y *= screenHeight * render_scale;
 
 
-	float wscale = w * screenHeight * render_scale * cam.zoom / img.w;
-	float hscale = h * screenHeight * render_scale * cam.zoom / img.h;
+	float wscale = w * screenHeight * render_scale / img.w;
+	float hscale = h * screenHeight * render_scale / img.h;
 
 	int size_x = img.w * wscale;
 	int size_y = img.h * hscale;
@@ -170,7 +175,6 @@ internal void renderImage(const char* filename, float x, float y, float w, float
 	RGB curPixel;
 
 	if (wscale > 0 && hscale > 0) {
-
 		for (int i = offsetTop; i < size_y - offsetBottom; i++) {
 			u32* pixel = (u32*)renderWindow.memory + x0 + offsetLeft + screenOffset + ((size_y - 1) - i + y0) * renderWindow.width;
 			for (int j = offsetLeft; j < size_x - offsetRight; j++) {
@@ -191,9 +195,8 @@ internal void renderImage(const char* filename, float x, float y, float w, float
 internal void
 draw_number(int number, float x, float y, float size) {
 	float half_size = size * .5f;
-	u32 color = 0xffffff;
+	u32 color = 0xff0000;
 	float alpha = 1;
-	Camera cam(0, 0, 1);
 
 
 	bool drew_number = false;
@@ -205,81 +208,81 @@ draw_number(int number, float x, float y, float size) {
 
 		switch (digit) {
 		case 0: {
-			renderRect(x - size, y, half_size, 2.5f * size, color, alpha, cam);
-			renderRect(x + size, y, half_size, 2.5f * size, color, alpha, cam);
-			renderRect(x, y + size * 2.f, half_size, half_size, color, alpha, cam);
-			renderRect(x, y - size * 2.f, half_size, half_size, color, alpha, cam);
+			renderRect(x - size, y, half_size, 2.5f * size, color, alpha);
+			renderRect(x + size, y, half_size, 2.5f * size, color, alpha);
+			renderRect(x, y + size * 2.f, half_size, half_size, color, alpha);
+			renderRect(x, y - size * 2.f, half_size, half_size, color, alpha);
 			x -= size * 4.f;
 		} break;
 
 		case 1: {
-			renderRect(x + size, y, half_size, 2.5f * size, color, alpha, cam);
+			renderRect(x + size, y, half_size, 2.5f * size, color, alpha);
 			x -= size * 2.f;
 		} break;
 
 		case 2: {
-			renderRect(x, y + size * 2.f, 1.5f * size, half_size, color, alpha, cam);
-			renderRect(x, y, 1.5f * size, half_size, color, alpha, cam);
-			renderRect(x, y - size * 2.f, 1.5f * size, half_size, color, alpha, cam);
-			renderRect(x + size, y + size, half_size, half_size, color, alpha, cam);
-			renderRect(x - size, y - size, half_size, half_size, color, alpha, cam);
+			renderRect(x, y + size * 2.f, 1.5f * size, half_size, color, alpha);
+			renderRect(x, y, 1.5f * size, half_size, color, alpha);
+			renderRect(x, y - size * 2.f, 1.5f * size, half_size, color, alpha);
+			renderRect(x + size, y + size, half_size, half_size, color, alpha);
+			renderRect(x - size, y - size, half_size, half_size, color, alpha);
 			x -= size * 4.f;
 		} break;
 
 		case 3: {
-			renderRect(x - half_size, y + size * 2.f, size, half_size, color, alpha, cam);
-			renderRect(x - half_size, y, size, half_size, color, alpha, cam);
-			renderRect(x - half_size, y - size * 2.f, size, half_size, color, alpha, cam);
-			renderRect(x + size, y, half_size, 2.5f * size, color, alpha, cam);
+			renderRect(x - half_size, y + size * 2.f, size, half_size, color, alpha);
+			renderRect(x - half_size, y, size, half_size, color, alpha);
+			renderRect(x - half_size, y - size * 2.f, size, half_size, color, alpha);
+			renderRect(x + size, y, half_size, 2.5f * size, color, alpha);
 			x -= size * 4.f;
 		} break;
 
 		case 4: {
-			renderRect(x + size, y, half_size, 2.5f * size, color, alpha, cam);
-			renderRect(x - size, y + size, half_size, 1.5f * size, color, alpha, cam);
-			renderRect(x, y, half_size, half_size, color, alpha, cam);
+			renderRect(x + size, y, half_size, 2.5f * size, color, alpha);
+			renderRect(x - size, y + size, half_size, 1.5f * size, color, alpha);
+			renderRect(x, y, half_size, half_size, color, alpha);
 			x -= size * 4.f;
 		} break;
 
 		case 5: {
-			renderRect(x, y + size * 2.f, 1.5f * size, half_size, color, alpha, cam);
-			renderRect(x, y, 1.5f * size, half_size, color, alpha, cam);
-			renderRect(x, y - size * 2.f, 1.5f * size, half_size, color, alpha, cam);
-			renderRect(x - size, y + size, half_size, half_size, color, alpha, cam);
-			renderRect(x + size, y - size, half_size, half_size, color, alpha, cam);
+			renderRect(x, y + size * 2.f, 1.5f * size, half_size, color, alpha);
+			renderRect(x, y, 1.5f * size, half_size, color, alpha);
+			renderRect(x, y - size * 2.f, 1.5f * size, half_size, color, alpha);
+			renderRect(x - size, y + size, half_size, half_size, color, alpha);
+			renderRect(x + size, y - size, half_size, half_size, color, alpha);
 			x -= size * 4.f;
 		} break;
 
 		case 6: {
-			renderRect(x + half_size, y + size * 2.f, size, half_size, color, alpha, cam);
-			renderRect(x + half_size, y, size, half_size, color, alpha, cam);
-			renderRect(x + half_size, y - size * 2.f, size, half_size, color, alpha, cam);
-			renderRect(x - size, y, half_size, 2.5f * size, color, alpha, cam);
-			renderRect(x + size, y - size, half_size, half_size, color, alpha, cam);
+			renderRect(x + half_size, y + size * 2.f, size, half_size, color, alpha);
+			renderRect(x + half_size, y, size, half_size, color, alpha);
+			renderRect(x + half_size, y - size * 2.f, size, half_size, color, alpha);
+			renderRect(x - size, y, half_size, 2.5f * size, color, alpha);
+			renderRect(x + size, y - size, half_size, half_size, color, alpha);
 			x -= size * 4.f;
 		} break;
 
 		case 7: {
-			renderRect(x + size, y, half_size, 2.5f * size, color, alpha, cam);
-			renderRect(x - half_size, y + size * 2.f, size, half_size, color, alpha, cam);
+			renderRect(x + size, y, half_size, 2.5f * size, color, alpha);
+			renderRect(x - half_size, y + size * 2.f, size, half_size, color, alpha);
 			x -= size * 4.f;
 		} break;
 
 		case 8: {
-			renderRect(x - size, y, half_size, 2.5f * size, color, alpha, cam);
-			renderRect(x + size, y, half_size, 2.5f * size, color, alpha, cam);
-			renderRect(x, y + size * 2.f, half_size, half_size, color, alpha, cam);
-			renderRect(x, y - size * 2.f, half_size, half_size, color, alpha, cam);
-			renderRect(x, y, half_size, half_size, color, alpha, cam);
+			renderRect(x - size, y, half_size, 2.5f * size, color, alpha);
+			renderRect(x + size, y, half_size, 2.5f * size, color, alpha);
+			renderRect(x, y + size * 2.f, half_size, half_size, color, alpha);
+			renderRect(x, y - size * 2.f, half_size, half_size, color, alpha);
+			renderRect(x, y, half_size, half_size, color, alpha);
 			x -= size * 4.f;
 		} break;
 
 		case 9: {
-			renderRect(x - half_size, y + size * 2.f, size, half_size, color, alpha, cam);
-			renderRect(x - half_size, y, size, half_size, color, alpha, cam);
-			renderRect(x - half_size, y - size * 2.f, size, half_size, color, alpha, cam);
-			renderRect(x + size, y, half_size, 2.5f * size, color, alpha, cam);
-			renderRect(x - size, y + size, half_size, half_size, color, alpha, cam);
+			renderRect(x - half_size, y + size * 2.f, size, half_size, color, alpha);
+			renderRect(x - half_size, y, size, half_size, color, alpha);
+			renderRect(x - half_size, y - size * 2.f, size, half_size, color, alpha);
+			renderRect(x + size, y, half_size, 2.5f * size, color, alpha);
+			renderRect(x - size, y + size, half_size, half_size, color, alpha);
 			x -= size * 4.f;
 		} break;
 		}

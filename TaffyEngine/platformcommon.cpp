@@ -4,7 +4,7 @@ struct Button_State {
 };
 
 
-enum {
+enum Inputs {
 	ESC, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
 
 	TINDLE, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_0, BACKSPACE,
@@ -26,7 +26,6 @@ enum {
 	NUM_MULT, NUM_ADD, NUM_SEPARATOR, NUM_SUBTRACT, NUM_DECIMAL, NUM_DIVIDE,
 
 	LEFT_MOUSE, RIGHT_MOUSE, MIDDLE_MOUSE, SIDE_FRONT_MOUSE, SIDE_BACK_MOUSE,
-
 
 	BUTTON_COUNT,
 };
@@ -60,6 +59,8 @@ void processButtons(u32 vkcode, Input *input, bool d) {
 		processButton(Q, 'Q', d);
 		processButton(E, 'E', d);
 
+		processButton(LEFT_MOUSE, VK_LBUTTON, d);
+
 	}
 }
 
@@ -67,4 +68,13 @@ void setKeyUnchanged(Input *input) {
 	for (int i = 0; i < BUTTON_COUNT; i++) {
 		input -> buttons[i].changed = false;
 	}
+}
+
+void updateMouse(HWND window, POINT* mouse) {
+	GetCursorPos(mouse);
+	ScreenToClient(window, mouse);
+	mouse->y = 270 - (mouse->y - yOffset) * (540.f / screenHeight);
+	mouse->x = (mouse->x - (renderWindow.width * 0.5)) * (540.f / screenHeight);
+	mouse->x = clamp(-480, mouse->x, 480);
+	mouse->y = clamp(-270, mouse->y, 270);
 }

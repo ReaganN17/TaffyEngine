@@ -6,21 +6,9 @@
 #    pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-struct RenderWindow {
-	int height, width, sizeInBits;
-	u8 bitS;
-	void* memory;
 
-	BITMAPINFO bitmap_info;
-};
 
-global_var bool running = true;
-global_var RenderWindow renderWindow;
-
-//#include "testrender.cpp"
-//#include "testsimulate.cpp"
 #include "game.cpp"
-#define FULLSCREEN
 
 LRESULT CALLBACK window_callback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	LRESULT result = 0;
@@ -65,8 +53,7 @@ LRESULT CALLBACK window_callback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 internal void loop(HWND window) {
 	//initilization variables for frames, input and render
 	HDC hdc = GetDC(window);
-
-	Input input = {};
+	
 	gameinit();
 
 	float delta_time = 0.016666f;
@@ -84,6 +71,7 @@ internal void loop(HWND window) {
 		MSG message;
 
 		setKeyUnchanged(&input);
+		updateMouse(window, &mouse);
 
 		while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
 
@@ -101,14 +89,14 @@ internal void loop(HWND window) {
 			default: {
 				TranslateMessage(&message);
 				DispatchMessage(&message);
+				
 			}
 			}
 
 		}
 
 		// Simulate
-		//simulate(&input, delta_time);
-		gameloop(&input, delta_time);
+		gameloop(delta_time);
 
 		// Render
 		StretchDIBits(hdc, 0, 0, renderWindow.width, renderWindow.height, 0, 0, renderWindow.width, renderWindow.height, renderWindow.memory, &renderWindow.bitmap_info, DIB_RGB_COLORS, SRCCOPY);
@@ -119,9 +107,6 @@ internal void loop(HWND window) {
 		delta_time = (float)(frame_end_time.QuadPart - frame_begin_time.QuadPart) / performance_frequency;
 		frame_begin_time = frame_end_time;
 
-
-		//End Loop 
-		if (input.buttons[ESC].down) running = false;
 	}
 }
 
@@ -142,10 +127,12 @@ int main() {
 	// Create Window
 	HWND window = CreateWindow(window_class.lpszClassName, "Taffy Engine", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
 
+	
 	SetWindowLong(window, GWL_STYLE, GetWindowLong(window, GWL_STYLE) & ~WS_OVERLAPPEDWINDOW);
 	MONITORINFO mi = { sizeof(mi) };
 	GetMonitorInfo(MonitorFromWindow(window, MONITOR_DEFAULTTOPRIMARY), &mi);
 	SetWindowPos(window, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+	
 
 	loop(window);
 }

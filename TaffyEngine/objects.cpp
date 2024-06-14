@@ -1,9 +1,5 @@
 //Header
 
-enum ObjectType {
-	CHARACTER, PLAYER, UI_BUTTON, UI_TEXT, BG, DEFAULT,
-};
-
 enum zLayer {
 	FARBACK, BACK, MIDDLE, FRONT, FARFRONT
 };
@@ -13,21 +9,21 @@ struct Object {
 	bool instance = false;
 
 	list<Object*>::iterator itr;
+
 	u32 color = 0;
 
-	ObjectType type = DEFAULT;
 	zLayer z = MIDDLE;
 	const char* file = "";
 
 	Object();
 	Object(float x, float y, zLayer z);
 	Object(float x, float y, float w, float h, zLayer z);
-	Object(float x, float y, const char* filename, ObjectType t, zLayer z);
-	Object(float x, float y, float w, float h, const char* filename, ObjectType t, zLayer z);
-	Object(float x, float y, float w, float h, u32 c, ObjectType t, float a, zLayer z);
+	Object(float x, float y, const char* filename, zLayer z);
+	Object(float x, float y, float w, float h, const char* filename,  zLayer z);
+	Object(float x, float y, float w, float h, u32 c, float a, zLayer z);
 	~Object();
 
-	void render(Camera cam);
+	virtual void render();
 	bool isImg();
 
 	Object& velocity(float xInput, float yInput, float dt);
@@ -36,16 +32,15 @@ struct Object {
 	Object& changeImg(const char* filename, float newW, float newH);
 };
 
-internal void renderAllObjects(Camera cam);
-
 //End of Header
 
-global_var list<Object*> Z0;
-global_var list<Object*> Z1;
-global_var list<Object*> Z2;
-global_var list<Object*> Z3;
-global_var list<Object*> Z4;
+list<Object*> Z0;
+list<Object*> Z1;
+list<Object*> Z2;
+list<Object*> Z3;
+list<Object*> Z4;
 
+global_var list<list<Object*>*> objects = { &Z0, &Z1, &Z2, &Z3, &Z4 };
 //Class
 
 #define addObject(layer)\
@@ -80,49 +75,51 @@ Object::Object(float x, float y, float w, float h, zLayer z = MIDDLE) :x(x), y(y
 }
 
 //3 Constructors that should be used
-Object::Object(float x, float y, const char* filename, ObjectType t, zLayer z = MIDDLE) :Object(x, y, z) {
+Object::Object(float x, float y, const char* filename, zLayer z = MIDDLE) :Object(x, y, z) {
 	file = filename;
 	w = getWidth(filename);
 	h = getHeight(filename);
-	type = t;
 	alpha = 1;
 }
 
-Object::Object(float x, float y, float w, float h, const char* filename, ObjectType t, zLayer z = MIDDLE) :Object(x, y, w, h, z) {
+Object::Object(float x, float y, float w, float h, const char* filename,  zLayer z = MIDDLE) :Object(x, y, w, h, z) {
 	file = filename;
 	alpha = 1;
-	type = t;
 }
 
-Object::Object(float x, float y, float w, float h, u32 c, ObjectType t, float a = 1, zLayer z = MIDDLE) :Object(x, y, w, h, z) {
+Object::Object(float x, float y, float w, float h, u32 c, float a = 1, zLayer z = MIDDLE) :Object(x, y, w, h, z) {
 	color = c;
 	alpha = a;
-	type = t;
+}
+
+#define cleanUp(layer)\
+layer.erase(itr);\
+for (list<Object*>::iterator it = itr; it != layer.end(); ++it) {\
+	advance((*it)->itr, -1); \
 }
 
 Object::~Object() {
 	switch (z) {
-		case FARBACK: { Z0.erase(itr); } break;
-		case BACK: { Z1.erase(itr); } break;
-		case MIDDLE: { Z2.erase(itr); } break;
-		case FRONT: { Z3.erase(itr); } break;
-		case FARFRONT: { Z4.erase(itr); } break;
+		case FARBACK: { cleanUp(Z0); } break;
+		case BACK: { cleanUp(Z1); } break;
+		case MIDDLE: { cleanUp(Z2); } break;
+		case FRONT: { cleanUp(Z3); } break;
+		case FARFRONT: { cleanUp(Z4); } break;
 	}
 
 	instance = false;
 }
 
-void Object::render(Camera cam) {
+void Object::render() {
 	if (isImg()) {
-		renderImage(file, x, y, w, h, cam, alpha);
+		renderImage(file, (x - mainCam.x) * mainCam.zoom, (y - mainCam.y) * mainCam.zoom, w * mainCam.zoom, h * mainCam.zoom, alpha);
 	}
 	else {
-		renderRect(x, y, w / 2, h / 2, color, alpha, cam);
+		renderRect((x - mainCam.x) * mainCam.zoom, (y - mainCam.y) * mainCam.zoom, w * mainCam.zoom / 2, h * mainCam.zoom / 2, color, alpha);
 	}
 }
 
 bool Object::isImg() {
-
 	return strlen(file) > 0;
 }
 
@@ -154,12 +151,12 @@ Object& Object::changeImg(const char* filename, float newW, float newH) {
 
 //End of Class functions
 
-//Non specific object functions
-
-internal void renderAllObjects(Camera cam) {
-	for (list<Object*>::iterator it = Z0.begin(); it != Z0.end(); ++it) {(*it)->render(cam);}
-	for (list<Object*>::iterator it = Z1.begin(); it != Z1.end(); ++it) {(*it)->render(cam);}
-	for (list<Object*>::iterator it = Z2.begin(); it != Z2.end(); ++it) {(*it)->render(cam);}
-	for (list<Object*>::iterator it = Z3.begin(); it != Z3.end(); ++it) {(*it)->render(cam);}
-	for (list<Object*>::iterator it = Z4.begin(); it != Z4.end(); ++it) {(*it)->render(cam);}
+//Render Objects
+internal void renderAllObjects() {
+	for (list<list<Object*>*>::iterator it = objects.begin(); it != objects.end(); ++it) {
+		for (list<Object*>::iterator it1 = (*it)->begin(); it1 != (*it)->end(); ++it1) {
+			(*it1)->render();
+		}
+	}
 }
+

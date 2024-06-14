@@ -94,7 +94,21 @@ struct Image {
 	}
 
 	Image& shade(u32 hex, float opac) {
-		
+		RGB curPixel;
+		opac = clampF(0, opac, 1);
+		for (int i = 0; i < w * channels; i += channels) {
+			curPixel.r = data[i];
+			curPixel.g = data[i + 1];
+			curPixel.b = data[i + 2];
+
+			curPixel = hexToRGB(alphaPerPixel(RGBToHex(curPixel), hex, opac));
+
+			data[i] = curPixel.r;
+			data[i + 1] = curPixel.g;
+			data[i + 2] = curPixel.b;
+		}
+
+		return *this;
 	}
 
 	Image& create(const char* filename) {

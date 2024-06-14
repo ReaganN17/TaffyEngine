@@ -16,6 +16,9 @@
     <Filter Include="Source Files\utils">
       <UniqueIdentifier>{c577eeb2-a66a-4801-820f-377c01999c9c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\objects">
+      <UniqueIdentifier>{37463432-b7b8-4e4f-8ac2-0604646f8aac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="win32platform.cpp">
@@ -45,14 +48,17 @@
     <ClCompile Include="renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="events.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="objects.cpp">
+      <Filter>Source Files\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="uibuttons.cpp">
+      <Filter>Source Files\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraUtils.cpp">
+      <Filter>Source Files\utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

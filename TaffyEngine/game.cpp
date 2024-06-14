@@ -92,12 +92,6 @@ internal void gameloop(float dt) {
 
 			renderCustomBG(dt, false);
 
-			draw_number(Z2.size(), 0, 0, 20);
-
-			//bob1.render();
-			//bob2.render();
-			//bob3.render();
-			//bob4.render();
 			renderAllObjects();
 		} break;
 	}

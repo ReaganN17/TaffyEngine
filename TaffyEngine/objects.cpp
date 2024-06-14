@@ -8,7 +8,7 @@ struct Object {
 	float x = 0, y = 0, w = 0, h = 0, alpha = 1;
 	bool instance = false;
 
-	list<Object*>::iterator itr;
+	u16 pos;
 
 	u32 color = 0;
 
@@ -45,8 +45,7 @@ global_var list<list<Object*>*> objects = { &Z0, &Z1, &Z2, &Z3, &Z4 };
 
 #define addObject(layer)\
 layer.push_back(&*this);\
-itr = layer.begin();\
-advance(itr, layer.size() - 1);\
+pos = layer.size() - 1;\
 instance = true;
 
 //Constructors that shouldn't be directly used
@@ -93,9 +92,11 @@ Object::Object(float x, float y, float w, float h, u32 c, float a = 1, zLayer z 
 }
 
 #define cleanUp(layer)\
-layer.erase(itr);\
-for (list<Object*>::iterator it = itr; it != layer.end(); ++it) {\
-	advance((*it)->itr, -1); \
+list<Object*>::iterator it = layer.begin();\
+advance(it, pos);\
+layer.erase(it);\
+for (it; it != layer.end(); ++it) {\
+	(*it)-> pos--;\
 }
 
 Object::~Object() {
@@ -106,7 +107,6 @@ Object::~Object() {
 		case FRONT: { cleanUp(Z3); } break;
 		case FARFRONT: { cleanUp(Z4); } break;
 	}
-
 	instance = false;
 }
 

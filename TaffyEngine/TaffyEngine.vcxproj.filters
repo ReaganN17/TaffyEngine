@@ -19,6 +19,9 @@
     <Filter Include="Source Files\objects">
       <UniqueIdentifier>{37463432-b7b8-4e4f-8ac2-0604646f8aac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\game related">
+      <UniqueIdentifier>{6dfa2ca9-b6a4-4eb8-b721-09af6302fa70}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="win32platform.cpp">
@@ -42,13 +45,7 @@
     <ClCompile Include="STBI_ImageUtils.cpp">
       <Filter>Source Files\utils</Filter>
     </ClCompile>
-    <ClCompile Include="game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="events.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="objects.cpp">
@@ -59,6 +56,18 @@
     </ClCompile>
     <ClCompile Include="CameraUtils.cpp">
       <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="maps.cpp">
+      <Filter>Source Files\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="uiobjects.cpp">
+      <Filter>Source Files\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>Source Files\game related</Filter>
+    </ClCompile>
+    <ClCompile Include="events.cpp">
+      <Filter>Source Files\game related</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

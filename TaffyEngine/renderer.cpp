@@ -1,5 +1,3 @@
-
-
 //clears ENTIRE screen, used for when window size changes
 internal void clearScreen(u32 color) {
 	u32* pixel = (u32*)renderWindow.memory;
@@ -17,20 +15,21 @@ internal void updateValues() {
 	xOffset = max((renderWindow.width - screenWidth) / 2, 0);
 	yOffset = max((renderWindow.height - screenHeight) / 2, 0);
 	screenOffset = xOffset + yOffset * renderWindow.width;
+	render_scale = (float) screenHeight / 540;
 }
 
 //no matter the size will stretch the image to the boundaries
 //image needs to be cropped or sized beforehand
-internal void renderStaticBG(const char* file, float alpha, u32 background) {
+
+internal void renderStaticBG(const char* file, u8 alpha, u32 background) {
 
 	Image img(file);
+	img.shade(background, 255 - alpha);
 
 	float wscale = ((float)screenWidth/img.w);
 	float hscale = ((float)screenHeight/img.h);
 
 	u32 src;
-	RGB curPixel;
-
 
 	if (wscale > 0 && hscale > 0) {
 		for (int i = 0; i < screenHeight; i++) {
@@ -40,11 +39,9 @@ internal void renderStaticBG(const char* file, float alpha, u32 background) {
 				else {
 					src = img.channels * ((int)(j / wscale) + img.w * (int)((screenHeight - i - 1) / hscale));
 
-					curPixel.r = img.data[src];
-					curPixel.g = img.data[src + 1];
-					curPixel.b = img.data[src + 2];
+					RGBA curPixel(img.data[src], img.data[src + 1], img.data[src + 2], (img.channels == 4) ? img.data[src + 3] : 255);
 
-					*pixel++ = alphaPerPixel(background, RGBToHex(curPixel), alpha);
+					*pixel++ = curPixel.toHexNoA();
 				}
 			}
 		}
@@ -55,19 +52,13 @@ internal void renderStaticBG(const char* file, float alpha, u32 background) {
 internal void renderMovingBG(const char* file, float x, float y, float scale) {
 	Image img(file);
 
-	x *= screenHeight * render_scale;
-	y *= screenHeight * render_scale;
-
-	scale *= screenHeight * render_scale;
+	scale *= render_scale;
 
 	int size_x = img.w * scale;
 	int size_y = img.h * scale;
 
-	x += screenWidth / 2.f;
-	y += screenHeight / 2.f;
-
-	int x0 = x - (size_x / 2);
-	int y0 = y - (size_y / 2);
+	int x0 = (x * render_scale) + (screenWidth- size_x) * 0.5;
+	int y0 = (y * render_scale) + (screenHeight - size_y) * 0.5;
 
 	int offsetRight = max(0, x0 + size_x - screenWidth);
 	int offsetLeft = max(0, -x0);
@@ -76,7 +67,6 @@ internal void renderMovingBG(const char* file, float x, float y, float scale) {
 	int offsetTop = max(0, y0 + size_y - screenHeight);
 
 	u32 src = 0;
-	RGB curPixel;
 
 	if (scale > 0) {
 		for (int i = offsetTop; i < size_y - offsetBottom; i++) {
@@ -84,18 +74,16 @@ internal void renderMovingBG(const char* file, float x, float y, float scale) {
 			for (int j = offsetLeft; j < size_x - offsetRight; j++) {
 				src = img.channels * ((int)(j / scale) + img.w * (int)(i / scale));
 
-				curPixel.r = img.data[src];
-				curPixel.g = img.data[src + 1];
-				curPixel.b = img.data[src + 2];
-				*pixel++ = RGBToHex(curPixel);
-				
+				RGBA curPixel(img.data[src], img.data[src + 1], img.data[src + 2], (img.channels == 4) ? img.data[src + 3] : 255);
+
+				*pixel++ = curPixel.toHexNoA();
 			}
 		}
 	}
 }
 
 //render current BG that i use
-internal void renderBG(Camera cam) {
+internal void renderBG() {
 	for (int i = 0; i < screenHeight; i++) {
 		u32* pixel = (u32*)renderWindow.memory + screenOffset + i * renderWindow.width;
 		for (int x = 0; x < screenWidth; x++) {
@@ -104,17 +92,15 @@ internal void renderBG(Camera cam) {
 	}
 }
 
+
 //renders a rectangle
-internal void renderRect(float x, float y, float half_size_x, float half_size_y, u32 color, float alpha = 1, float scale = 0, u32 shader = 0) {
-	alpha = clampF(0, alpha, 1);
-	scale = clampF(0, scale, 1);
+internal void renderRect(float x, float y, float half_size_x, float half_size_y, u32 color, u8 alpha = 255, u8 scale = 0, u32 shader = 0) {
 
+	x *= render_scale;
+	y *= render_scale;
 
-	x *= screenHeight * render_scale;
-	y *= screenHeight * render_scale;
-
-	half_size_x *= screenHeight * render_scale;
-	half_size_y *= screenHeight * render_scale;
+	half_size_x *= render_scale;
+	half_size_y *= render_scale;
 
 	x += screenWidth / 2.f;
 	y += screenHeight / 2.f;
@@ -128,40 +114,26 @@ internal void renderRect(float x, float y, float half_size_x, float half_size_y,
 	for (int i = y0; i < y1; i++) {
 		u32* pixel = (u32*)renderWindow.memory + x0 + screenOffset + i * renderWindow.width;
 		for (int j = x0; j < x1; j++) {
-			if (scale > 0) color = alphaPerPixel(color, shader, scale);
-
-			*pixel++ = alphaPerPixel(*pixel, color, alpha);
+			*pixel++ = color;
 		}
 	}
 }
 
-//renders an image
-internal void renderImage(const char* filename, float x, float y, float w, float h, float alpha = 1, float scale = 0, u32 color = 0) {
+internal void renderImageV2(const char* filename, int x, int y, int w, int h, u8 alpha = 255, u8 scale = 0, u32 shader = 0) {
 	Image img(filename);
 
 	if (scale > 0) {
-		img.shade(color, scale);
+		img.shade(shader, scale);
 	}
 
+	int size_x = w * render_scale;
+	int size_y = h * render_scale;
 
-	alpha = clampF(0, alpha, 1);
-	
+	float wscale = ((float) size_x) / img.w;
+	float hscale = ((float) size_y) / img.h;
 
-	x *= screenHeight * render_scale;
-	y *= screenHeight * render_scale;
-
-
-	float wscale = w * screenHeight * render_scale / img.w;
-	float hscale = h * screenHeight * render_scale / img.h;
-
-	int size_x = img.w * wscale;
-	int size_y = img.h * hscale;
-
-	x += screenWidth / 2.f;
-	y += screenHeight / 2.f;
-
-	int x0 = x - (size_x / 2);
-	int y0 = y - (size_y / 2);
+	int x0 = (x * render_scale) + 0.5 * (screenWidth - size_x);
+	int y0 = (y * render_scale) + 0.5 * (screenHeight - size_y);
 
 	int offsetRight = max(0, x0 + size_x - screenWidth);
 	int offsetLeft = max(0, -x0);
@@ -170,7 +142,49 @@ internal void renderImage(const char* filename, float x, float y, float w, float
 	int offsetTop = max(0, y0 + size_y - screenHeight);
 
 	u32 src = 0;
-	RGB curPixel;
+
+	
+	if (wscale > 0 && hscale > 0) {
+		for (int i = offsetTop; i < size_y - offsetBottom; i++) {
+			u32* pixel = (u32*)renderWindow.memory + x0 + offsetLeft + screenOffset + ((size_y - 1) - i + y0) * renderWindow.width;
+			for (int j = offsetLeft; j < size_x - offsetRight; j++) {
+				src = img.channels * ((int)(j / wscale) + img.w * (int)(i / hscale));
+
+				RGBA curPixel(img.data[src], img.data[src + 1], img.data[src + 2], (img.channels == 4) ? img.data[src + 3] : 255);
+				
+				
+				if (alpha == 255) { 
+					*pixel++ = curPixel.toHexOneA(*pixel); 
+				}
+				else {
+					*pixel++ = curPixel.toHexWithA(*pixel, alpha);
+				}
+				
+			}
+		}
+	}
+}
+
+internal void renderImage(const char* filename, int x, int y, int w, int h) {
+	Image img(filename);
+
+	int size_x = w * render_scale;
+	int size_y = h * render_scale;
+
+	float wscale = ((float)size_x) / img.w;
+	float hscale = ((float)size_y) / img.h;
+
+	int x0 = (x * render_scale) + 0.5 * (screenWidth - size_x);
+	int y0 = (y * render_scale) + 0.5 * (screenHeight - size_y);
+
+	int offsetRight = max(0, x0 + size_x - screenWidth);
+	int offsetLeft = max(0, -x0);
+
+	int offsetBottom = max(0, -y0);
+	int offsetTop = max(0, y0 + size_y - screenHeight);
+
+	u32 src = 0;
+
 
 	if (wscale > 0 && hscale > 0) {
 		for (int i = offsetTop; i < size_y - offsetBottom; i++) {
@@ -178,11 +192,55 @@ internal void renderImage(const char* filename, float x, float y, float w, float
 			for (int j = offsetLeft; j < size_x - offsetRight; j++) {
 				src = img.channels * ((int)(j / wscale) + img.w * (int)(i / hscale));
 
-				curPixel.r = img.data[src];
-				curPixel.g = img.data[src + 1];
-				curPixel.b = img.data[src + 2];
+				RGBA curPixel(img.data[src], img.data[src + 1], img.data[src + 2], (img.channels == 4) ? img.data[src + 3] : 255);
 
-				*pixel++ = alphaPerPixel(*pixel, RGBToHex(curPixel), ((img.channels == 4) ? img.data[src + 3] : 255) * alpha / 255);
+				*pixel++ = curPixel.toHexOneA(*pixel);
+
+
+			}
+		}
+	}
+}
+
+internal void renderRepeatMap(const char*filename, int x, int y, int w, int h) {
+	Image img(filename);
+
+	if (x < -480 - w * 0.5) x += w * ceil(480.f / w);
+	if (x > 480 + w * 0.5) x -= w * ceil(480.f / w);
+	if (y > 270 + h * 0.5) y -= h * ceil(270.f / h);
+	if (y < -270 - h * 0.5) y += h * ceil(270.f / h);
+
+	int size_x = w * render_scale;
+	int size_y = h * render_scale;
+
+	float wscale = (float)size_x / img.w;
+	float hscale = (float)size_y / img.h;
+
+	for (int k = ((x + 480) % w) - 480; k <= 480 + w * 0.5; k += w) {
+		for (int l = ((y + 270) % h) - 270; l <= 270 + h * 0.5; l += h) {
+
+			int x0 = (k) * render_scale + 0.5 * (screenWidth - size_x);
+			int y0 = (l) * render_scale + 0.5 * (screenHeight - size_y);
+
+			int offsetRight = max(0, x0 + size_x - screenWidth);
+			int offsetLeft = max(0, -x0);
+
+			int offsetBottom = max(0, -y0);
+			int offsetTop = max(0, y0 + size_y - screenHeight);
+
+			u32 src = 0;
+
+			if (wscale > 0 && hscale > 0) {
+				for (int i = offsetTop; i < size_y - offsetBottom; i++) {
+					u32* pixel = (u32*)renderWindow.memory + x0 + offsetLeft + screenOffset + ((size_y - 1) - i + y0) * renderWindow.width;
+					for (int j = offsetLeft; j < size_x - offsetRight; j++) {
+						src = img.channels * ((int)(j / wscale) + img.w * (int)(i / hscale));
+
+						RGBA curPixel(img.data[src], img.data[src + 1], img.data[src + 2], (img.channels == 4) ? img.data[src + 3] : 255);
+
+						*pixel++ = curPixel.toHexOneA(*pixel);
+					}
+				}
 			}
 		}
 	}

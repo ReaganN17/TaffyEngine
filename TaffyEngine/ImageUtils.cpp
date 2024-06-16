@@ -13,7 +13,18 @@ struct Image {
 			size = w * h * channels;
 		}
 		else {
+			//creates black box so it doesnt crash if file is unread
+			//spent fucking 2 hours looking where the crash was and it was from here kill me
 
+			channels = 3;
+			w = 1;
+			h = 1;
+			size = 3;
+			data = new u8[size];
+
+			data[0] = 0;
+			data[1] = 0;
+			data[2] = 0;
 		}
 	}
 
@@ -43,7 +54,7 @@ struct Image {
 
 		data = stbi_load(filename, &w, &h, &channels, 0);
 
-		if (channels < 3) {
+		if (channels < 3 && data != NULL) {
 			channels += 2;
 
 			size = w * h * channels;
@@ -103,15 +114,11 @@ struct Image {
 		return *this;
 	}
 
-	Image& shade(u32 hex, float opac) {
-		RGB curPixel;
-
+	Image& shade(u32 hex, u8 opac) {
 		for (int i = 0; i < w * h; i++) {
-			curPixel.r = data[channels * i];
-			curPixel.g = data[(channels * i) + 1];
-			curPixel.b = data[(channels * i) + 2];
+			RGBA curPixel(data[channels * i], data[(channels * i) + 1], data[(channels * i) + 2]);
 
-			curPixel = hexToRGB(alphaPerPixel(RGBToHex(curPixel), hex, opac));
+			curPixel.set(curPixel.toHexWithA(hex, 255 - opac));
 
 			data[channels * i] = curPixel.r;
 			data[(channels * i) + 1] = curPixel.g;

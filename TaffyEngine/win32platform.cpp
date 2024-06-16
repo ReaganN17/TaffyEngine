@@ -2,10 +2,10 @@
 #include "MyUtils.cpp"
 #include "platformcommon.cpp"
 
+
 #ifdef _MSC_VER
 #    pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
-
 
 
 #include "game.cpp";
@@ -75,6 +75,7 @@ internal void loop(HWND window) {
 
 		while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
 
+			//stupid WM_KEYDOWN doesnt detect mouse inputs
 			switch (message.message) {
 			case WM_KEYUP:
 			case WM_KEYDOWN: {
@@ -95,6 +96,7 @@ internal void loop(HWND window) {
 
 		}
 
+		//i dont like this
 		processMouseButtons(&input);
 
 
@@ -129,6 +131,8 @@ int main() {
 
 	// Create Window
 	HWND window = CreateWindow(window_class.lpszClassName, "Taffy Engine", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
+
+	//Fullscreen yolo
 
 	
 	SetWindowLong(window, GWL_STYLE, GetWindowLong(window, GWL_STYLE) & ~WS_OVERLAPPEDWINDOW);

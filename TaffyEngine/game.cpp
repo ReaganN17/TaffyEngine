@@ -17,11 +17,12 @@ global_var Camera mainCam(0, 0, 1);
 //runs the game, if set false will exit the window
 global_var bool running = true;
 
+//if backround doesnt exist, set to enable black bg;
+global_var bool background = true;
 //^do not mess with names, meant to be constants
 
 #include "renderer.cpp"
 #include "objects.cpp"
-#include "uibuttons.cpp"
 
 enum GameScreens {
 	INTRO, MAINMENU, EXIT,
@@ -34,62 +35,71 @@ enum GameScreens {
 GameScreens currentScreen = INTRO;
 
 
-
-
-#define destroy(o) if (o.instance) { o.~Object(); }
-#define rebuild(o, construct) destroy(o) new (&o) construct;
+#define destroy(o, type) if (o.instance) { o.~type(); }
+#define rebuild(o, type, construct) destroy(o, type) new (&o) construct;
+#define buildonce(o, construct) if (!o.instance) new (&o) construct;
 
 float player_x = 0, player_y = 0;
 float camera_x = 0, camera_y = 0, cameraspeed = 500, zoom = 1;
-long start;
 
 //Create Objects in order of depth, fartheset to closest if same Z level
-Object bob1(50, 50, 50, 50, "resources/bob.png", MIDDLE);
-Object bob2(-50, -50, 50, 50, "resources/bob.png", MIDDLE);
-Object bob3(50, -50, 50, 50, "resources/bob.png", MIDDLE);
-Object bob4(-50, 50, 50, 50, "resources/bob.png", MIDDLE);
+//Object bob1(50, 50, 50, 50, "resources/bob.png", MIDDLE);
+//Object bob2(-50, -50, 50, 50, "resources/bob.png", MIDDLE);
+//Object bob3(50, -50, 50, 50, "resources/bob.png", MIDDLE);
+//Object bob4(-50, 50, 50, 50, "resources/bob.png", MIDDLE);
 
-Button button(0, 0, 40, 40, "resources/please.png");
+//Button test(0, 0, 20, 20, "resources/please.png");
+
 
 internal void gameinit() {
-	start = GetTickCount64();
 	clearScreen(0x000000);
 }
 
 #include "events.cpp"
 
 internal void gameloop(float dt) {
+	if (background) renderBG();
 
 	switch (currentScreen) {
 		case INTRO: {
 			intro(dt);
 		} break;
+		case MAINMENU: {
+			mainMenu(dt);
+		}break;
 
 
 		case GAME: {
-			
-			if (isdown(W)) { player_y = 500; }
-			else if (isdown(S)) { player_y = -500; }
-			else { player_y = 0; }
 
-			if (isdown(A)) { player_x = -500; }
-			else if (isdown(D)) { player_x = 500; }
-			else { player_x = 0; }
 
-			if (isdown(UP)) camera_y += cameraspeed * dt;
-			if (isdown(DOWN)) camera_y -= cameraspeed * dt;
 
-			if (isdown(Q)) zoom *= 1.01;
-			if (isdown(E)) zoom /= 1.01;
+			if (isdown(W)) { player_y += 300 * dt; }
+			if (isdown(S)) { player_y -= 300 * dt; }
+
+			if (isdown(A)) { player_x -= 300 * dt; }
+			if (isdown(D)) { player_x += 300 * dt; }
+
+
+			if (isdown(UP)) camera_y += 150 * dt;
+			if (isdown(DOWN)) camera_y -= 150 * dt;
+
+			if (pressed(Q)) { destroyAllObjects(); }
+			//if (pressed(E)) { bob1.~Object(); }
 			
 
 			mainCam.setPos(camera_x, camera_y, zoom);
-			bob1.velocity(player_x, player_y, dt);
 
-			renderCustomBG(dt, false);
-
+			//bob1.setPos(player_x, player_y);
+			//renderCustomBG(dt, false);
 
 			renderAllObjects();
+
+			//draw_number(bob1.pos, 50, 50, 10);
+			//draw_number(bob2.pos, -50, -50, 10);
+			//draw_number(bob3.pos, 50, -50, 10);
+			//draw_number(bob4.pos, -50, 50, 10);
+
+			draw_number(dt * 100000, 0, 0, 10);
 		} break;
 	}
 

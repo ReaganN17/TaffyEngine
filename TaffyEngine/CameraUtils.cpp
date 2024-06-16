@@ -37,4 +37,6 @@ Camera& Camera::shader(bool s, u32 color, float alpha) {
 	shade = s;
 	this->color = color;
 	this->alpha = alpha;
+
+	return *this;
 }

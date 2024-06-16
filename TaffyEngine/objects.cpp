@@ -5,7 +5,8 @@ enum zLayer {
 };
 
 struct Object {
-	float x = 0, y = 0, w = 0, h = 0, alpha = 1;
+	int x = 0, y = 0, w = 0, h = 0;
+	u8 alpha = 255;
 	bool instance = false;
 
 	u16 pos;
@@ -16,31 +17,38 @@ struct Object {
 	const char* file = "";
 
 	Object();
-	Object(float x, float y, zLayer z);
-	Object(float x, float y, float w, float h, zLayer z);
-	Object(float x, float y, const char* filename, zLayer z);
-	Object(float x, float y, float w, float h, const char* filename,  zLayer z);
-	Object(float x, float y, float w, float h, u32 c, float a, zLayer z);
+	Object(int x, int y, zLayer z);
+	Object(int x, int y, int w, int h, zLayer z);
+	Object(int x, int y, const char* filename, zLayer z);
+	Object(int x, int y, int w, int h, const char* filename,  zLayer z);
+	Object(int x, int y, int w, int h, u32 c, u8 a, zLayer z);
 	~Object();
 
 	virtual void render();
 	bool isImg();
 
 	Object& velocity(float xInput, float yInput, float dt);
-	Object& setPos(float x, float y);
-	Object& setScale(float w, float h);
-	Object& changeImg(const char* filename, float newW, float newH);
+	Object& setPos(int x, int y);
+	Object& setScale(int w, int h);
+	Object& setAlpha(int val);
+
+	Object& changeImg(const char* filename, int newW, int newH);
 };
 
 //End of Header
 
-list<Object*> Z0;
-list<Object*> Z1;
-list<Object*> Z2;
-list<Object*> Z3;
-list<Object*> Z4;
+vector<Object*> Z0;
+vector<Object*> Z1;
+vector<Object*> Z2;
+vector<Object*> Z3;
+vector<Object*> Z4;
 
-global_var list<list<Object*>*> objects = { &Z0, &Z1, &Z2, &Z3, &Z4 };
+global_var vector<vector<Object*>*> objects = { &Z0, &Z1, &Z2, &Z3, &Z4 };
+
+#include "uibuttons.cpp"
+#include "maps.cpp"
+#include "uiobjects.cpp"
+
 //Class
 
 #define addObject(layer)\
@@ -49,11 +57,9 @@ pos = layer.size() - 1;\
 instance = true;
 
 //Constructors that shouldn't be directly used
-Object::Object() { 
-	addObject(Z2);
-}
+Object::Object() { }
 
-Object::Object(float x, float y, zLayer z = MIDDLE) :x(x), y(y), z(z) { 
+Object::Object(int x, int y, zLayer z = MIDDLE) :x(x), y(y), z(z) { 
 	switch (z) {
 		case FARBACK: { addObject(Z0); break; }
 		case BACK: { addObject(Z1); break; }
@@ -63,7 +69,7 @@ Object::Object(float x, float y, zLayer z = MIDDLE) :x(x), y(y), z(z) {
 	}
 }
 
-Object::Object(float x, float y, float w, float h, zLayer z = MIDDLE) :x(x), y(y), w(w),h(h), z(z) { 
+Object::Object(int x, int y, int w, int h, zLayer z = MIDDLE) :x(x), y(y), w(w),h(h), z(z) { 
 	switch (z) {
 		case FARBACK: { addObject(Z0); break; }
 		case BACK: { addObject(Z1); break; }
@@ -74,45 +80,51 @@ Object::Object(float x, float y, float w, float h, zLayer z = MIDDLE) :x(x), y(y
 }
 
 //3 Constructors that should be used
-Object::Object(float x, float y, const char* filename, zLayer z = MIDDLE) :Object(x, y, z) {
+Object::Object(int x, int y, const char* filename, zLayer z = MIDDLE) :Object(x, y, z) {
 	file = filename;
 	w = getWidth(filename);
 	h = getHeight(filename);
-	alpha = 1;
+	alpha = 255;
 }
 
-Object::Object(float x, float y, float w, float h, const char* filename,  zLayer z = MIDDLE) :Object(x, y, w, h, z) {
+Object::Object(int x, int y, int w, int h, const char* filename,  zLayer z = MIDDLE) :Object(x, y, w, h, z) {
 	file = filename;
-	alpha = 1;
+	alpha = 255;
 }
 
-Object::Object(float x, float y, float w, float h, u32 c, float a = 1, zLayer z = MIDDLE) :Object(x, y, w, h, z) {
+Object::Object(int x, int y, int w, int h, u32 c, u8 a = 255, zLayer z = MIDDLE) :Object(x, y, w, h, z) {
 	color = c;
 	alpha = a;
 }
 
+//stupid shitty vectors are sensitive gotta do everything exact
 #define cleanUp(layer)\
-list<Object*>::iterator it = layer.begin();\
-advance(it, pos);\
-layer.erase(it);\
-for (it; it != layer.end(); ++it) {\
-	(*it)-> pos--;\
-}
+auto clean = layer.begin() + pos;\
+layer.erase(clean);\
+for (auto i : layer) {\
+if (i->pos > this->pos) {i->pos--;}\
+}\
+
+
 
 Object::~Object() {
+	//WHY DOES THIS FUCKING FIX IT
+	if (!instance) return;
+
 	switch (z) {
-		case FARBACK: { cleanUp(Z0); } break;
-		case BACK: { cleanUp(Z1); } break;
-		case MIDDLE: { cleanUp(Z2); } break;
-		case FRONT: { cleanUp(Z3); } break;
-		case FARFRONT: { cleanUp(Z4); } break;
+	case FARBACK: { cleanUp(Z0); } break;
+	case BACK: { cleanUp(Z1); } break;
+	case MIDDLE: { cleanUp(Z2); } break;
+	case FRONT: { cleanUp(Z3); } break;
+	case FARFRONT: { cleanUp(Z4); } break;
 	}
+
 	instance = false;
 }
 
 void Object::render() {
 	if (isImg()) {
-		renderImage(file, (x - mainCam.x) * mainCam.zoom, (y - mainCam.y) * mainCam.zoom, w * mainCam.zoom, h * mainCam.zoom, alpha);
+		renderImageV2(file, (x - mainCam.x) * mainCam.zoom, (y - mainCam.y) * mainCam.zoom, w * mainCam.zoom, h * mainCam.zoom, alpha);
 	}
 	else {
 		renderRect((x - mainCam.x) * mainCam.zoom, (y - mainCam.y) * mainCam.zoom, w * mainCam.zoom / 2, h * mainCam.zoom / 2, color, alpha);
@@ -130,19 +142,25 @@ Object& Object::velocity(float xInput, float yInput, float dt) {
 	return *this;
 }
 
-Object& Object::setPos(float x, float y) {
+Object& Object::setPos(int x, int y) {
 	this->x = x;
 	this->y = y;
 	return *this;
 }
 
-Object& Object::setScale(float w, float h) {
+Object& Object::setScale(int w, int h) {
 	this->w = h;
 	this->h = h;
 	return *this;
 }
 
-Object& Object::changeImg(const char* filename, float newW, float newH) {
+Object& Object::setAlpha(int val) {
+	alpha = clamp(0, val, 255);
+
+	return *this;
+}
+
+Object& Object::changeImg(const char* filename, int newW, int newH) {
 	file = filename;
 	w = (newW < 0) ? getWidth(filename) : newW;
 	h = (newH < 0) ? getHeight(filename) : newH;
@@ -152,11 +170,26 @@ Object& Object::changeImg(const char* filename, float newW, float newH) {
 //End of Class functions
 
 //Render Objects
+
+
 internal void renderAllObjects() {
-	for (list<list<Object*>*>::iterator it = objects.begin(); it != objects.end(); ++it) {
-		for (list<Object*>::iterator it1 = (*it)->begin(); it1 != (*it)->end(); ++it1) {
+	for (auto it = objects.begin(); it != objects.end(); ++it) {
+		for (auto it1 = (*it)->begin(); it1 != (*it)->end(); ++it1) {
 			(*it1)->render();
 		}
 	}
 }
+
+internal void destroyAllObjects(){
+	//do it twice cause first one aint guarenteed (jank ass programming)
+	for (u8 i = 0; i < 2; i++) {
+		for (auto it : objects) {
+			for (auto it1 : *it) {
+				(it1)->~Object();
+			}
+		}
+	}
+}
+
+
 

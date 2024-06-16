@@ -3,6 +3,7 @@
 #include <iostream>
 #include <list>
 #include <vector>
+#include <math.h>
 
 using namespace std;
 
@@ -19,13 +20,13 @@ typedef unsigned long u64;
 #define global_var static
 
 //rendering variables
-global_var float render_scale = 1.f / 540;
 
-global_var int screenWidth;
-global_var int screenHeight;
-global_var int screenOffset;
-global_var int yOffset;
-global_var int xOffset;
+global_var int screenWidth = 960;
+global_var int screenHeight = 540;
+global_var int screenOffset = 0;
+global_var int yOffset = 0;
+global_var int xOffset = 0;
+global_var float render_scale = (float) screenHeight / 540;
 
 struct RenderWindow {
 	int height, width, sizeInBits;

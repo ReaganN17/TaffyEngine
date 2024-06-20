@@ -69,5 +69,17 @@
     <ClCompile Include="events.cpp">
       <Filter>Source Files\game related</Filter>
     </ClCompile>
+    <ClCompile Include="gameevents.cpp">
+      <Filter>Source Files\game related</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>Source Files\game related</Filter>
+    </ClCompile>
+    <ClCompile Include="grid.cpp">
+      <Filter>Source Files\game related</Filter>
+    </ClCompile>
+    <ClCompile Include="gridobject.cpp">
+      <Filter>Source Files\game related</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

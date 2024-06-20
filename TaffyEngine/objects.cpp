@@ -1,195 +1,257 @@
 //Header
 
-enum zLayer {
-	FARBACK, BACK, MIDDLE, FRONT, FARFRONT
+union ObjectByte
+{
+	unsigned char byte = 0;
+
+	struct
+	{
+		u8 layer : 5;
+		bool instance : 1;
+		bool renderGroup : 1;
+		bool cameraLinked : 1;
+	};
 };
 
 struct Object {
+	Image sprite;
 	int x = 0, y = 0, w = 0, h = 0;
-	u8 alpha = 255;
-	bool instance = false;
-
-	u16 pos;
-
 	u32 color = 0;
-
-	zLayer z = MIDDLE;
-	const char* file = "";
+	u16 pos;
+	u8 shade = 0;
+	ObjectByte ob;
 
 	Object();
-	Object(int x, int y, zLayer z);
-	Object(int x, int y, int w, int h, zLayer z);
-	Object(int x, int y, const char* filename, zLayer z);
-	Object(int x, int y, int w, int h, const char* filename,  zLayer z);
-	Object(int x, int y, int w, int h, u32 c, u8 a, zLayer z);
+	Object(int x, int y);
+	Object(int x, int y, int w, int h);
+	Object(int x, int y, const char* filename, u8 z);
+	Object(int x, int y, int w, int h, const char* filename, u8 z);
+	Object(int x, int y, int w, int h, const char* filename, u8 z, u16 cx, u16 cy, u16 cw, u16 ch);
+	Object(int x, int y, int w, int h, u32 c, u8 z);
 	~Object();
 
 	virtual void render();
+	virtual Object& update();
+
+	void addObject(u8 z);
+	void removeObject();
+
 	bool isImg();
 
-	Object& velocity(float xInput, float yInput, float dt);
 	Object& setPos(int x, int y);
 	Object& setScale(int w, int h);
-	Object& setAlpha(int val);
+	Object& setShade(u8 shade);
+	Object& changeImg(const char* filename);
+	Object& changeCrop(const char* filename, u16 cx, u16 cy, u16 cw, u16 ch);
 
-	Object& changeImg(const char* filename, int newW, int newH);
+
+private:
+	void addLayer(vector<Object*>* z);
+	void cleanLayer(vector<Object*>* z);
 };
 
 //End of Header
 
-vector<Object*> Z0;
-vector<Object*> Z1;
-vector<Object*> Z2;
-vector<Object*> Z3;
-vector<Object*> Z4;
+vector<Object*> FarBack_0;
+vector<Object*> Back_1;
+vector<Object*> Middle_2;
+vector<Object*> Front_3;
+vector<Object*> FarFront_4;
 
-global_var vector<vector<Object*>*> objects = { &Z0, &Z1, &Z2, &Z3, &Z4 };
+global_var vector<vector<Object*>*> objects = { &FarBack_0, &Back_1, &Middle_2, &Front_3, &FarFront_4 };
 
 #include "uibuttons.cpp"
 #include "maps.cpp"
 #include "uiobjects.cpp"
 
+//Render Objects
+
+//renders all objects in a z layer
+internal void renderZObjects(vector<Object*>* z) {
+	for (auto o : *z) {
+		(o)->render();
+	}
+}
+
+//rendres all objects in the render group
+internal void renderAllObjects() {
+	for (auto i : objects) {
+		renderZObjects(i);
+	}
+}
+
+//destroys all objets in the render group
+//done backwards due to how remove object function works
+internal void destroyAllObjects() {
+	for (auto it: objects) {
+		//this is stupid
+		reverse((it)->begin(), (it)->end());
+		for (auto it1 : (*it)) {
+			(it1)->~Object();
+		}
+	}
+}
+
+//updates all objects in a z layer
+internal void updateZObjects(vector<Object*>* z) {
+	for (auto o : *z) {
+		(o)->update();
+	}
+}
+
+//updates all objects in the render group
+internal void updateAllObjects() {
+	for (auto i : objects) {
+		updateZObjects(i);
+	}
+}
+
 //Class
 
-#define addObject(layer)\
-layer.push_back(&*this);\
-pos = layer.size() - 1;\
-instance = true;
+//default constructor
+Object::Object() {}
 
-//Constructors that shouldn't be directly used
-Object::Object() { }
+//object point constructor
+Object::Object(int x, int y) : x(x), y(y) {}
 
-Object::Object(int x, int y, zLayer z = MIDDLE) :x(x), y(y), z(z) { 
-	switch (z) {
-		case FARBACK: { addObject(Z0); break; }
-		case BACK: { addObject(Z1); break; }
-		case MIDDLE: { addObject(Z2); break; }
-		case FRONT: {addObject(Z3); break;}
-		case FARFRONT: { addObject(Z4); break; }
-	}
+//object rectangle constructor
+Object::Object(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) {}
+
+//basic object image constructor
+Object::Object(int x, int y, const char* filename, u8 z) :Object(x, y) {
+	sprite.create(filename);
+	addObject(z);
+	ob.instance = true;
 }
 
-Object::Object(int x, int y, int w, int h, zLayer z = MIDDLE) :x(x), y(y), w(w),h(h), z(z) { 
-	switch (z) {
-		case FARBACK: { addObject(Z0); break; }
-		case BACK: { addObject(Z1); break; }
-		case MIDDLE: { addObject(Z2); break; }
-		case FRONT: { addObject(Z3); break; }
-		case FARFRONT: { addObject(Z4); break; }
-	}
+//advanced object image constructor (basic but with width and height)
+Object::Object(int x, int y, int w, int h, const char* filename, u8 z) : Object(x, y, w, h) {
+	sprite.create(filename);
+	addObject(z);
+	ob.instance = true;
 }
 
-//3 Constructors that should be used
-Object::Object(int x, int y, const char* filename, zLayer z = MIDDLE) :Object(x, y, z) {
-	file = filename;
-	w = getWidth(filename);
-	h = getHeight(filename);
-	alpha = 255;
+//advance object image construct when using sprite sheets
+Object::Object(int x, int y, int w, int h, const char* filename, u8 z, u16 cx, u16 cy, u16 cw, u16 ch) : Object(x, y, w, h, filename, z) {
+	sprite.create(filename);
+	sprite.crop(cx, cy, cw, ch);
 }
 
-Object::Object(int x, int y, int w, int h, const char* filename,  zLayer z = MIDDLE) :Object(x, y, w, h, z) {
-	file = filename;
-	alpha = 255;
+//object colored rectangle constructor
+Object::Object(int x, int y, int w, int h, u32 color, u8 z) : Object(x, y, w, h) {
+	this->color = color;
+	addObject(z);
+	ob.instance = true;
 }
 
-Object::Object(int x, int y, int w, int h, u32 c, u8 a = 255, zLayer z = MIDDLE) :Object(x, y, w, h, z) {
-	color = c;
-	alpha = a;
-}
-
-//stupid shitty vectors are sensitive gotta do everything exact
-#define cleanUp(layer)\
-auto clean = layer.begin() + pos;\
-layer.erase(clean);\
-for (auto i : layer) {\
-if (i->pos > this->pos) {i->pos--;}\
-}\
-
-
-
+//decontructs object if it exists
 Object::~Object() {
-	//WHY DOES THIS FUCKING FIX IT
-	if (!instance) return;
+	if (!ob.instance) return;
+
+	removeObject();
+
+	ob.instance = false;
+}
+
+//adds object to render group based on z layer
+//if already in render group, removes first
+void Object::addObject(u8 z) {
+	if (ob.renderGroup) return;
+
+	ob.layer = z;
 
 	switch (z) {
-	case FARBACK: { cleanUp(Z0); } break;
-	case BACK: { cleanUp(Z1); } break;
-	case MIDDLE: { cleanUp(Z2); } break;
-	case FRONT: { cleanUp(Z3); } break;
-	case FARFRONT: { cleanUp(Z4); } break;
+	case 0: addLayer(&FarBack_0); break;
+	case 1: addLayer(&Back_1); break;
+	case 2: addLayer(&Middle_2); break;
+	case 3: addLayer(&Front_3); break;
+	case 4: addLayer(&FarFront_4); break;
 	}
 
-	instance = false;
+	ob.renderGroup = true;
 }
 
+//removes object render group, if already moved dont
+void Object::removeObject() {
+	if (!ob.renderGroup) return;
+
+	switch (ob.layer) {
+	case 0: cleanLayer(&FarBack_0); break;
+	case 1: cleanLayer(&Back_1); break;
+	case 2: cleanLayer(&Middle_2); break;
+	case 3: cleanLayer(&Front_3); break;
+	case 4: cleanLayer(&FarFront_4); break;
+	}
+
+	ob.renderGroup = false;
+}
+
+//add to a z layer
+void Object::addLayer(vector<Object*>* z) {
+	z->push_back(&*this);
+	pos = z->size() - 1;
+}
+
+//remove from z layer
+void Object::cleanLayer(vector<Object*>* z) {
+	auto clean = z->begin() + pos;
+	z->erase(clean);
+	for (auto i : *z) {
+		if (i->pos > this->pos) { i->pos--; }
+	}
+}
+
+//render
 void Object::render() {
-	if (isImg()) {
-		renderImageV2(file, (x - mainCam.x) * mainCam.zoom, (y - mainCam.y) * mainCam.zoom, w * mainCam.zoom, h * mainCam.zoom, alpha);
+	switch (ob.cameraLinked | (isImg() << 1)) {
+	case 0: renderRect(x, y, w * 0.5, h * 0.5, color); break;
+	case 1:	renderRect((x - mainCam.x) * mainCam.zoom, (y - mainCam.y) * mainCam.zoom, w * 0.5 * mainCam.zoom, h * 0.5 * mainCam.zoom, color); break;
+	case 2: renderImageV2(&sprite, x, y, w, h, shade); break;
+	case 3: renderImageV2(&sprite, (x - mainCam.x) * mainCam.zoom, (y - mainCam.y) * mainCam.zoom, w * mainCam.zoom, h * mainCam.zoom, shade); break;
 	}
-	else {
-		renderRect((x - mainCam.x) * mainCam.zoom, (y - mainCam.y) * mainCam.zoom, w * mainCam.zoom / 2, h * mainCam.zoom / 2, color, alpha);
-	}
 }
 
-bool Object::isImg() {
-	return strlen(file) > 0;
+//update loop
+Object& Object::update() { return *this; }
+
+//image or rectangle
+bool Object::isImg() { return sprite.data != NULL; }
+
+//sets x and y pos
+Object& Object::setPos(int x, int y) { 
+
+	this->x = x; this->y = y; return *this;
 }
 
-Object& Object::velocity(float xInput, float yInput, float dt) {
-	x += xInput * dt;
-	y += yInput * dt;
-
-	return *this;
-}
-
-Object& Object::setPos(int x, int y) {
-	this->x = x;
-	this->y = y;
-	return *this;
-}
-
+//sets scale
 Object& Object::setScale(int w, int h) {
-	this->w = h;
-	this->h = h;
+
+	this->w = w; this->h = h; return *this;
+}
+
+//sets shade
+Object& Object::setShade(u8 shade) {
+	this->shade = shade; return*this;
+}
+
+//retains height and width
+Object& Object::changeImg(const char* filename) {
+	sprite.create(filename);
+
 	return *this;
 }
 
-Object& Object::setAlpha(int val) {
-	alpha = clamp(0, val, 255);
+//changes image on the sprite sheet
+Object& Object::changeCrop(const char * filename, u16 cx, u16 cy, u16 cw, u16 ch) {
+	sprite.create(filename);
+	sprite.crop(cx, cy, cw, ch);
 
-	return *this;
-}
-
-Object& Object::changeImg(const char* filename, int newW, int newH) {
-	file = filename;
-	w = (newW < 0) ? getWidth(filename) : newW;
-	h = (newH < 0) ? getHeight(filename) : newH;
 	return *this;
 }
 
 //End of Class functions
 
-//Render Objects
 
-
-internal void renderAllObjects() {
-	for (auto it = objects.begin(); it != objects.end(); ++it) {
-		for (auto it1 = (*it)->begin(); it1 != (*it)->end(); ++it1) {
-			(*it1)->render();
-		}
-	}
-}
-
-internal void destroyAllObjects(){
-	//do it twice cause first one aint guarenteed (jank ass programming)
-	for (u8 i = 0; i < 2; i++) {
-		for (auto it : objects) {
-			for (auto it1 : *it) {
-				(it1)->~Object();
-			}
-		}
-	}
-}
 
 
 

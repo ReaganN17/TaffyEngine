@@ -1,14 +1,12 @@
 #include <windows.h>
 #include "MyUtils.cpp"
 #include "platformcommon.cpp"
-
+#include "game.cpp";
 
 #ifdef _MSC_VER
 #    pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-
-#include "game.cpp";
 
 LRESULT CALLBACK window_callback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	LRESULT result = 0;
@@ -84,7 +82,7 @@ internal void loop(HWND window) {
 			} break;
 
 			case WM_SIZE: {
-				clearScreen(0x000000);
+				clearEntireScreen(0x000000);
 			} break;
 
 			default: {
@@ -110,6 +108,11 @@ internal void loop(HWND window) {
 		LARGE_INTEGER frame_end_time;
 		QueryPerformanceCounter(&frame_end_time);
 		delta_time = (float)(frame_end_time.QuadPart - frame_begin_time.QuadPart) / performance_frequency;
+		
+		while (delta_time < 0.01) {
+			QueryPerformanceCounter(&frame_end_time);
+			delta_time = (float)(frame_end_time.QuadPart - frame_begin_time.QuadPart) / performance_frequency;
+		}
 		frame_begin_time = frame_end_time;
 
 	}

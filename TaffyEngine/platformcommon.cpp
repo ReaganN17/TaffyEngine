@@ -3,8 +3,11 @@ struct Button_State {
 	bool changed;
 };
 
+enum zLayer:u8 {
+	FARBACK, BACK, MIDDLE, FRONT, FARFRONT,
+};
 
-enum Inputs {
+enum Inputs:u8 {
 	ESC, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
 
 	TINDLE, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_0, BACKSPACE,

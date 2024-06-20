@@ -1,91 +1,114 @@
+union ButtonByte
+{
+	unsigned char byte = 0;
+
+	struct
+	{
+		//is it worth it?
+
+		bool down : 1;
+		bool pressed : 1;
+		bool released : 1;
+		bool hover : 1;
+		bool stick : 1;
+		bool circle : 1;
+		bool disable : 1;
+		bool erm : 1;
+	};
+};
+
 struct Button : Object {
-	bool down = false;
-	bool pressed = false;
-	bool released = false;
-	bool hover = false;
-	bool stick = false;
-	bool circle = false;
+	u16 dW, dH;
+	ButtonByte bb;
 
-	//only purpose is to be a switch for the pulse button so you cant click it if ur key was down before hovering
-	//god give me a better way to do this
-	bool erm = false;
 
-	Button(int x, int y, int w, int h, const char* filename, zLayer z, bool stick, bool circle);
-	Button(int x, int y, int w, int h, u32 color, u8 alpha, zLayer z, bool stick, bool circle);
+	Button(int x, int y, int w, int h, const char* filename, u16 cx, u16 cy, u16 cw, u16 ch, u8 z, bool stick, bool circle);
+	Button(int x, int y, int w, int h, const char* filename, u8 z, bool stick, bool circle);
+	Button(int x, int y, int w, int h, u32 color, u8 z, bool stick, bool circle);
 	Button();
 
 	~Button();
 
-	Button& update(Inputs key);
+	Button& update();
 
-	virtual void render();
 	bool isMouseOver();
 };
 
-Button::~Button() {}
+Button::~Button() { if (!ob.instance) return; }
 
 Button::Button() {}
 
 //long ass constructor cause i dont feel like being neat
-Button::Button(int x, int y, int w, int h, const char* filename, zLayer z = MIDDLE, bool stick = false, bool circle = false) :
-	Object(x, y, w, h, filename, z), stick(stick), circle(circle) {}
+Button::Button(int x, int y, int w, int h, const char* filename, u8 z = 2, bool stick = false, bool circle = false) : Object(x, y, w, h, filename, z) {
+	dW = w;
+	dH = h;
+	bb.stick = stick;
+	bb.circle = circle;
+	ob.cameraLinked = false;
+}
 
-Button::Button(int x, int y, int w, int h, u32 color, u8 alpha, zLayer z = MIDDLE, bool stick = false, bool circle = false) :
-	Object(x, y, w, h, color, alpha, z), stick(stick), circle(circle) {}
+Button::Button(int x, int y, int w, int h, const char* filename, u16 cx, u16 cy, u16 cw, u16 ch, u8 z = 2, bool stick = false, bool circle = false) 
+	:Object(x, y, w, h, filename, z, cx, cy, cw, ch) 
+{
+	dW = w;
+	dH = h;
+	bb.stick = stick;
+	bb.circle = circle;
+	ob.cameraLinked = false;
+}
 
-//placed in the render function so it updates with the game loop
-Button& Button::update(Inputs key) {
-	pressed = false;
-	released = false;
+Button::Button(int x, int y, int w, int h, u32 color, u8 z = 2, bool stick = false, bool circle = false) : Object(x, y, w, h, color, z) {
+	dW = w;
+	dH = h;
+	bb.stick = stick;
+	bb.circle = circle;
+	ob.cameraLinked = false;
+}
 
-	hover = isMouseOver();
+//default key is left mouse
+Button& Button::update() {
+	bb.pressed = false;
+	bb.released = false;
 
-	if (stick) {
-		if (hover && pressed(key) && !down) {
-			pressed = true;
-			down = true;
-		} else if (hover && pressed(key) && down) {
-			released = true;
-			down = false;
+	bb.hover = isMouseOver();
+
+	if (bb.disable) bb.hover = false, bb.down = false;
+
+	if (bb.stick) {
+		if (bb.hover && pressed(LEFT_MOUSE) && !bb.down) {
+			bb.pressed = true;
+			bb.down = true;
+		}
+		else if (bb.hover && pressed(LEFT_MOUSE) && bb.down) {
+			bb.released = true;
+			bb.down = false;
 		}
 	}
 	else {
-		down = false;
-		if (hover && pressed(key)) {
-			pressed = true;
-			erm = true;
+		bb.down = false;
+		if (bb.hover && pressed(LEFT_MOUSE)) {
+			bb.pressed = true;
+			bb.erm = true;
 		}
-		if (erm && hover && isdown(key)) {
-			down = true;
+		if (bb.erm && bb.hover && isdown(LEFT_MOUSE)) {
+			bb.down = true;
 		}
-		if (erm && hover && released(key)) {
-			released = true;
-			erm = false;
+		if (bb.erm && bb.hover && released(LEFT_MOUSE)) {
+			bb.released = true;
+			bb.erm = false;
 		}
-		if (!hover) {
-			erm = false;
+		if (!bb.hover) {
+			bb.erm = false;
 		}
 	}
 
+	if (bb.down) setShade(50); else { setShade(0); }
+	if (bb.hover) setScale(1.3 * dW, 1.3 * dH); else { setScale(dW, dH); }
 
 	return *this;
 }
 
-
-//UI Buttons coordinates are different from game coordinates but still have the same proportiions
-void Button::render() {
-	update(LEFT_MOUSE);
-	
-	if (isImg()) {
-		renderImageV2(file, x, y, (hover)?w*1.3:w, (hover) ? h * 1.3 : h, alpha, (down)?50:0);
-
-	}
-	else {
-		renderRect(x, y, w / 2, h / 2, color, alpha);
-	}
-}
-
 bool Button::isMouseOver() {
-	if(circle) return (4 * (mouse.x * mouse.x) / (w * w) + 4 * (mouse.y * mouse.y) / (h * h)) <= 1;
+	if(bb.circle) return (4 * (mouse.x * mouse.x) / (w * w) + 4 * (mouse.y * mouse.y) / (h * h)) <= 1;
 	else return (mouse.x >= x - w / 2 && mouse.x <= x + w / 2) && (mouse.y >= y - h / 2 && mouse.y <= y + h / 2);
 }

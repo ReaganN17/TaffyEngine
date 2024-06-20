@@ -19,6 +19,7 @@ typedef unsigned long u64;
 #define internal static
 #define global_var static
 
+
 //rendering variables
 
 global_var int screenWidth = 960;
@@ -40,8 +41,8 @@ global_var RenderWindow renderWindow;
 
 #include "MathUtils.cpp"
 
-#include "RGBUtils.cpp"
-
 #include "ImageUtils.cpp"
+
+#include "RGBUtils.cpp"
 
 #include "CameraUtils.cpp"

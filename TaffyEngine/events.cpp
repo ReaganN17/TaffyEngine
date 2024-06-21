@@ -217,7 +217,7 @@ internal void mainMenu(float dt) {
 
 	} break;
 	case LEVELLOOP: {
-		
+		renderCustomBG(dt, false);
 		updateAllObjects();
 		renderAllObjects();
 

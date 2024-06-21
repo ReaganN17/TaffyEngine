@@ -95,7 +95,7 @@ internal void level1(float dt) {
 		if (isdown(UP)) camera_y += 300 * dt;
 		if (isdown(DOWN))camera_y -= 300 * dt;
 
-		bob.move(controls);
+		bob.move(controls, dt);
 
 		mainCam.setPos(camera_x, camera_y);
 

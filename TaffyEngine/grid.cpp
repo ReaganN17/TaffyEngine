@@ -23,7 +23,7 @@ struct Grid : Object{
 		gw = ref.w;
 		gh = ref.h;
 
-		grid = new u8[w * h];
+		grid = new u8[gw * gh];
 
 		for (int i = 0; i < ref.w * ref.h; i++) {
 			grid[i] = (ref.data[ref.channels * i] == 0) ? 1 : 0;

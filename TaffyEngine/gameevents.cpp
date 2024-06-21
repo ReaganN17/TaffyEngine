@@ -21,8 +21,10 @@ internal void level10(float dt);
 
 MainGameVar mgVar;
 
+PControls controls;
+
 Grid grid;
-GridObject bob;
+Player bob;
 
 internal void game(float dt) {
 	clearScreen(0);
@@ -64,6 +66,9 @@ internal void game(float dt) {
 
 struct LevelVar {
 	u8 sequence = 0;
+	int tsY = 0;
+	int tsRate = 0;
+	int timeS = 0;
 };
 LevelVar lvar;
 
@@ -73,26 +78,36 @@ internal void level1(float dt) {
 	switch (lvar.sequence) {
 	case 0: {
 		new (&grid) Grid(-480, 270, 50, "resources/testrender.png", 0, 0, 1, "resources/testrender.png");
-		new (&bob) GridObject(&grid, 1, 1, "resources/bob.png", 0.75);
+		new (&bob) Player(&grid, 1, 1, "resources/bob.png", 0.75);
+		lvar.timeS = GetTickCount();
 		lvar.sequence = 1;
 		} break;
 	case 1: {
+		renderRect(0, 0, 480, 270, 0);
+
+		if (GetTickCount() - 1000 > lvar.timeS) {
+			lvar.sequence = 2;
+		}
+	} break;
+	case 2: {
 		if (isdown(LEFT)) camera_x -= 300 * dt;
 		if (isdown(RIGHT))camera_x += 300 * dt;
 		if (isdown(UP)) camera_y += 300 * dt;
 		if (isdown(DOWN))camera_y -= 300 * dt;
 
-		if (pressed(W)) bob.moveToPos(bob.xG, bob.yG - 1);
-		if (pressed(A)) bob.moveToPos(bob.xG - 1, bob.yG);
-		if (pressed(S)) bob.moveToPos(bob.xG, bob.yG + 1);
-		if (pressed(D)) bob.moveToPos(bob.xG + 1, bob.yG);
+		bob.move(controls);
 
 		mainCam.setPos(camera_x, camera_y);
 
 		updateAllObjects();
 		renderAllObjects();
 
-		draw_number(grid.gw, 0, 0, 20);
+		if (lvar.tsY < 540) {
+			lvar.tsY += lvar.tsRate * dt;
+			lvar.tsRate += 1080 * dt;
+			renderRect(0, lvar.tsY, 480, 270, 0);
+		}
+
 	} break;
 	}
 }

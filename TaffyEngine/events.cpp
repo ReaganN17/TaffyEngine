@@ -59,13 +59,15 @@ internal void renderCustomBG(float dt, bool stop, u8 shade = 0, bool reset = fal
 
 //events are named so its easier to keep track of them
 enum MainMenuEvents {
-	MMINIT, MMLOOP, EXITINIT, EXITLOOP, LEVELINIT, LEVELLOOP
+	MMINIT, MMLOOP, EXITINIT, EXITLOOP, LEVELINIT, LEVELLOOP, TRANSITIONOUT, TRANSITIONIN
 };
 
 //main menu event
 struct MainMenuVar {
 	u8 sequence = MMINIT;
 	u8 levelUnlocked = 1;
+	int tsY = 700;
+	int tsRate = -1400;
 };
 
 MainMenuVar mmVar;
@@ -95,10 +97,8 @@ Button Back;
 
 #define LevelButton(b, n) \
 if (b.bb.released) {\
-		destroyAllObjects();\
 		mgVar.level = n;\
-		currentScreen = GAME;\
-		mmVar.sequence = MMINIT;\
+		mmVar.sequence = TRANSITIONOUT;\
 }
 
 internal void mainMenu(float dt) {
@@ -217,7 +217,7 @@ internal void mainMenu(float dt) {
 
 	} break;
 	case LEVELLOOP: {
-		renderCustomBG(dt, false);
+		
 		updateAllObjects();
 		renderAllObjects();
 
@@ -238,8 +238,18 @@ internal void mainMenu(float dt) {
 		}
 
 	} break;
-	case 6: {
+	case TRANSITIONOUT: {
+		mmVar.tsY += mmVar.tsRate * dt;
+		mmVar.tsRate += 1080 * dt;
 
+		renderCustomBG(dt, false);
+		renderAllObjects();
+		renderRect(0, max(mmVar.tsY, 0), 480, 270, 0);
+		
+		if (mmVar.tsY <= 0) {
+			destroyAllObjects();
+			currentScreen = GAME;
+		}
 	} break;
 	}
 	

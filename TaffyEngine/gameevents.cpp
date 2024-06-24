@@ -102,6 +102,8 @@ internal void level1(float dt) {
 		updateAllObjects();
 		renderAllObjects();
 
+		if (pressed(ESC)) { running = false; }
+
 		if (lvar.tsY < 540) {
 			lvar.tsY += lvar.tsRate * dt;
 			lvar.tsRate += 1080 * dt;

@@ -37,6 +37,7 @@ struct Object {
 	void removeObject();
 
 	bool isImg();
+	virtual bool collide(Object* obj);
 
 	Object& setPos(int x, int y);
 	Object& setScale(int w, int h);
@@ -216,6 +217,15 @@ Object& Object::update() { return *this; }
 
 //image or rectangle
 bool Object::isImg() { return sprite.data != NULL; }
+
+//collision (rect only)
+bool Object::collide(Object* obj) {
+	if (obj->x + 0.5 * obj->w > this->x - 0.5 * this->w) return true;
+	if (obj->x - 0.5 * obj->w < this->x + 0.5 * this->w) return true;
+	if (obj->y + 0.5 * obj->h > this->y - 0.5 * this->h) return true;
+	if (obj->y - 0.5 * obj->h < this->y + 0.5 * this->h) return true;
+	return false;
+}
 
 //sets x and y pos
 Object& Object::setPos(int x, int y) { 

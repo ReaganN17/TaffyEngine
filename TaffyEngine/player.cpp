@@ -119,7 +119,7 @@ Player& Player::move(PControls inputs, float dt) {
 
 			setGridVector(mmb.direction, pos - 0.5);
 
-			if (pos => posborder) { mmb.sequence = BOUNCEINIT; setGridVector(mmb.direction, posborder - 0.5);}
+			if (pos >= posborder) { mmb.sequence = BOUNCEINIT; setGridVector(mmb.direction, posborder - 0.5);}
 
 			if (rate <= 0) { mmb.sequence = MOVEEND; setGridVector(mmb.direction, 0); }
 		} break;

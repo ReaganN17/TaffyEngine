@@ -1,15 +1,10 @@
-enum Direction {
-	MLEFT, MRIGHT, MUP, MDOWN
-};
-
-
 //gridObject requires a grid
 //however initlized grid is not good because grid can change
 //taking a grid as a parameter is the best i can do unfortunately
 
 struct GridObject : Object {
 	Grid* grid;
-	u16 xG = 0, yG = 0;
+	u16 xG = 0, yG = 0, scale;
 	u8 id = 2, overlapped = 0;
 	//ids 
 	//0 is empty space
@@ -38,9 +33,11 @@ GridObject::~GridObject() { if (!ob.instance) return; }
 
 
 //constructor
-GridObject::GridObject(Grid* grid, u16 x, u16 y, const char* sprite, float scale = 1, zLayer z = MIDDLE, u8 id = 2) : Object(grid->dx + x * grid->grid_scale, grid->dy - y * grid->grid_scale, grid->grid_scale* scale, grid->grid_scale* scale, sprite, z) {
+GridObject::GridObject(Grid* grid, u16 x, u16 y, const char* sprite, float scale = 1, zLayer z = MIDDLE, u8 id = 2) : Object(grid->dx + x * grid->grid_scale, grid->dy - y * grid->grid_scale, grid->grid_scale * scale, grid->grid_scale* scale, sprite, z) {
 	xG = x, yG = y, this->id = id;  this->grid = grid;
 	ob.cameraLinked = true;
+
+	this->scale = scale * 1000;
 
 	overlapped = grid->grid[x + y * grid->gw];
 	grid->grid[x + y * grid->gw] = id;

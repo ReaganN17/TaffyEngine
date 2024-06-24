@@ -1,3 +1,6 @@
+enum Direction {
+	MRIGHT, MUP, MLEFT, MDOWN
+};
 
 //0 - traverse
 //1 to whatever number - no access
@@ -49,6 +52,19 @@ struct Grid : Object{
 		setPos(x + w * (0.5 + offsetX), y - h * (0.5 + offsetY));
 
 		ob.cameraLinked = true;
+	}
+
+	u8 getID(u16 x, u16 y) {
+		return grid[x + y * gw];
+	}
+
+	u8 getIDVector(u8 dir, float mag, u16 xG = 0, u16 yG = 0) {
+		switch (dir) {
+			case MLEFT: return getID(xG - mag, yG);
+			case MRIGHT: return getID(xG + mag, yG);
+			case MUP: return getID(xG, yG - mag);
+			case MDOWN: return getID(xG, yG + mag);
+		}
 	}
 };
 

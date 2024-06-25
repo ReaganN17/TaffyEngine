@@ -129,7 +129,8 @@ internal void renderRect(float x, float y, float half_size_x, float half_size_y,
 	}
 }
 
-internal void renderImageV2(Image *img, int x, int y, int w, int h, u8 shade = 0) {
+internal void renderImageV2(Image* img, int x, int y, int w, int h, u8 shade = 0) {
+
 	int size_x = w * render_scale;
 	int size_y = h * render_scale;
 
@@ -151,8 +152,9 @@ internal void renderImageV2(Image *img, int x, int y, int w, int h, u8 shade = 0
 		for (int i = offsetTop; i < size_y - offsetBottom; i++) {
 			u32* pixel = (u32*)renderWindow.memory + x0 + offsetLeft + screenOffset + ((size_y - 1) - i + y0) * renderWindow.width;
 			for (int j = offsetLeft; j < size_x - offsetRight; j++) {
-				src = img->channels * ((int)(j / wscale) + img->w * (int)(i / hscale));
 
+				src = img->channels * ((int)(j / wscale) + img->w * (int)(i / hscale));
+				
 				RGBAPixel curPixel(img->data, src, img->channels);
 
 				if (shade != 0) { curPixel.shade(255- shade); }

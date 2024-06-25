@@ -12,7 +12,7 @@ global_var Input input = {};
 #define released(b) (!input.buttons[b].down && input.buttons[b].changed)
 
 //contains Camera that most objects will follow
-global_var Camera mainCam(0, 0, 1);
+global_var Camera mainCam(0, 0, 1.5);
 
 //runs the game, if set false will exit the window
 global_var bool running = true;

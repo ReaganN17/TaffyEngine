@@ -16,6 +16,7 @@ struct GridObject : Object {
 	GridObject();
 	~GridObject();
 	GridObject(Grid* grid, u16 x, u16 y, const char* sprite, float scale, zLayer z, u8 id);
+	GridObject(Grid* grid, u16 x, u16 y, const char* sprite, u16 cx, u16 cy, u16 cw, u16 ch, float scale, zLayer z, u8 id);
 
 	void setGridPos(float x, float y);
 	void setGridVector(u8 dir, float mag);
@@ -33,7 +34,17 @@ GridObject::~GridObject() { if (!ob.instance) return; }
 
 
 //constructor
-GridObject::GridObject(Grid* grid, u16 x, u16 y, const char* sprite, float scale = 1, zLayer z = MIDDLE, u8 id = 2) : Object(grid->dx + x * grid->grid_scale, grid->dy - y * grid->grid_scale, grid->grid_scale * scale, grid->grid_scale* scale, sprite, z) {
+GridObject::GridObject(Grid* grid, u16 x, u16 y, const char* sprite, u16 cx, u16 cy, u16 cw, u16 ch, float scale = 1, zLayer z = MIDDLE, u8 id = 2) : Object(grid->dx + x * grid->grid_scale, grid->dy - y * grid->grid_scale, grid->grid_scale * scale, grid->grid_scale* scale, sprite, z, cx, cy, cw, ch) {
+	xG = x, yG = y, this->id = id;  this->grid = grid;
+	ob.cameraLinked = true;
+
+	this->scale = scale * 1000;
+
+	overlapped = grid->grid[x + y * grid->gw];
+	grid->grid[x + y * grid->gw] = id;
+}
+
+GridObject::GridObject(Grid* grid, u16 x, u16 y, const char* sprite, float scale = 1, zLayer z = MIDDLE, u8 id = 2) : Object(grid->dx + x * grid->grid_scale, grid->dy - y * grid->grid_scale, grid->grid_scale* scale, grid->grid_scale* scale, sprite, z) {
 	xG = x, yG = y, this->id = id;  this->grid = grid;
 	ob.cameraLinked = true;
 

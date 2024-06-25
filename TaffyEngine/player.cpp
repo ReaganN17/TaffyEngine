@@ -2,6 +2,10 @@ enum movementSeq {
 	SELECTION, MOVEINIT, MOVE, MOVEINTERUPTINIT, MOVEINTERUPT, BOUNCEINIT, BOUNCEMOVE, MOVEEND
 };
 
+enum GeoState {
+	SQUARE, TRIANGLE, CIRCLE
+};
+
 union MovementByte {
 	u8 byte = 0;
 
@@ -15,29 +19,30 @@ struct Player : GridObject {
 
 	Player();
 	~Player();
-	Player(Grid* grid, u16 x, u16 y, const char* file, float scale, zLayer z);
+	Player(Grid* grid, u16 x, u16 y, zLayer z);
 
 	//moving purposes
 	float pos;
 	float acc;
-	float rate;
+	float rate = 0;
 	float posborder;
 	u8 distance;
 	MovementByte mmb;
 
 	//player characteristics
 	short health = 250;
-	u8 state = 0;
+	u8 state = SQUARE;
 	u8 power = 5;
-	u8 range = 3;
-	float speed = 5; //time between moves is 1/speed seconds;
+	u8 range = 1;
+
+	void control(PControls inputs, float dt);
 
 	Player& move(PControls inputs, float dt);
-
+	Player& ability(PControls inputs, float dt);
+	Player& rotate(PControls inputs, float dt);
 	Player& toPos(int x, int y);
-	bool checkValidVector(u8 dir, float mag);
-	Player& toGridVector(u8 dir, u8 mag);
-	Player& gridPushBack(u8 dir, u8 mag);
+	Player& changeChar(PControls inputs, float dt);
+	bool checkValidVector(u8 dir, float mag);	
 
 	bool checkValid(int x, int y);
 
@@ -51,7 +56,41 @@ Player::Player() {}
 Player::~Player() { if (!ob.instance) return; }
 
 //actual constructor
-Player::Player(Grid* grid, u16 x, u16 y, const char* file, float scale, zLayer z = MIDDLE) : GridObject(grid, x, y, file, scale, z, 2) {}
+Player::Player(Grid* grid, u16 x, u16 y, zLayer z = MIDDLE) : GridObject(grid, x, y, "resources/playerSpriteSheetV1.png", 161, 165, 170, 170, 0.65, z, 2) {}
+
+void Player::control(PControls inputs, float dt) {
+	changeChar(inputs, dt);
+	ability(inputs, dt);
+	rotate(inputs, dt);
+	move(inputs, dt);
+}
+
+Player& Player::changeChar(PControls inputs, float dt) {
+	if (pressed(inputs.square)) { changeCrop("resources/playerSpriteSheetV1.png", 161, 165, 170, 170); state = SQUARE; }
+	if (pressed(inputs.circle)) { changeCrop("resources/playerSpriteSheetV1.png", 611, 158, 185, 177); state = CIRCLE; }
+	if (pressed(inputs.triangle)) { changeCrop("resources/playerSpriteSheetV1.png", 348, 166, 229, 164); state = TRIANGLE; }
+
+	return *this;
+}
+
+Player& Player::rotate(PControls inputs, float dt) {
+	if (pressed(inputs.rotleft)) { mmb.direction++;}
+	if (pressed(inputs.rotright)) { mmb.direction--;}
+
+	return *this;
+}
+
+Player& Player::ability(PControls inputs, float dt) {
+	if (pressed(inputs.power)) {
+		switch (state) {
+			case SQUARE: break;
+			case TRIANGLE: break;
+			case CIRCLE: mmb.sequence = MOVEINIT; range = 7; rate = 7; break;
+		}
+	}
+
+	return *this;
+}
 
 Player& Player::move(PControls inputs, float dt) {
 	
@@ -65,6 +104,20 @@ Player& Player::move(PControls inputs, float dt) {
 		} break;
 
 		case MOVEINIT: {
+			float speed;
+
+			//custom rate can overrite speeds
+			if (rate == 0) {
+				switch (state) {
+					case SQUARE: speed = 3; break;
+					case TRIANGLE: speed = 6; break;
+					case CIRCLE: speed = 10; break;
+				}
+			}
+			else {
+				speed = rate;
+			}
+
 			distance = range;
 			pos = 0.5;
 
@@ -74,6 +127,8 @@ Player& Player::move(PControls inputs, float dt) {
 		}
 
 		case MOVE: {
+			if (!checkValidVector(mmb.direction, 1)) { mmb.sequence = MOVEINTERUPTINIT; break; }
+
 			grid->grid[xG + yG * grid->gw] = overlapped;
 	
 			//kinematics (sorta)
@@ -95,9 +150,9 @@ Player& Player::move(PControls inputs, float dt) {
 
 			setGridVector(mmb.direction, pos - 0.5);
 
-			if (!checkValidVector(mmb.direction, 1)) { mmb.sequence = MOVEINTERUPTINIT; }
+			
 
-			if (rate <= 0) { mmb.sequence = MOVEEND; setGridVector(mmb.direction, 0); }
+			if (rate <= 0) { mmb.sequence = MOVEEND;}
 		} break;
 
 		case MOVEINTERUPTINIT: {
@@ -114,14 +169,14 @@ Player& Player::move(PControls inputs, float dt) {
 		} break;
 
 		case MOVEINTERUPT: {
+
 			pos += rate * dt + acc * dt * dt * 0.5f;
 			rate += acc * dt;
 
 			setGridVector(mmb.direction, pos - 0.5);
+			if (pos >= posborder) { mmb.sequence = BOUNCEINIT; setGridVector(mmb.direction, posborder - 0.5); break; }
 
-			if (pos >= posborder) { mmb.sequence = BOUNCEINIT; setGridVector(mmb.direction, posborder - 0.5);}
-
-			if (rate <= 0) { mmb.sequence = MOVEEND; setGridVector(mmb.direction, 0); }
+			if (rate <= 0) { mmb.sequence = MOVEEND;}
 		} break;
 
 		case BOUNCEINIT: {
@@ -142,10 +197,13 @@ Player& Player::move(PControls inputs, float dt) {
 
 			setGridVector(mmb.direction, pos - 0.5);
 
-			if (rate >= 0) { mmb.sequence = MOVEEND; setGridVector(mmb.direction, 0); }
+			if (rate >= 0) { mmb.sequence = MOVEEND; }
 		} break;
 
 		case MOVEEND: {
+			rate = 0;
+			range = 1;
+			setGridVector(mmb.direction, 0);
 			mmb.sequence = SELECTION;
 		}break;
 	}
@@ -179,9 +237,36 @@ bool Player::checkValid(int x, int y) {
 }
 
 void Player::render() {
-	//Image arrow("resources/bob.png");
+	Image arrow("resources/playerSpriteSheetV1.png");
 
-	//renderImageV2(&arrow, this->x + 50, this->y, 50, 50);
+	switch (state) {
+		case SQUARE:arrow.crop(164, 383, 151, 55); break;
+		case TRIANGLE: arrow.crop(383, 375, 141, 59); break;
+		case CIRCLE: arrow.crop(633, 379, 130, 50); break;
+	}
+
+	switch (mmb.direction) {
+		case MLEFT:arrow.rotate(90); break;
+		case MRIGHT:arrow.rotate(-90); break;
+		case MUP: break;
+		case MDOWN:arrow.rotate(-180); break;
+	}
+
+	if (state == TRIANGLE) {
+		switch (mmb.direction) {
+			case MLEFT:sprite.rotateTo(90); break;
+			case MRIGHT:sprite.rotateTo(-90); break;
+			case MUP: sprite.rotateTo(0); break;
+			case MDOWN:sprite.rotateTo(-180); ; break;
+		}
+	}
+	
+	int paraX = (((this->x) + ((mmb.direction == MLEFT) ? -0.5 : (mmb.direction == MRIGHT) ? 0.5 : 0) * grid->grid_scale) - mainCam.x) * mainCam.zoom;
+	int paraY = (((this->y) + ((mmb.direction == MDOWN) ? -0.5 : (mmb.direction == MUP) ? 0.5 : 0) * grid->grid_scale) - mainCam.y) * mainCam.zoom;
+	int paraW = ((mmb.direction % 2 == 0) ? 10 : 20) * mainCam.zoom;
+	int paraH = ((mmb.direction % 2 == 1) ? 10 : 20) * mainCam.zoom;
+
+	renderImageV2(&arrow, paraX, paraY, paraW, paraH);
 
 	Object::render();
 }

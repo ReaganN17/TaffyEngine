@@ -78,7 +78,7 @@ internal void level1(float dt) {
 	switch (lvar.sequence) {
 	case 0: {
 		new (&grid) Grid(-480, 270, 50, "resources/testrender.png", 0, 0, 1, "resources/testrender.png");
-		new (&bob) Player(&grid, 1, 1, "resources/bob.png", 0.75);
+		new (&bob) Player(&grid, 1, 1);
 		lvar.timeS = GetTickCount();
 		lvar.sequence = 1;
 		} break;
@@ -94,13 +94,40 @@ internal void level1(float dt) {
 		if (isdown(RIGHT))camera_x += 300 * dt;
 		if (isdown(UP)) camera_y += 300 * dt;
 		if (isdown(DOWN))camera_y -= 300 * dt;
-
-		bob.move(controls, dt);
+		bob.control(controls, dt);
 
 		mainCam.setPos(camera_x, camera_y);
 
 		updateAllObjects();
 		renderAllObjects();
+
+		/*
+		draw_number(grid.grid[1 + 1 * grid.gw], -10, 0, 2);
+		draw_number(grid.grid[2 + 1 * grid.gw], 0, 0, 2);
+		draw_number(grid.grid[3 + 1 * grid.gw], 10, 0, 2);
+		draw_number(grid.grid[4 + 1 * grid.gw], 20, 0, 2);
+		draw_number(grid.grid[5 + 1 * grid.gw], 30, 0, 2);
+		draw_number(grid.grid[1 + 2 * grid.gw], -10, -10, 2);
+		draw_number(grid.grid[2 + 2 * grid.gw], 0, -10, 2);
+		draw_number(grid.grid[3 + 2 * grid.gw], 10, -10, 2);
+		draw_number(grid.grid[4 + 2 * grid.gw], 20, -10, 2);
+		draw_number(grid.grid[5 + 2 * grid.gw], 30, -10, 2);
+		draw_number(grid.grid[1 + 3 * grid.gw], -10, -20, 2);
+		draw_number(grid.grid[2 + 3 * grid.gw], 0, -20, 2);
+		draw_number(grid.grid[3 + 3 * grid.gw], 10, -20, 2);
+		draw_number(grid.grid[4 + 3 * grid.gw], 20, -20, 2);
+		draw_number(grid.grid[5 + 3 * grid.gw], 30, -20, 2);
+		draw_number(grid.grid[1 + 4 * grid.gw], -10, -30, 2);
+		draw_number(grid.grid[2 + 4 * grid.gw], 0, -30, 2);
+		draw_number(grid.grid[3 + 4 * grid.gw], 10, -30, 2);
+		draw_number(grid.grid[4 + 4 * grid.gw], 20, -30, 2);
+		draw_number(grid.grid[5 + 4 * grid.gw], 30, -30, 2);
+		draw_number(grid.grid[1 + 5 * grid.gw], -10, -40, 2);
+		draw_number(grid.grid[2 + 5 * grid.gw], 0, -40, 2);
+		draw_number(grid.grid[3 + 5 * grid.gw], 10, -40, 2);
+		draw_number(grid.grid[4 + 5 * grid.gw], 20, -40, 2);
+		draw_number(grid.grid[5 + 5 * grid.gw], 30, -40, 2);
+		*/
 
 		if (pressed(ESC)) { running = false; }
 

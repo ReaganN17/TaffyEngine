@@ -61,6 +61,12 @@ void processButtons(u32 vkcode, Input *input, bool d) {
 		processButton(D, 'D', d);
 		processButton(Q, 'Q', d);
 		processButton(E, 'E', d);
+
+		processButton(KEY_0, '0', d);
+		processButton(KEY_1, '1', d);
+		processButton(KEY_2, '2', d);
+		processButton(KEY_3, '3', d);
+		processButton(KEY_4, '4', d);
 	}
 }
 

@@ -8,6 +8,7 @@ struct Image {
 	size_t size = 0;
 	u16 w, h;
 	u8 channels;
+	short rotation = 0;
 
 	Image();
 	Image(const char* filename);
@@ -18,6 +19,10 @@ struct Image {
 	
 	bool read(const char* filename);
 	bool isPNG(const char* filename);
+
+	Image& rotate(short rot);
+	Image& rotateTo(short rot);
+
 
 	Image& grayscale_avg();
 	Image& create(const char* filename);
@@ -54,6 +59,7 @@ Image::~Image() {
 }
 
 bool Image::read(const char* filename) {
+	rotation = 0;
 	delete[] data;
 
 	if (!isPNG(filename)) return false;
@@ -71,6 +77,69 @@ bool Image::isPNG(const char* filename) {
 		}
 	}
 	return false;
+}
+
+Image& Image::rotateTo(short rot) {
+	rot /= 90;
+	rot *= 90;
+	rot = (rot + 180) % 360 - 180;
+	
+	if ((rot + 360) % 360 - 180 == rotation) { rotate(-180); }
+	if ((rot + 270) % 360 - 180 == rotation) { rotate(-90); }
+	if ((rot + 450) % 360 - 180 == rotation) { rotate(90);  }
+
+	return *this;
+}
+
+Image& Image::rotate(short rot) {
+	rot /= 90;
+	rot *= 90;
+	rot = (rot + 180) % 360 - 180;
+	rotation += rot;
+	rotation = (rotation + 540) % 360 - 180;
+
+	u8* result = new u8[size];
+
+	switch (rot) {
+	case -180: {
+		for (int i = 0; i < w * h; i++) {
+			memcpy(&result[channels * (w * h - i - 1)], &data[channels * i], channels);
+		}
+	
+	}break;
+	case -90: {
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				memcpy(&result[channels * ((h - 1- i) + j * h)], &data[channels * (j + i * w)], channels);
+			}
+		}
+		w = w + h;
+		h = w - h;
+		w = w - h;
+	
+	}break;
+	case 90: {
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				memcpy(&result[channels * (i + (w - 1 - j) * h)], &data[channels * (j + i * w)], channels);
+			}
+		}
+		w = w + h;
+		h = w - h;
+		w = w - h;
+	
+	}break;
+
+
+	case 0: 
+	default: delete[] result; rotation = 0; return *this;
+	}
+
+	delete[] data;
+	data = result;
+	result = nullptr;
+
+	return *this;
 }
 
 Image& Image::grayscale_avg() {

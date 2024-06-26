@@ -31,7 +31,7 @@ struct Object {
 	~Object();
 
 	virtual void render();
-	virtual Object& update();
+	virtual Object& update(float dt);
 
 	void addObject(u8 z);
 	void removeObject();
@@ -94,16 +94,16 @@ internal void destroyAllObjects() {
 }
 
 //updates all objects in a z layer
-internal void updateZObjects(vector<Object*>* z) {
+internal void updateZObjects(vector<Object*>* z, float dt) {
 	for (auto o : *z) {
-		(o)->update();
+		(o)->update(dt);
 	}
 }
 
 //updates all objects in the render group
-internal void updateAllObjects() {
+internal void updateAllObjects(float dt) {
 	for (auto i : objects) {
-		updateZObjects(i);
+		updateZObjects(i, dt);
 	}
 }
 
@@ -213,7 +213,7 @@ void Object::render() {
 }
 
 //update loop
-Object& Object::update() { return *this; }
+Object& Object::update(float dt) { return *this; }
 
 //image or rectangle
 bool Object::isImg() { return sprite.data != NULL; }

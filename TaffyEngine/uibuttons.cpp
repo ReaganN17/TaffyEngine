@@ -29,7 +29,7 @@ struct Button : Object {
 
 	~Button();
 
-	Button& update();
+	Button& update(float dt);
 
 	bool isMouseOver();
 };
@@ -66,7 +66,7 @@ Button::Button(int x, int y, int w, int h, u32 color, u8 z = 2, bool stick = fal
 }
 
 //default key is left mouse
-Button& Button::update() {
+Button& Button::update(float dt) {
 	bb.pressed = false;
 	bb.released = false;
 

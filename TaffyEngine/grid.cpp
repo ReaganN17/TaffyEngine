@@ -1,12 +1,9 @@
-enum Direction {
-	MRIGHT, MUP, MLEFT, MDOWN
-};
-
 //0 - traverse
 //1 to whatever number - no access
 
 //2D array
 //built from top down, left right, no negatives
+
 
 
 struct Grid : Object{
@@ -52,6 +49,8 @@ struct Grid : Object{
 		setPos(x + w * (0.5 + offsetX), y - h * (0.5 + offsetY));
 
 		ob.cameraLinked = true;
+
+		PathMap.createFromGrid(grid, gw, gh);
 	}
 
 	u8 getID(u16 x, u16 y) {

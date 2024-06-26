@@ -114,7 +114,7 @@ internal void mainMenu(float dt) {
 	}break;
 	case MMLOOP: {
 		renderCustomBG(dt, false);
-		updateAllObjects();
+		updateAllObjects(dt);
 		renderAllObjects();
 		
 
@@ -133,7 +133,7 @@ internal void mainMenu(float dt) {
 		Credits.bb.disable = true;
 		Controls.bb.disable = true;
 
-		updateAllObjects();
+		updateAllObjects(dt);
 
 		LevelSelect.setShade(50);
 		Options.setShade(50);
@@ -152,8 +152,8 @@ internal void mainMenu(float dt) {
 		renderCustomBG(dt, true, 50);
 		renderZObjects(&Middle_2);
 
-		updateZObjects(&Front_3);
-		updateZObjects(&FarFront_4);
+		updateZObjects(&Front_3, dt);
+		updateZObjects(&FarFront_4, dt);
 		renderZObjects(&Front_3);
 		renderZObjects(&FarFront_4);
 		
@@ -218,7 +218,7 @@ internal void mainMenu(float dt) {
 	} break;
 	case LEVELLOOP: {
 		renderCustomBG(dt, false);
-		updateAllObjects();
+		updateAllObjects(dt);
 		renderAllObjects();
 
 		LevelButton(Level1, 1);

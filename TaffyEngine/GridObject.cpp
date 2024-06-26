@@ -23,8 +23,7 @@ struct GridObject : Object {
 	virtual bool checkValid(int x, int y);
 };
 
-#include "player.cpp"
-
+#include "sentientGO.cpp"
 
 //Obligatory constructor
 GridObject::GridObject() {}

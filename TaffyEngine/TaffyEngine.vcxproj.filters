@@ -22,6 +22,9 @@
     <Filter Include="Source Files\game related">
       <UniqueIdentifier>{6dfa2ca9-b6a4-4eb8-b721-09af6302fa70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\game related\Game Events">
+      <UniqueIdentifier>{3be063fe-23a7-40e5-95e6-15f479816b08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="win32platform.cpp">
@@ -63,15 +66,6 @@
     <ClCompile Include="uiobjects.cpp">
       <Filter>Source Files\objects</Filter>
     </ClCompile>
-    <ClCompile Include="game.cpp">
-      <Filter>Source Files\game related</Filter>
-    </ClCompile>
-    <ClCompile Include="events.cpp">
-      <Filter>Source Files\game related</Filter>
-    </ClCompile>
-    <ClCompile Include="gameevents.cpp">
-      <Filter>Source Files\game related</Filter>
-    </ClCompile>
     <ClCompile Include="player.cpp">
       <Filter>Source Files\game related</Filter>
     </ClCompile>
@@ -79,6 +73,24 @@
       <Filter>Source Files\game related</Filter>
     </ClCompile>
     <ClCompile Include="gridobject.cpp">
+      <Filter>Source Files\game related</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>Source Files\game related</Filter>
+    </ClCompile>
+    <ClCompile Include="events.cpp">
+      <Filter>Source Files\game related\Game Events</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>Source Files\game related\Game Events</Filter>
+    </ClCompile>
+    <ClCompile Include="gameevents.cpp">
+      <Filter>Source Files\game related\Game Events</Filter>
+    </ClCompile>
+    <ClCompile Include="sentientGO.cpp">
+      <Filter>Source Files\game related</Filter>
+    </ClCompile>
+    <ClCompile Include="nodes.cpp">
       <Filter>Source Files\game related</Filter>
     </ClCompile>
   </ItemGroup>

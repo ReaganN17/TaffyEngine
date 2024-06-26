@@ -1,5 +1,11 @@
 //hold game events such as each level, pause menu, etc
+
+#include "nodes.cpp"
+
+Nodes PathMap;
+
 #include "grid.cpp"
+
 #include "gridobject.cpp"
 //main loop
 
@@ -25,6 +31,7 @@ PControls controls;
 
 Grid grid;
 Player bob;
+BasicEnemy rah;
 
 internal void game(float dt) {
 	clearScreen(0);
@@ -79,6 +86,7 @@ internal void level1(float dt) {
 	case 0: {
 		new (&grid) Grid(-480, 270, 50, "resources/testrender.png", 0, 0, 1, "resources/testrender.png");
 		new (&bob) Player(&grid, 1, 1);
+		new (&rah) BasicEnemy(&grid, 4, 4, MIDDLE, 3);
 		lvar.timeS = GetTickCount();
 		lvar.sequence = 1;
 		} break;
@@ -96,9 +104,10 @@ internal void level1(float dt) {
 		if (isdown(DOWN))camera_y -= 300 * dt;
 		bob.control(controls, dt);
 
+
 		mainCam.setPos(camera_x, camera_y);
 
-		updateAllObjects();
+		updateAllObjects(dt);
 		renderAllObjects();
 
 		/*

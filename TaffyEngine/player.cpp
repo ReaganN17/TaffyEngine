@@ -1,52 +1,25 @@
-enum movementSeq {
-	SELECTION, MOVEINIT, MOVE, MOVEINTERUPTINIT, MOVEINTERUPT, BOUNCEINIT, BOUNCEMOVE, MOVEEND
-};
-
 enum GeoState {
 	SQUARE, TRIANGLE, CIRCLE
 };
 
-union MovementByte {
-	u8 byte = 0;
-
-	struct {
-		u8 sequence : 6;
-		u8 direction : 2;
-	};
-};
-
-struct Player : GridObject {
+struct Player : SentientGO {
 
 	Player();
 	~Player();
 	Player(Grid* grid, u16 x, u16 y, zLayer z);
-
-	//moving purposes
-	float pos;
-	float acc;
-	float rate = 0;
-	float posborder;
-	u8 distance;
-	MovementByte mmb;
-
-	//player characteristics
-	short health = 250;
-	u8 state = SQUARE;
-	u8 power = 5;
-	u8 range = 1;
 
 	void control(PControls inputs, float dt);
 
 	Player& move(PControls inputs, float dt);
 	Player& ability(PControls inputs, float dt);
 	Player& rotate(PControls inputs, float dt);
+	Player& takeDamage(short base);
 	Player& toPos(int x, int y);
 	Player& changeChar(PControls inputs, float dt);
-	bool checkValidVector(u8 dir, float mag);	
-
-	bool checkValid(int x, int y);
 
 	void render();
+
+	Player& update(float dt);
 };
 
 //obligatory constructor
@@ -56,7 +29,14 @@ Player::Player() {}
 Player::~Player() { if (!ob.instance) return; }
 
 //actual constructor
-Player::Player(Grid* grid, u16 x, u16 y, zLayer z = MIDDLE) : GridObject(grid, x, y, "resources/playerSpriteSheetV1.png", 161, 165, 170, 170, 0.65, z, 2) {}
+Player::Player(Grid* grid, u16 x, u16 y, zLayer z = MIDDLE) : SentientGO(grid, x, y, z, "resources/playerSpriteSheetV1.png", 161, 165, 170, 170, 0.65, 2) 
+{
+	health = 250;
+	state = SQUARE;
+	speed = 0;
+	range = 1;
+	power = 5;
+}
 
 void Player::control(PControls inputs, float dt) {
 	changeChar(inputs, dt);
@@ -85,7 +65,7 @@ Player& Player::ability(PControls inputs, float dt) {
 		switch (state) {
 			case SQUARE: break;
 			case TRIANGLE: break;
-			case CIRCLE: mmb.sequence = MOVEINIT; range = 7; rate = 7; break;
+			case CIRCLE: mmb.sequence = MOVEINIT; range = 7; speed = 70; break;
 		}
 	}
 
@@ -97,120 +77,47 @@ Player& Player::move(PControls inputs, float dt) {
 	//4 directional movement
 	switch (mmb.sequence) {
 		case SELECTION: {
+
 			if (pressed(inputs.left)) { mmb.direction = MLEFT; mmb.sequence = MOVEINIT; }
 			if (pressed(inputs.right)) { mmb.direction = MRIGHT; mmb.sequence = MOVEINIT; }
 			if (pressed(inputs.up)) { mmb.direction = MUP; mmb.sequence = MOVEINIT; }
 			if (pressed(inputs.down)) { mmb.direction = MDOWN; mmb.sequence = MOVEINIT; }
 		} break;
-
+	
 		case MOVEINIT: {
-			float speed;
-
-			//custom rate can overrite speeds
-			if (rate == 0) {
+			//custom speed can overwrite other speed
+			if (speed == 0) {
 				switch (state) {
-					case SQUARE: speed = 3; break;
-					case TRIANGLE: speed = 6; break;
-					case CIRCLE: speed = 10; break;
+				case SQUARE: speed = 30; break;
+				case TRIANGLE: speed = 60; break;
+				case CIRCLE: speed = 100; break;
 				}
 			}
-			else {
-				speed = rate;
-			}
 
-			distance = range;
-			pos = 0.5;
-
-			rate = 2 * speed * distance;
-			acc = -2 * distance * speed * speed;
+			moveinit();
 			mmb.sequence = MOVE;
-		}
-
-		case MOVE: {
-			if (!checkValidVector(mmb.direction, 1)) { mmb.sequence = MOVEINTERUPTINIT; break; }
-
-			grid->grid[xG + yG * grid->gw] = overlapped;
+		} break;
 	
-			//kinematics (sorta)
-			pos +=  rate * dt + acc * dt * dt * 0.5f;
-			rate += acc * dt;
-		
-			switch (mmb.direction) {
-				case MLEFT: xG -= floor(pos); break;
-				case MRIGHT: xG += floor(pos); break;
-				case MUP: yG -= floor(pos); break;
-				case MDOWN: yG += floor(pos); break;
-			}
-	
-			overlapped = grid->grid[xG + yG * grid->gw];
-			grid->grid[xG + yG * grid->gw] = id;
-
-
-			pos = fmod(pos, 1);
-
-			setGridVector(mmb.direction, pos - 0.5);
-
-			
-
-			if (rate <= 0) { mmb.sequence = MOVEEND;}
+		default: {
+			SentientGO::move(dt);
 		} break;
-
-		case MOVEINTERUPTINIT: {
-			float b;
-
-			switch(grid->getIDVector(mmb.direction, 1, xG, yG)) {
-				case 1: b = 1; break;
-				default: b = -2; break;
-			}
-			
-			posborder = 0.5 * (b - (float)scale/1000) + 0.5;
-
-			mmb.sequence = MOVEINTERUPT;
-		} break;
-
-		case MOVEINTERUPT: {
-
-			pos += rate * dt + acc * dt * dt * 0.5f;
-			rate += acc * dt;
-
-			setGridVector(mmb.direction, pos - 0.5);
-			if (pos >= posborder) { mmb.sequence = BOUNCEINIT; setGridVector(mmb.direction, posborder - 0.5); break; }
-
-			if (rate <= 0) { mmb.sequence = MOVEEND;}
-		} break;
-
-		case BOUNCEINIT: {
-			float factor = 0.1;
-			
-			acc = 2 * (posborder - 0.5) / (factor * factor);
-			rate = -2 * (posborder - 0.5) / (factor);
-
-			pos = posborder;
-
-			mmb.sequence = BOUNCEMOVE;
-
-		}break;
-
-		case BOUNCEMOVE: {
-			pos +=  rate * dt + acc * dt * dt * 0.5f;
-			rate += acc * dt;
-
-			setGridVector(mmb.direction, pos - 0.5);
-
-			if (rate >= 0) { mmb.sequence = MOVEEND; }
-		} break;
-
-		case MOVEEND: {
-			rate = 0;
-			range = 1;
-			setGridVector(mmb.direction, 0);
-			mmb.sequence = SELECTION;
-		}break;
 	}
 
 	return *this;
 }
 
+
+Player& Player::takeDamage(short base) {
+	switch (state) {
+		case SQUARE: base *= 0.8;  break;
+		case TRIANGLE: base *= 1.2; break;
+		case CIRCLE: break;
+	}
+
+	SentientGO::takeDamage(base);
+
+	return *this;
+}
 
 Player& Player::toPos(int x, int y) {
 	grid->grid[xG + yG * grid->gw] = overlapped;
@@ -218,22 +125,6 @@ Player& Player::toPos(int x, int y) {
 	overlapped = grid->grid[xG + yG * grid->gw];
 	grid->grid[xG + yG * grid->gw] = id;
 	return *this;
-}
-
-bool Player::checkValidVector(u8 dir, float mag) {
-	switch (dir) {
-		case MLEFT: return checkValid(xG - mag, yG);
-		case MRIGHT: return checkValid(xG + mag, yG);
-		case MUP: return checkValid(xG, yG - mag);
-		case MDOWN: return checkValid(xG, yG + mag);
-	}
-}
-
-bool Player::checkValid(int x, int y) {
-	if (grid->grid[x + y * grid->gw] > 0) return false;
-	if (x < 0 || x >= grid->gw) return false;
-	if (y < 0 || y >= grid->gh) return false;
-	return true;
 }
 
 void Player::render() {
@@ -269,4 +160,11 @@ void Player::render() {
 	renderImageV2(&arrow, paraX, paraY, paraW, paraH);
 
 	Object::render();
+}
+
+Player& Player::update(float dt) {
+	PathMap.goalUpdated = false;
+	if (mmb.sequence != SELECTION) { PathMap.setGoal(xG, yG); PathMap.goalUpdated = true; }
+
+	return *this;
 }

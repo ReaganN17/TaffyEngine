@@ -39,8 +39,8 @@ GridObject::GridObject(Grid* grid, u16 x, u16 y, const char* sprite, u16 cx, u16
 
 	this->scale = scale * 1000;
 
-	overlapped = grid->grid[x + y * grid->gw];
-	grid->grid[x + y * grid->gw] = id;
+	overlapped = grid->nodes[x + y * grid->gw].occupied;
+	grid->nodes[x + y * grid->gw].occupied = id;
 }
 
 GridObject::GridObject(Grid* grid, u16 x, u16 y, const char* sprite, float scale = 1, zLayer z = MIDDLE, u8 id = 2) : Object(grid->dx + x * grid->grid_scale, grid->dy - y * grid->grid_scale, grid->grid_scale* scale, grid->grid_scale* scale, sprite, z) {
@@ -49,8 +49,8 @@ GridObject::GridObject(Grid* grid, u16 x, u16 y, const char* sprite, float scale
 
 	this->scale = scale * 1000;
 
-	overlapped = grid->grid[x + y * grid->gw];
-	grid->grid[x + y * grid->gw] = id;
+	overlapped = grid->nodes[x + y * grid->gw].occupied;
+	grid->nodes[x + y * grid->gw].occupied = id;
 }
 
 

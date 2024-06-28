@@ -39,10 +39,11 @@ struct SentientGO : GridObject {
 	u8 range = 0;
 	u8 speed = 0;
 
-	virtual SentientGO& move(float dt);
+	virtual SentientGO& move(float dt, float kickback);
 
 	//moving functions
 	virtual SentientGO& moveinit();
+	virtual SentientGO& moveend();
 
 	virtual SentientGO& takeDamage(short base);
 	virtual SentientGO& toPos(int x, int y);
@@ -68,7 +69,10 @@ SentientGO::SentientGO(Grid* grid, u16 x, u16 y, zLayer z, const char* sprite, f
 SentientGO::SentientGO(Grid* grid, u16 x, u16 y, zLayer z, const char* sprite, u16 cx, u16 cy, u16 cw, u16 ch, float scale, u8 id)
 	: GridObject(grid, x, y, sprite, cx, cy, cw, ch, scale, z, id) {}
 
-SentientGO& SentientGO::move(float dt) {
+//basic move sequence
+//can customize by creating own switch statement in object's own move function
+//parameters are dt for movement time and kickback for recovery time when hitting a wall or other object
+SentientGO& SentientGO::move(float dt, float kickback) {
 	//4 directional movement
 	switch (mmb.sequence) {
 	case SELECTION: {
@@ -83,7 +87,7 @@ SentientGO& SentientGO::move(float dt) {
 	case MOVE: {
 		if (!checkValidVector(mmb.direction, 1)) { mmb.sequence = MOVEINTERUPTINIT; break; }
 
-		grid->grid[xG + yG * grid->gw] = overlapped;
+		grid->nodes[xG + yG * grid->gw].occupied = overlapped;
 
 		//kinematics (sorta)
 		pos += rate * dt + acc * dt * dt * 0.5f;
@@ -96,8 +100,8 @@ SentientGO& SentientGO::move(float dt) {
 			case MDOWN: yG += floor(pos); break;
 		}
 
-		overlapped = grid->grid[xG + yG * grid->gw];
-		grid->grid[xG + yG * grid->gw] = id;
+		overlapped = grid->nodes[xG + yG * grid->gw].occupied;
+		grid->nodes[xG + yG * grid->gw].occupied = id;
 
 
 		pos = fmod(pos, 1);
@@ -133,7 +137,7 @@ SentientGO& SentientGO::move(float dt) {
 	} break;
 
 	case BOUNCEINIT: {
-		float factor = 0.1;
+		float factor = kickback;
 
 		acc = 2 * (posborder - 0.5) / (factor * factor);
 		rate = -2 * (posborder - 0.5) / (factor);
@@ -154,11 +158,7 @@ SentientGO& SentientGO::move(float dt) {
 	} break;
 
 	case MOVEEND: {
-		speed = 0;
-		rate = 0;
-		acc = 0;
-		range = 1;
-		setGridVector(mmb.direction, 0);
+		moveend();
 		mmb.sequence = SELECTION;
 	}break;
 	}
@@ -166,6 +166,7 @@ SentientGO& SentientGO::move(float dt) {
 	return *this;
 }
 
+//basic initialization
 SentientGO& SentientGO::moveinit() {
 	distance = range;
 	pos = 0.5;
@@ -176,21 +177,33 @@ SentientGO& SentientGO::moveinit() {
 	return*this;
 }
 
+//basic end
+SentientGO& SentientGO::moveend() {
+	rate = 0;
+	acc = 0;
+	setGridVector(mmb.direction, 0);
+
+	return *this;
+}
+
+//basic take damage function
 SentientGO& SentientGO::takeDamage(short base) {
 	health -= base;
 
 	return *this;
 }
 
+//basic teleportation (i dont even use this)
 SentientGO& SentientGO::toPos(int x, int y) {
-	grid->grid[xG + yG * grid->gw] = overlapped;
+	grid->nodes[xG + yG * grid->gw].occupied = overlapped;
 	xG = x, yG = y;
-	overlapped = grid->grid[xG + yG * grid->gw];
-	grid->grid[xG + yG * grid->gw] = id;
+	overlapped = grid->nodes[xG + yG * grid->gw].occupied;
+	grid->nodes[xG + yG * grid->gw].occupied = id;
 
 	return *this;
 }
 
+//basic valid checkers for moving
 bool SentientGO::checkValidVector(u8 dir, float mag) {
 	switch (dir) {
 		case MLEFT: return checkValid(xG - mag, yG);
@@ -201,7 +214,7 @@ bool SentientGO::checkValidVector(u8 dir, float mag) {
 }
 
 bool SentientGO::checkValid(int x, int y) {
-	if (grid->grid[x + y * grid->gw] > 0) return false;
+	if (grid->nodes[x + y * grid->gw].occupied > 0) return false;
 	if (x < 0 || x >= grid->gw) return false;
 	if (y < 0 || y >= grid->gh) return false;
 	return true;

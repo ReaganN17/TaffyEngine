@@ -14,7 +14,6 @@ struct Player : SentientGO {
 	Player& ability(PControls inputs, float dt);
 	Player& rotate(PControls inputs, float dt);
 	Player& takeDamage(short base);
-	Player& toPos(int x, int y);
 	Player& changeChar(PControls inputs, float dt);
 
 	void render();
@@ -30,7 +29,7 @@ Player::~Player() { if (!ob.instance) return; }
 
 //actual constructor
 Player::Player(Grid* grid, u16 x, u16 y, zLayer z = MIDDLE) : SentientGO(grid, x, y, z, "resources/playerSpriteSheetV1.png", 161, 165, 170, 170, 0.65, 2) 
-{
+{	
 	health = 250;
 	state = SQUARE;
 	speed = 0;
@@ -65,7 +64,7 @@ Player& Player::ability(PControls inputs, float dt) {
 		switch (state) {
 			case SQUARE: break;
 			case TRIANGLE: break;
-			case CIRCLE: mmb.sequence = MOVEINIT; range = 7; speed = 70; break;
+			case CIRCLE: mmb.sequence = MOVEINIT; range = 7; rate = 70; break;
 		}
 	}
 
@@ -82,24 +81,34 @@ Player& Player::move(PControls inputs, float dt) {
 			if (pressed(inputs.right)) { mmb.direction = MRIGHT; mmb.sequence = MOVEINIT; }
 			if (pressed(inputs.up)) { mmb.direction = MUP; mmb.sequence = MOVEINIT; }
 			if (pressed(inputs.down)) { mmb.direction = MDOWN; mmb.sequence = MOVEINIT; }
+
 		} break;
 	
 		case MOVEINIT: {
-			//custom speed can overwrite other speed
-			if (speed == 0) {
+			//custom rate can overwrite speed
+			if (rate == 0) {
 				switch (state) {
 				case SQUARE: speed = 30; break;
 				case TRIANGLE: speed = 60; break;
 				case CIRCLE: speed = 100; break;
 				}
 			}
+			else { speed = rate; }
 
 			moveinit();
 			mmb.sequence = MOVE;
 		} break;
-	
+		
+		case MOVEEND: {
+
+			//reset range
+			range = 1;
+			moveend();
+			mmb.sequence = SELECTION;
+		} break;
+
 		default: {
-			SentientGO::move(dt);
+			SentientGO::move(dt, 0.2);
 		} break;
 	}
 
@@ -116,14 +125,6 @@ Player& Player::takeDamage(short base) {
 
 	SentientGO::takeDamage(base);
 
-	return *this;
-}
-
-Player& Player::toPos(int x, int y) {
-	grid->grid[xG + yG * grid->gw] = overlapped;
-	xG = x, yG = y;
-	overlapped = grid->grid[xG + yG * grid->gw];
-	grid->grid[xG + yG * grid->gw] = id;
 	return *this;
 }
 
@@ -163,8 +164,9 @@ void Player::render() {
 }
 
 Player& Player::update(float dt) {
-	PathMap.goalUpdated = false;
-	if (mmb.sequence != SELECTION) { PathMap.setGoal(xG, yG); PathMap.goalUpdated = true; }
+	if (mmb.sequence == MOVEEND || grid->nodeEnd == nullptr) {
+		grid->setEnd(xG, yG);
+	}
 
 	return *this;
 }

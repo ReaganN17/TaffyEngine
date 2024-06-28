@@ -1,7 +1,10 @@
 
-
 enum State {
 	IDLE, PATROL, LOCATE
+};
+
+struct PatrolArea {
+	
 };
 
 struct BasicEnemy : SentientGO {
@@ -20,6 +23,7 @@ struct BasicEnemy : SentientGO {
 
 	BasicEnemy& producePath();
 	BasicEnemy& update(float dt);
+	void scanGrid();
 };
 
 
@@ -41,17 +45,44 @@ BasicEnemy::BasicEnemy(Grid* grid, u16 x, u16 y, zLayer z, u8 id) : SentientGO(g
 BasicEnemy& BasicEnemy::move(u8 dir, float dt) {
 	switch (mmb.sequence) {
 		case SELECTION: {
+			//moves if given direction is a valid direction
 			if (dir < 4) {
 				mmb.direction = dir; 
 				mmb.sequence = MOVEINIT;
 			}
 		} break;
-		case MOVEINIT: {
-			speed = 10;
-			moveinit();
-		}
+
+		case MOVE: {
+			if (!checkValidVector(mmb.direction, 1)) { mmb.sequence = MOVEINTERUPTINIT; break; }
+
+			grid->nodes[xG + yG * grid->gw].occupied = overlapped;
+			grid->nodes[xG + yG * grid->gw].bObstacle = false;
+
+			//kinematics (sorta)
+			pos += rate * dt + acc * dt * dt * 0.5f;
+			rate += acc * dt;
+
+			switch (mmb.direction) {
+			case MLEFT: xG -= floor(pos); break;
+			case MRIGHT: xG += floor(pos); break;
+			case MUP: yG -= floor(pos); break;
+			case MDOWN: yG += floor(pos); break;
+			}
+
+			overlapped = grid->nodes[xG + yG * grid->gw].occupied;
+			grid->nodes[xG + yG * grid->gw].occupied = id;
+			grid->nodes[xG + yG * grid->gw].bObstacle = true;
+
+
+			pos = fmod(pos, 1);
+
+			setGridVector(mmb.direction, pos - 0.5);
+
+			if (rate <= 0) { mmb.sequence = MOVEEND; }
+		} break;
+
 		default: {
-			SentientGO::move(dt);
+			SentientGO::move(dt, 0.75);
 		} break;
 	}
 
@@ -61,7 +92,7 @@ BasicEnemy& BasicEnemy::move(u8 dir, float dt) {
 }
 
 BasicEnemy& BasicEnemy::update(float dt) {
-	if (PathMap.goalUpdated) producePath();
+	if (mmb.sequence == MOVEEND || moves.empty() == 1) {producePath();}
 
 	if (mmb.sequence == SELECTION && moves.empty() == 0) {
 		move(moves.front(), dt);
@@ -76,12 +107,15 @@ BasicEnemy& BasicEnemy::update(float dt) {
 }
 
 BasicEnemy& BasicEnemy::producePath() {
-	PathMap.setStart(xG, yG);
-
-	PathMap.createPath();
-	PathMap.createDirections(&moves);
+	grid->setStart(xG, yG);
+	grid->createPath();
+	grid->createDirections(&moves);
 
 	return *this;
+}
+
+void BasicEnemy::scanGrid() {
+
 }
 
 

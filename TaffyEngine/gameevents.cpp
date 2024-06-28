@@ -1,10 +1,8 @@
 //hold game events such as each level, pause menu, etc
+#include "gridv2.cpp"
+//#include "grid.cpp"
+//#include "nodes.cpp"
 
-#include "nodes.cpp"
-
-Nodes PathMap;
-
-#include "grid.cpp"
 
 #include "gridobject.cpp"
 //main loop
@@ -32,6 +30,9 @@ PControls controls;
 Grid grid;
 Player bob;
 BasicEnemy rah;
+BasicEnemy rah2;
+BasicEnemy rah3;
+BasicEnemy rah4;
 
 internal void game(float dt) {
 	clearScreen(0);
@@ -79,6 +80,7 @@ struct LevelVar {
 };
 LevelVar lvar;
 
+
 int camera_x = 0, camera_y = 0;
 internal void level1(float dt) {
 
@@ -87,6 +89,10 @@ internal void level1(float dt) {
 		new (&grid) Grid(-480, 270, 50, "resources/testrender.png", 0, 0, 1, "resources/testrender.png");
 		new (&bob) Player(&grid, 1, 1);
 		new (&rah) BasicEnemy(&grid, 4, 4, MIDDLE, 3);
+		new (&rah2) BasicEnemy(&grid, 4, 3, MIDDLE, 3);
+		new (&rah3) BasicEnemy(&grid, 3, 4, MIDDLE, 3);
+		new (&rah4) BasicEnemy(&grid, 10, 3, MIDDLE, 3);
+
 		lvar.timeS = GetTickCount();
 		lvar.sequence = 1;
 		} break;
@@ -110,33 +116,12 @@ internal void level1(float dt) {
 		updateAllObjects(dt);
 		renderAllObjects();
 
-		/*
-		draw_number(grid.grid[1 + 1 * grid.gw], -10, 0, 2);
-		draw_number(grid.grid[2 + 1 * grid.gw], 0, 0, 2);
-		draw_number(grid.grid[3 + 1 * grid.gw], 10, 0, 2);
-		draw_number(grid.grid[4 + 1 * grid.gw], 20, 0, 2);
-		draw_number(grid.grid[5 + 1 * grid.gw], 30, 0, 2);
-		draw_number(grid.grid[1 + 2 * grid.gw], -10, -10, 2);
-		draw_number(grid.grid[2 + 2 * grid.gw], 0, -10, 2);
-		draw_number(grid.grid[3 + 2 * grid.gw], 10, -10, 2);
-		draw_number(grid.grid[4 + 2 * grid.gw], 20, -10, 2);
-		draw_number(grid.grid[5 + 2 * grid.gw], 30, -10, 2);
-		draw_number(grid.grid[1 + 3 * grid.gw], -10, -20, 2);
-		draw_number(grid.grid[2 + 3 * grid.gw], 0, -20, 2);
-		draw_number(grid.grid[3 + 3 * grid.gw], 10, -20, 2);
-		draw_number(grid.grid[4 + 3 * grid.gw], 20, -20, 2);
-		draw_number(grid.grid[5 + 3 * grid.gw], 30, -20, 2);
-		draw_number(grid.grid[1 + 4 * grid.gw], -10, -30, 2);
-		draw_number(grid.grid[2 + 4 * grid.gw], 0, -30, 2);
-		draw_number(grid.grid[3 + 4 * grid.gw], 10, -30, 2);
-		draw_number(grid.grid[4 + 4 * grid.gw], 20, -30, 2);
-		draw_number(grid.grid[5 + 4 * grid.gw], 30, -30, 2);
-		draw_number(grid.grid[1 + 5 * grid.gw], -10, -40, 2);
-		draw_number(grid.grid[2 + 5 * grid.gw], 0, -40, 2);
-		draw_number(grid.grid[3 + 5 * grid.gw], 10, -40, 2);
-		draw_number(grid.grid[4 + 5 * grid.gw], 20, -40, 2);
-		draw_number(grid.grid[5 + 5 * grid.gw], 30, -40, 2);
-		*/
+		for (int x = 0; x < 6; x++) {
+			for (int y = 0; y < 6; y++) {
+				draw_number(grid.nodes[x + y * grid.gw].occupied, -20 + (10 * x), (-10 * y), 2);
+			}
+		}
+		
 
 		if (pressed(ESC)) { running = false; }
 

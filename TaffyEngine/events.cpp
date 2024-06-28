@@ -239,7 +239,7 @@ internal void mainMenu(float dt) {
 
 	} break;
 	case TRANSITIONOUT: {
-		mmVar.tsY += mmVar.tsRate * dt;
+		mmVar.tsY += mmVar.tsRate * dt + 1080 * dt * dt * 0.5;
 		mmVar.tsRate += 1080 * dt;
 
 		renderCustomBG(dt, false);

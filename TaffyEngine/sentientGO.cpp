@@ -87,22 +87,30 @@ SentientGO& SentientGO::move(float dt, float kickback) {
 	case MOVE: {
 		if (!checkValidVector(mmb.direction, 1)) { mmb.sequence = MOVEINTERUPTINIT; break; }
 
-		grid->nodes[xG + yG * grid->gw].occupied = overlapped;
-
 		//kinematics (sorta)
 		pos += rate * dt + acc * dt * dt * 0.5f;
 		rate += acc * dt;
 
+		
+
 		switch (mmb.direction) {
-			case MLEFT: xG -= floor(pos); break;
-			case MRIGHT: xG += floor(pos); break;
-			case MUP: yG -= floor(pos); break;
-			case MDOWN: yG += floor(pos); break;
+			case MLEFT: 
+				if (xG - floor(pos) != xG) { removeCurID(); xG -= floor(pos); addCurID(); }
+				else { xG -= floor(pos); }
+			break;
+			case MRIGHT: 
+				if (xG + floor(pos) != xG) { removeCurID(); xG += floor(pos); addCurID(); }
+				else { xG += floor(pos); }
+			break;
+			case MUP: 
+				if (yG - floor(pos) != yG) { removeCurID(); yG -= floor(pos); addCurID(); }
+				else { yG -= floor(pos); }
+			break;
+			case MDOWN:
+				if (yG + floor(pos) != yG) { removeCurID(); yG += floor(pos); addCurID(); }
+				else { yG += floor(pos); }
+			break;
 		}
-
-		overlapped = grid->nodes[xG + yG * grid->gw].occupied;
-		grid->nodes[xG + yG * grid->gw].occupied = id;
-
 
 		pos = fmod(pos, 1);
 
@@ -195,10 +203,9 @@ SentientGO& SentientGO::takeDamage(short base) {
 
 //basic teleportation (i dont even use this)
 SentientGO& SentientGO::toPos(int x, int y) {
-	grid->nodes[xG + yG * grid->gw].occupied = overlapped;
+	removeCurID();
 	xG = x, yG = y;
-	overlapped = grid->nodes[xG + yG * grid->gw].occupied;
-	grid->nodes[xG + yG * grid->gw].occupied = id;
+	addCurID();
 
 	return *this;
 }
@@ -214,7 +221,7 @@ bool SentientGO::checkValidVector(u8 dir, float mag) {
 }
 
 bool SentientGO::checkValid(int x, int y) {
-	if (grid->nodes[x + y * grid->gw].occupied > 0) return false;
+	if (grid->nodes[x + y * grid->gw].occupants.size() > 0) return false;
 	if (x < 0 || x >= grid->gw) return false;
 	if (y < 0 || y >= grid->gh) return false;
 	return true;

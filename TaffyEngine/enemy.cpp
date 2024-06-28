@@ -23,7 +23,9 @@ struct BasicEnemy : SentientGO {
 
 	BasicEnemy& producePath();
 	BasicEnemy& update(float dt);
-	void scanGrid();
+
+	Grid*& scan(u8 r);
+	Grid*& unscan(u8 r);
 };
 
 
@@ -37,7 +39,7 @@ BasicEnemy::~BasicEnemy() { if (!ob.instance) return; }
 BasicEnemy::BasicEnemy(Grid* grid, u16 x, u16 y, zLayer z, u8 id) : SentientGO(grid, x, y, z, "resources/bob.png", 0.75, 3) {
 	health = 250;
 	state = IDLE;
-	speed = 10;
+	speed = 20;
 	range = 1;
 	power = 5;
 }
@@ -52,35 +54,6 @@ BasicEnemy& BasicEnemy::move(u8 dir, float dt) {
 			}
 		} break;
 
-		case MOVE: {
-			if (!checkValidVector(mmb.direction, 1)) { mmb.sequence = MOVEINTERUPTINIT; break; }
-
-			grid->nodes[xG + yG * grid->gw].occupied = overlapped;
-			grid->nodes[xG + yG * grid->gw].bObstacle = false;
-
-			//kinematics (sorta)
-			pos += rate * dt + acc * dt * dt * 0.5f;
-			rate += acc * dt;
-
-			switch (mmb.direction) {
-			case MLEFT: xG -= floor(pos); break;
-			case MRIGHT: xG += floor(pos); break;
-			case MUP: yG -= floor(pos); break;
-			case MDOWN: yG += floor(pos); break;
-			}
-
-			overlapped = grid->nodes[xG + yG * grid->gw].occupied;
-			grid->nodes[xG + yG * grid->gw].occupied = id;
-			grid->nodes[xG + yG * grid->gw].bObstacle = true;
-
-
-			pos = fmod(pos, 1);
-
-			setGridVector(mmb.direction, pos - 0.5);
-
-			if (rate <= 0) { mmb.sequence = MOVEEND; }
-		} break;
-
 		default: {
 			SentientGO::move(dt, 0.75);
 		} break;
@@ -92,7 +65,7 @@ BasicEnemy& BasicEnemy::move(u8 dir, float dt) {
 }
 
 BasicEnemy& BasicEnemy::update(float dt) {
-	if (mmb.sequence == MOVEEND || moves.empty() == 1) {producePath();}
+	if ((mmb.sequence == MOVEEND || moves.empty() == 1)) {producePath();}
 
 	if (mmb.sequence == SELECTION && moves.empty() == 0) {
 		move(moves.front(), dt);
@@ -108,17 +81,36 @@ BasicEnemy& BasicEnemy::update(float dt) {
 
 BasicEnemy& BasicEnemy::producePath() {
 	grid->setStart(xG, yG);
+
+	scan(2);
 	grid->createPath();
 	grid->createDirections(&moves);
+	unscan(2);
 
 	return *this;
 }
 
-void BasicEnemy::scanGrid() {
 
+Grid*& BasicEnemy::scan(u8 r) {
+	for (int x = -r; x <= r; x++) {
+		for (int y = -r; y <= r; y++) {
+			if (grid->containsID(xG + x, yG + y, id)) { grid->nodes[xG + x + (yG + y) * grid->gw].bObstacle = true; }
+		}
+	}
+
+
+	return grid;
 }
 
+Grid*& BasicEnemy::unscan(u8 r) {
+	for (int x = -r; x <= r; x++) {
+		for (int y = -r; y <= r; y++) {
+			if (grid->containsID(xG + x, yG + y, id)) { grid->nodes[xG + x + (yG + y) * grid->gw].bObstacle = false; }
+		}
+	}
 
+	return grid;
+}
 
 
 

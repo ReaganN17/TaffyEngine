@@ -3,19 +3,20 @@ enum Direction {
 	MRIGHT, MUP, MLEFT, MDOWN
 };
 
+
+
 //Node struct
 struct Node {
 	bool bObstacle = false;
 	bool bVisited = false;
-	u8 occupied = 0;
 	float fGlobalGoal;
 	float fLocalGoal;
 	u16 x;
 	u16 y;
 	vector<Node*> vecNeighbours;
+	vector<u8> occupants;
 	Node* parent;
 };
-
 
 //Grid Header
 
@@ -35,6 +36,7 @@ struct Grid : Object{
 
 	Grid& PNGToGrid(const char* filename);
 	Grid& createEmpty(int w, int h);
+	Grid& createNeighbors(u8 range);
 
 	Node*& setStart(u16 x, u16 y);
 	Node*& setEnd(u16 x, u16 y);
@@ -44,9 +46,14 @@ struct Grid : Object{
 	Grid& createPath();
 	void createDirections(list<u8>* dir);
 
+	Node*& addID(int x, int y, u8 id);
+	Node*& removeID(int x, int y, u8 id);
+
 	//temporary til better solution
 	u8 getID(u16 x, u16 y);
 	u8 getIDVector(u8 dir, float mag, u16 xG, u16 yG);
+
+	bool containsID(int x, int y, u8 id);
 };
 
 //End of Headers
@@ -79,10 +86,12 @@ Grid& Grid::PNGToGrid(const char* file) {
 	createEmpty(ref.w, ref.h);
 
 	for (u16 i = 0; i < gw * gh; i++) {
-		nodes[i].bObstacle = (ref.data[ref.channels * (i)] == 0);
 		
 		//learn how to do this better then fix
-		nodes[i].occupied = ((ref.data[ref.channels * (i)] == 0) ? 1 : 0);
+		if (ref.data[ref.channels * (i)] == 0) {
+			nodes[i].bObstacle = true;
+			nodes[i].occupants.push_back(1);
+		}
 	}
 
 	return *this;
@@ -111,19 +120,29 @@ Grid& Grid::createEmpty(int w, int h) {
 	}
 
 	//create neighbors
-	for (u16 x = 0; x < gw; x++) {
-		for (u16 y = 0; y < gh; y++)
-		{
-			if (y > 0)
-				nodes[y * gw + x].vecNeighbours.push_back(&nodes[(y - 1) * gw + (x + 0)]);
-			if (y < gh - 1)
-				nodes[y * gw + x].vecNeighbours.push_back(&nodes[(y + 1) * gw + (x + 0)]);
-			if (x > 0)
-				nodes[y * gw + x].vecNeighbours.push_back(&nodes[(y + 0) * gw + (x - 1)]);
-			if (x < gw - 1)
-				nodes[y * gw + x].vecNeighbours.push_back(&nodes[(y + 0) * gw + (x + 1)]);
+	createNeighbors(1);
+
+	return *this;
+}
+
+Grid& Grid::createNeighbors(u8 range) {
+	for (int i = 1; i <= range; i++) {
+		for (u16 x = 0; x < gw; x++) {
+			for (u16 y = 0; y < gh; y++)
+			{
+				if (y > (i - 1))
+					nodes[y * gw + x].vecNeighbours.push_back(&nodes[(y - i) * gw + (x + 0)]);
+				if (y < gh - i)
+					nodes[y * gw + x].vecNeighbours.push_back(&nodes[(y + i) * gw + (x + 0)]);
+				if (x > (i - 1))
+					nodes[y * gw + x].vecNeighbours.push_back(&nodes[(y + 0) * gw + (x - i)]);
+				if (x < gw - i)
+					nodes[y * gw + x].vecNeighbours.push_back(&nodes[(y + 0) * gw + (x + i)]);
+			}
 		}
 	}
+
+	
 
 	return *this;
 }
@@ -244,9 +263,39 @@ void Grid::createDirections(list<u8>* directions) {
 	}
 }
 
-//stupid stupid stupid
+
+Node*& Grid::removeID(int x, int y, u8 id) {
+	x = clamp(0, x, gw - 1);
+	y = clamp(0, y, gh - 1);
+
+
+	//why
+	for (int i = 0; i < nodes[x + y * gw].occupants.size(); i++) {
+		if (nodes[x + y * gw].occupants.at(i) == id) {
+
+			auto it = nodes[x + y * gw].occupants.begin() + i;
+			nodes[x + y * gw].occupants.erase(it);
+			break;
+		}
+	}
+
+	return nodes;
+}
+
+Node*& Grid::addID(int x, int y, u8 id) {
+	x = clamp(0, x, gw - 1);
+	y = clamp(0, y, gh - 1);
+
+	nodes[x + y * gw].occupants.push_back(id);
+
+	return nodes;
+
+}
+
+//returns the top most ID
 u8 Grid::getID(u16 x, u16 y) {
-	return nodes[x + y * gw].occupied;
+	if (nodes[x + y * gw].occupants.empty() == 1) return 0;
+	return nodes[x + y * gw].occupants.back();
 }
 
 u8 Grid::getIDVector(u8 dir, float mag, u16 xG = 0, u16 yG = 0) {
@@ -258,5 +307,17 @@ u8 Grid::getIDVector(u8 dir, float mag, u16 xG = 0, u16 yG = 0) {
 	}
 }
 
+bool Grid::containsID(int x, int y, u8 id) {
+	x = clamp(0, x, gw - 1);
+	y = clamp(0, y, gh - 1);
+
+	if (id == 0) return nodes[x + y * gw].occupants.empty() == 1;
+
+	for (auto i : nodes[x + y * gw].occupants) {
+		if (i == id) return true;
+	}
+
+	return false;
+}
 
 

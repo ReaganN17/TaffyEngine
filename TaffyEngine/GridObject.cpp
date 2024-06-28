@@ -1,11 +1,10 @@
 //gridObject requires a grid
 //however initlized grid is not good because grid can change
 //taking a grid as a parameter is the best i can do unfortunately
-
 struct GridObject : Object {
 	Grid* grid;
 	u16 xG = 0, yG = 0, scale;
-	u8 id = 2, overlapped = 0;
+	u8 id = 2;
 	//ids 
 	//0 is empty space
 	//1 is unbreakable wall
@@ -21,6 +20,10 @@ struct GridObject : Object {
 	void setGridPos(float x, float y);
 	void setGridVector(u8 dir, float mag);
 	virtual bool checkValid(int x, int y);
+	
+
+	Grid*& removeCurID();
+	Grid*& addCurID();
 };
 
 #include "sentientGO.cpp"
@@ -39,8 +42,7 @@ GridObject::GridObject(Grid* grid, u16 x, u16 y, const char* sprite, u16 cx, u16
 
 	this->scale = scale * 1000;
 
-	overlapped = grid->nodes[x + y * grid->gw].occupied;
-	grid->nodes[x + y * grid->gw].occupied = id;
+	grid->nodes[x + y * grid->gw].occupants.push_back(id);
 }
 
 GridObject::GridObject(Grid* grid, u16 x, u16 y, const char* sprite, float scale = 1, zLayer z = MIDDLE, u8 id = 2) : Object(grid->dx + x * grid->grid_scale, grid->dy - y * grid->grid_scale, grid->grid_scale* scale, grid->grid_scale* scale, sprite, z) {
@@ -49,8 +51,7 @@ GridObject::GridObject(Grid* grid, u16 x, u16 y, const char* sprite, float scale
 
 	this->scale = scale * 1000;
 
-	overlapped = grid->nodes[x + y * grid->gw].occupied;
-	grid->nodes[x + y * grid->gw].occupied = id;
+	grid->nodes[x + y * grid->gw].occupants.push_back(id);
 }
 
 
@@ -72,3 +73,17 @@ bool GridObject::checkValid(int x, int y) {
 	if (y < 0 || y >= grid->gh) return false;
 	return true;
 }
+
+Grid*& GridObject::removeCurID() {
+	grid->removeID(xG, yG, id);
+
+	return grid;
+}
+
+Grid*& GridObject::addCurID() {
+	grid->addID(xG, yG, id);
+
+	return grid;
+
+}
+

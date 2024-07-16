@@ -6,7 +6,8 @@ union ObjectByte
 
 	struct
 	{
-		u8 layer : 5;
+		u8 layer : 4;
+		bool spriteSheet : 1;
 		bool instance : 1;
 		bool renderGroup : 1;
 		bool cameraLinked : 1;
@@ -14,10 +15,11 @@ union ObjectByte
 };
 
 struct Object {
+	Image* spritesheet;
+	CropInfo crop;
 	Image sprite;
 	int x = 0, y = 0, w = 0, h = 0;
 	u32 color = 0;
-	u16 pos;
 	u8 shade = 0;
 	ObjectByte ob;
 
@@ -26,12 +28,19 @@ struct Object {
 	Object(int x, int y, int w, int h);
 	Object(int x, int y, const char* filename, u8 z);
 	Object(int x, int y, int w, int h, const char* filename, u8 z);
-	Object(int x, int y, int w, int h, const char* filename, u8 z, u16 cx, u16 cy, u16 cw, u16 ch);
+
+	//spritesheet option
+	Object(int x, int y, u8 z, Image* spritesheet, CropInfo crop);
+	Object(int x, int y, int w, int h, u8 z, Image* spritesheet, CropInfo crop);
+
+
 	Object(int x, int y, int w, int h, u32 c, u8 z);
 	~Object();
 
 	virtual void render();
-	virtual Object& update(float dt);
+	virtual Object& update();
+
+	virtual void destroyObject();
 
 	void addObject(u8 z);
 	void removeObject();
@@ -39,11 +48,13 @@ struct Object {
 	bool isImg();
 	virtual bool collide(Object* obj);
 
+	Object& animateToPos(int x, int y, float time);
+
 	Object& setPos(int x, int y);
 	Object& setScale(int w, int h);
 	Object& setShade(u8 shade);
 	Object& changeImg(const char* filename);
-	Object& changeCrop(const char* filename, u16 cx, u16 cy, u16 cw, u16 ch);
+	Object& changeCrop(CropInfo crop);
 
 
 private:
@@ -60,6 +71,8 @@ vector<Object*> Front_3;
 vector<Object*> FarFront_4;
 
 global_var vector<vector<Object*>*> objects = { &FarBack_0, &Back_1, &Middle_2, &Front_3, &FarFront_4 };
+
+#include "basicEvents.cpp"
 
 #include "uibuttons.cpp"
 #include "maps.cpp"
@@ -82,28 +95,29 @@ internal void renderAllObjects() {
 }
 
 //destroys all objets in the render group
-//done backwards due to how remove object function works
 internal void destroyAllObjects() {
 	for (auto it: objects) {
-		//this is stupid
-		reverse((it)->begin(), (it)->end());
+
+
 		for (auto it1 : (*it)) {
 			(it1)->~Object();
 		}
+
+		(*it).clear();
 	}
 }
 
 //updates all objects in a z layer
-internal void updateZObjects(vector<Object*>* z, float dt) {
+internal void updateZObjects(vector<Object*>* z) {
 	for (auto o : *z) {
-		(o)->update(dt);
+		(o)->update();
 	}
 }
 
 //updates all objects in the render group
-internal void updateAllObjects(float dt) {
+internal void updateAllObjects() {
 	for (auto i : objects) {
-		updateZObjects(i, dt);
+		updateZObjects(i);
 	}
 }
 
@@ -121,7 +135,10 @@ Object::Object(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) {}
 //basic object image constructor
 Object::Object(int x, int y, const char* filename, u8 z) :Object(x, y) {
 	sprite.create(filename);
+	w = sprite.w;
+	h = sprite.h;
 	addObject(z);
+	ob.cameraLinked = true;
 	ob.instance = true;
 }
 
@@ -129,14 +146,34 @@ Object::Object(int x, int y, const char* filename, u8 z) :Object(x, y) {
 Object::Object(int x, int y, int w, int h, const char* filename, u8 z) : Object(x, y, w, h) {
 	sprite.create(filename);
 	addObject(z);
+	ob.cameraLinked = true;
 	ob.instance = true;
 }
 
-//advance object image construct when using sprite sheets
-Object::Object(int x, int y, int w, int h, const char* filename, u8 z, u16 cx, u16 cy, u16 cw, u16 ch) : Object(x, y, w, h, filename, z) {
-	sprite.create(filename);
-	sprite.crop(cx, cy, cw, ch);
+//basic object constructor from spritesheet
+Object::Object(int x, int y, u8 z, Image* spritesheet, CropInfo crop) : Object(x, y) {
+	new (&sprite) Image(spritesheet->produceCrop(crop.cx, crop.cy, crop.cw, crop.ch));
+	this->crop = crop;
+	this->spritesheet = spritesheet;
+	w = sprite.w;
+	h = sprite.h;
+	addObject(z);
+	ob.instance = true;
+	ob.cameraLinked = true;
+	ob.spriteSheet = true;
 }
+
+//advanced object constructor from spritesheet
+Object::Object(int x, int y, int w, int h, u8 z, Image* spritesheet, CropInfo crop) : Object(x, y, w, h) {
+	new (&sprite) Image(spritesheet->produceCrop(crop.cx, crop.cy, crop.cw, crop.ch));
+	this->crop = crop;
+	this->spritesheet = spritesheet;
+	addObject(z);
+	ob.instance = true;
+	ob.cameraLinked = true;
+	ob.spriteSheet = true;
+}
+
 
 //object colored rectangle constructor
 Object::Object(int x, int y, int w, int h, u32 color, u8 z) : Object(x, y, w, h) {
@@ -149,9 +186,15 @@ Object::Object(int x, int y, int w, int h, u32 color, u8 z) : Object(x, y, w, h)
 Object::~Object() {
 	if (!ob.instance) return;
 
-	removeObject();
+	sprite.~Image();
 
 	ob.instance = false;
+}
+
+//removes from render group then destroys
+void Object::destroyObject() {
+	removeObject();
+	Object::~Object();
 }
 
 //adds object to render group based on z layer
@@ -190,16 +233,15 @@ void Object::removeObject() {
 //add to a z layer
 void Object::addLayer(vector<Object*>* z) {
 	z->push_back(&*this);
-	pos = z->size() - 1;
 }
 
 //remove from z layer
 void Object::cleanLayer(vector<Object*>* z) {
-	auto clean = z->begin() + pos;
-	z->erase(clean);
-	for (auto i : *z) {
-		if (i->pos > this->pos) { i->pos--; }
+	auto i = find(z->begin(), z->end(), &*this);
+	if (i != z->end()) {
+		z->erase(i);
 	}
+	
 }
 
 //render
@@ -213,7 +255,7 @@ void Object::render() {
 }
 
 //update loop
-Object& Object::update(float dt) { return *this; }
+Object& Object::update() { return *this; }
 
 //image or rectangle
 bool Object::isImg() { return sprite.data != NULL; }
@@ -227,11 +269,20 @@ bool Object::collide(Object* obj) {
 	return false;
 }
 
+ObjectMove moveVar;
+Object& Object::animateToPos(int x, int y, float time) {
+
+	moveVar.init(&*this, x, y, time);
+
+	return *this;
+}
+
 //sets x and y pos
 Object& Object::setPos(int x, int y) { 
 
 	this->x = x; this->y = y; return *this;
 }
+
 
 //sets scale
 Object& Object::setScale(int w, int h) {
@@ -252,9 +303,12 @@ Object& Object::changeImg(const char* filename) {
 }
 
 //changes image on the sprite sheet
-Object& Object::changeCrop(const char * filename, u16 cx, u16 cy, u16 cw, u16 ch) {
-	sprite.create(filename);
-	sprite.crop(cx, cy, cw, ch);
+Object& Object::changeCrop(CropInfo crop) {
+	if (!ob.spriteSheet) return *this;
+
+	sprite.~Image();
+	this->crop = crop;
+	new (&sprite) Image(spritesheet->produceCrop(crop.cx, crop.cy, crop.cw, crop.ch));
 
 	return *this;
 }

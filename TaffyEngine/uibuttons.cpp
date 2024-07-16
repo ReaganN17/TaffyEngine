@@ -21,15 +21,14 @@ struct Button : Object {
 	u16 dW, dH;
 	ButtonByte bb;
 
-
-	Button(int x, int y, int w, int h, const char* filename, u16 cx, u16 cy, u16 cw, u16 ch, u8 z, bool stick, bool circle);
+	Button(int x, int y, int w, int h, u8 z, Image* spritesheet, CropInfo crop, bool stick, bool circle);
 	Button(int x, int y, int w, int h, const char* filename, u8 z, bool stick, bool circle);
 	Button(int x, int y, int w, int h, u32 color, u8 z, bool stick, bool circle);
 	Button();
 
 	~Button();
 
-	Button& update(float dt);
+	Button& update();
 
 	bool isMouseOver();
 };
@@ -40,33 +39,30 @@ Button::Button() {}
 
 //long ass constructor cause i dont feel like being neat
 Button::Button(int x, int y, int w, int h, const char* filename, u8 z = 2, bool stick = false, bool circle = false) : Object(x, y, w, h, filename, z) {
-	dW = w;
-	dH = h;
+	dW = w, dH = h;
 	bb.stick = stick;
 	bb.circle = circle;
 	ob.cameraLinked = false;
 }
 
-Button::Button(int x, int y, int w, int h, const char* filename, u16 cx, u16 cy, u16 cw, u16 ch, u8 z = 2, bool stick = false, bool circle = false) 
-	:Object(x, y, w, h, filename, z, cx, cy, cw, ch) 
+Button::Button(int x, int y, int w, int h, u8 z, Image* spritesheet, CropInfo crop, bool stick = false, bool circle = false)
+	:Object(x, y, w, h, z, spritesheet, crop) 
 {
-	dW = w;
-	dH = h;
+	dW = w, dH = h;
 	bb.stick = stick;
 	bb.circle = circle;
 	ob.cameraLinked = false;
 }
 
 Button::Button(int x, int y, int w, int h, u32 color, u8 z = 2, bool stick = false, bool circle = false) : Object(x, y, w, h, color, z) {
-	dW = w;
-	dH = h;
+	dW = w, dH = h;
 	bb.stick = stick;
 	bb.circle = circle;
 	ob.cameraLinked = false;
 }
 
 //default key is left mouse
-Button& Button::update(float dt) {
+Button& Button::update() {
 	bb.pressed = false;
 	bb.released = false;
 

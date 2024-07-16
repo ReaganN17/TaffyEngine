@@ -3,6 +3,7 @@
 #include <iostream>
 #include <list>
 #include <vector>
+#include <algorithm>
 #include <math.h>
 
 using namespace std;
@@ -37,7 +38,26 @@ struct RenderWindow {
 	BITMAPINFO bitmap_info;
 };
 
+struct CropInfo {
+	u16 cx;
+	u16 cy;
+	u16 cw;
+	u16 ch;
+
+	CropInfo() {}
+	~CropInfo() {}
+	CropInfo(u16 cx, u16 cy, u16 cw, u16 ch) : cx(cx), cy(cy), cw(cw), ch(ch) {}
+
+	CropInfo& set(u16 x, u16 y, u16 w, u16 h) {
+		cx = x, cy = y;
+		cw = w, ch = h;
+	}
+};
+
 global_var RenderWindow renderWindow;
+
+global_var float delta_time;
+#define dt delta_time
 
 #include "MathUtils.cpp"
 

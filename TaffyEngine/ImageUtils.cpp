@@ -6,8 +6,8 @@ struct Image {
 
 	u8* data = NULL;
 	size_t size = 0;
-	u16 w, h;
-	u8 channels;
+	u16 w = 0, h = 0;
+	u8 channels = 0;
 	short rotation = 0;
 
 	Image();
@@ -21,12 +21,15 @@ struct Image {
 	bool isPNG(const char* filename);
 
 	Image& rotate(short rot);
-	Image& rotateTo(short rot);
-
+	Image& rotateTo(short rot);	
+	Image& copy(Image img);
 
 	Image& grayscale_avg();
 	Image& create(const char* filename);
 	Image& crop(u16 cx, u16 cy, u16 cw, u16 ch);
+
+	Image produceCrop(u16 cx, u16 cy, u16 cw, u16 ch);
+	void produceCropImage(u16 cx, u16 cy, u16 cw, u16 ch, Image* img);
 };
 //End of Header
 
@@ -39,7 +42,7 @@ Image::Image(const char* filename) {
 		size = w * h * channels;
 	}
 	else {
-		Image(1, 1, 3);
+		Image::Image(1, 1, 3);
 	}
 }
 
@@ -186,4 +189,56 @@ Image& Image::crop(u16 cx, u16 cy, u16 cw, u16 ch) {
 
 	return *this;
 }
+
+Image Image::produceCrop(u16 cx, u16 cy, u16 cw, u16 ch) {
+	Image cropped(cw, ch, channels);
+
+	for (u16 y = 0; y < ch; ++y) {
+		if (y + cy >= h) break;
+		for (u16 x = 0; x < cw; ++x) {
+			if (x + cx >= w) break;
+			memcpy(&cropped.data[(x + y * cw) * channels], &data[(x + cx + (y + cy) * w) * channels], channels);
+		}
+	}
+
+	return cropped;
+}
+
+void Image::produceCropImage(u16 cx, u16 cy, u16 cw, u16 ch, Image* img) {
+	img->w = cw;
+	img->h = ch;
+	img->channels = channels;
+	img->size = channels * cw * ch;
+
+	delete[] img->data;
+	img->data = new u8[img->size];
+	memset(img->data, 0, size);
+
+	for (u16 y = 0; y < ch; ++y) {
+
+		if (y + cy >= h) break;
+
+		for (u16 x = 0; x < cw; ++x) {
+			if (x + cx >= w) break;
+			memcpy(&img->data[(x + y * cw) * channels], &data[(x + cx + (y + cy) * w) * channels], channels);
+		}
+	}
+}
+
+Image& Image::copy(Image img) {
+	w = img.w;
+	h = img.h;
+	channels = img.channels;
+	size = w * h * channels;
+
+	delete[] data;
+	data = new u8[size];
+
+	memset(data, 0, size);
+	memcpy(&data, &img.data, size);
+
+	return *this;
+}
+
+
 

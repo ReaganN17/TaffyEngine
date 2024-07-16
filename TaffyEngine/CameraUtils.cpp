@@ -12,6 +12,10 @@ struct Camera {
 
 	Camera& setPos(int x, int y);
 	Camera& setZoom(float zoom);
+
+
+
+	Camera& update(float dt);
 };
 
 Camera::Camera(int x, int y, float zoom): x(x), y(y), zoom(zoom) {}
@@ -29,4 +33,8 @@ Camera& Camera::setZoom(float z) {
 	zoom = z;
 
 	return *this;
+}
+
+Camera& Camera::update(float dt) {
+
 }

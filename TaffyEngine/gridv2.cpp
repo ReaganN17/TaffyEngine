@@ -43,7 +43,7 @@ struct Grid : Object{
 
 	float heuristic(Node* a, Node* b);
 	Node*& reset();
-	Grid& createPath();
+	bool createPath();
 	void createDirections(list<u8>* dir);
 
 	Node*& addID(int x, int y, u8 id);
@@ -54,6 +54,7 @@ struct Grid : Object{
 	u8 getIDVector(u8 dir, float mag, u16 xG, u16 yG);
 
 	bool containsID(int x, int y, u8 id);
+	bool containsIDVector(u8 dir, int mag, int x, int y, u8 id);
 };
 
 //End of Headers
@@ -187,7 +188,7 @@ Node*& Grid::reset() {
 }
 
 //Create Path
-Grid& Grid::createPath() {
+bool Grid::createPath() {
 	reset();
 
 	//start at the started node
@@ -244,7 +245,7 @@ Grid& Grid::createPath() {
 		}
 	}
 
-	return *this;
+	return nodeEnd->parent != nullptr;
 }
 
 
@@ -315,6 +316,17 @@ bool Grid::containsID(int x, int y, u8 id) {
 
 	for (auto i : nodes[x + y * gw].occupants) {
 		if (i == id) return true;
+	}
+
+	return false;
+}
+
+bool Grid::containsIDVector(u8 dir, int mag, int x, int y, u8 id) {
+	switch (dir) {
+		case MLEFT: return containsID(x - mag, y, id);
+		case MRIGHT: return containsID(x + mag, y, id);
+		case MUP: return containsID(x, y - mag, id);
+		case MDOWN: return containsID(x, y + mag, id);
 	}
 
 	return false;

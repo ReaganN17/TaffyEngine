@@ -54,7 +54,7 @@ internal void loop(HWND window) {
 	
 	gameinit();
 
-	float delta_time = 0.016666f;
+	delta_time = 0.016666f;
 	LARGE_INTEGER frame_begin_time;
 	QueryPerformanceCounter(&frame_begin_time);
 
@@ -97,9 +97,8 @@ internal void loop(HWND window) {
 		//i dont like this
 		processMouseButtons(&input);
 
-
 		// Simulate
-		gameloop(delta_time);
+		gameloop();
 
 		// Render
 		StretchDIBits(hdc, 0, 0, renderWindow.width, renderWindow.height, 0, 0, renderWindow.width, renderWindow.height, renderWindow.memory, &renderWindow.bitmap_info, DIB_RGB_COLORS, SRCCOPY);

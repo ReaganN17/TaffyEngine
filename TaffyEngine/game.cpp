@@ -21,8 +21,12 @@ global_var bool running = true;
 global_var bool background = false;
 //^do not mess with names, meant to be constants
 
+//basic elements
 #include "renderer.cpp"
+#include "events.cpp"
 #include "objects.cpp"
+
+//game elements
 
 enum GameScreens {
 	INTRO, MAINMENU, 
@@ -47,31 +51,32 @@ struct PControls {
 };
 
 
-#define destroy(o, type) if (o.instance) { o.~type(); }
-#define rebuild(o, type, construct) destroy(o, type) new (&o) construct;
-#define buildonce(o, construct) if (!o.instance) new (&o) construct;
+#include "gridv2.cpp"
+#include "gridobject.cpp"
+#include "playerUI.cpp"
 
 internal void gameinit() {
 	clearEntireScreen(0x000000);
 }
 
-#include "events.cpp"
+Image globalSpriteSheet("resources/MegaSpriteSheet.png");
 
-internal void gameloop(float dt) {
+#include "events1.cpp"
+
+internal void gameloop() {
 	//default background
 	if (background) renderBG();
 
 	switch (currentScreen) {
 		case INTRO: {
-			intro(dt);
+			intro();
 		} break;
 		case MAINMENU: {
-			mainMenu(dt);
+			mainMenu();
 		}break;
 		case GAME: {
-			game(dt);
+			game();
 		} break;
 	}
-
 	
 }

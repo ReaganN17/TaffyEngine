@@ -2,23 +2,26 @@ enum GeoState {
 	SQUARE, TRIANGLE, CIRCLE
 };
 
-struct Player : SentientGO {
+struct Player : GridObject {
 
 	Player();
 	~Player();
-	Player(Grid* grid, u16 x, u16 y, zLayer z);
+	Player(Grid* grid, u16 x, u16 y, Image *img);
 
-	void control(PControls inputs, float dt);
+	void control(PControls inputs);
 
-	Player& move(PControls inputs, float dt);
-	Player& ability(PControls inputs, float dt);
-	Player& rotate(PControls inputs, float dt);
+	Player& move(PControls inputs);
+	Player& ability(PControls inputs);
+	Player& rotate(PControls inputs);
 	Player& takeDamage(short base);
-	Player& changeChar(PControls inputs, float dt);
+	Player& changeChar(PControls inputs);
 
 	void render();
 
-	Player& update(float dt);
+	Player& update();
+
+	bool checkValidVector(u8 dir, float mag);
+	bool checkValid(int x, int y);
 };
 
 //obligatory constructor
@@ -28,7 +31,8 @@ Player::Player() {}
 Player::~Player() { if (!ob.instance) return; }
 
 //actual constructor
-Player::Player(Grid* grid, u16 x, u16 y, zLayer z = MIDDLE) : SentientGO(grid, x, y, z, "resources/playerSpriteSheetV1.png", 161, 165, 170, 170, 0.65, 2) 
+
+Player::Player(Grid* grid, u16 x, u16 y, Image *spritesheet) : GridObject(grid, x, y, MIDDLE, spritesheet, CropInfo(980, 37, 120, 113), 0.65, 2, CHARA)
 {	
 	health = 250;
 	state = SQUARE;
@@ -37,29 +41,29 @@ Player::Player(Grid* grid, u16 x, u16 y, zLayer z = MIDDLE) : SentientGO(grid, x
 	power = 5;
 }
 
-void Player::control(PControls inputs, float dt) {
-	changeChar(inputs, dt);
-	ability(inputs, dt);
-	rotate(inputs, dt);
-	move(inputs, dt);
+void Player::control(PControls inputs) {
+	changeChar(inputs);
+	ability(inputs);
+	rotate(inputs);
+	move(inputs);
 }
 
-Player& Player::changeChar(PControls inputs, float dt) {
-	if (pressed(inputs.square)) { changeCrop("resources/playerSpriteSheetV1.png", 161, 165, 170, 170); state = SQUARE; }
-	if (pressed(inputs.circle)) { changeCrop("resources/playerSpriteSheetV1.png", 611, 158, 185, 177); state = CIRCLE; }
-	if (pressed(inputs.triangle)) { changeCrop("resources/playerSpriteSheetV1.png", 348, 166, 229, 164); state = TRIANGLE; }
+Player& Player::changeChar(PControls inputs) {
+	if (pressed(inputs.square)) { changeCrop(CropInfo(980, 37, 120, 113)); state = SQUARE; }
+	if (pressed(inputs.circle)) { changeCrop(CropInfo(1300, 34, 118, 116)); state = CIRCLE; }
+	if (pressed(inputs.triangle)) { changeCrop(CropInfo(1114, 34, 158, 114)); state = TRIANGLE; }
 
 	return *this;
 }
 
-Player& Player::rotate(PControls inputs, float dt) {
+Player& Player::rotate(PControls inputs) {
 	if (pressed(inputs.rotleft)) { mmb.direction++;}
 	if (pressed(inputs.rotright)) { mmb.direction--;}
 
 	return *this;
 }
 
-Player& Player::ability(PControls inputs, float dt) {
+Player& Player::ability(PControls inputs) {
 	if (pressed(inputs.power)) {
 		switch (state) {
 			case SQUARE: break;
@@ -71,7 +75,7 @@ Player& Player::ability(PControls inputs, float dt) {
 	return *this;
 }
 
-Player& Player::move(PControls inputs, float dt) {
+Player& Player::move(PControls inputs) {
 	
 	//4 directional movement
 	switch (mmb.sequence) {
@@ -98,6 +102,7 @@ Player& Player::move(PControls inputs, float dt) {
 			moveinit();
 			mmb.sequence = MOVE;
 		} break;
+
 		
 		case MOVEEND: {
 
@@ -108,7 +113,7 @@ Player& Player::move(PControls inputs, float dt) {
 		} break;
 
 		default: {
-			SentientGO::move(dt, 0.2);
+			GridObject::move(0.2);
 		} break;
 	}
 
@@ -123,18 +128,18 @@ Player& Player::takeDamage(short base) {
 		case CIRCLE: break;
 	}
 
-	SentientGO::takeDamage(base);
+	GridObject::takeDamage(base);
 
 	return *this;
 }
 
 void Player::render() {
-	Image arrow("resources/playerSpriteSheetV1.png");
+	Image arrow;
 
 	switch (state) {
-		case SQUARE:arrow.crop(164, 383, 151, 55); break;
-		case TRIANGLE: arrow.crop(383, 375, 141, 59); break;
-		case CIRCLE: arrow.crop(633, 379, 130, 50); break;
+		case SQUARE: new(&arrow) Image(spritesheet->produceCrop(986, 193, 99, 28)); break;
+		case TRIANGLE: new(&arrow) Image(spritesheet->produceCrop(1137, 191, 99, 28)); break;
+		case CIRCLE: new(&arrow) Image(spritesheet->produceCrop(1312, 188, 95, 29)); break;
 	}
 
 	switch (mmb.direction) {
@@ -159,14 +164,32 @@ void Player::render() {
 	int paraH = ((mmb.direction % 2 == 1) ? 10 : 20) * mainCam.zoom;
 
 	renderImageV2(&arrow, paraX, paraY, paraW, paraH);
+	
 
 	Object::render();
 }
 
-Player& Player::update(float dt) {
+Player& Player::update() {
 	if (mmb.sequence == MOVEEND || grid->nodeEnd == nullptr) {
 		grid->setEnd(xG, yG);
 	}
 
 	return *this;
+}
+
+//basic valid checkers for moving
+bool Player::checkValidVector(u8 dir, float mag) {
+	switch (dir) {
+	case MLEFT: return checkValid(xG - mag, yG);
+	case MRIGHT: return checkValid(xG + mag, yG);
+	case MUP: return checkValid(xG, yG - mag);
+	case MDOWN: return checkValid(xG, yG + mag);
+	}
+}
+
+bool Player::checkValid(int x, int y) {
+	if (grid->nodes[x + y * grid->gw].occupants.size() > 0) return false;
+	if (x < 0 || x >= grid->gw) return false;
+	if (y < 0 || y >= grid->gh) return false;
+	return true;
 }

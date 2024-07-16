@@ -7,7 +7,7 @@ struct PatrolArea {
 	
 };
 
-struct BasicEnemy : SentientGO {
+struct BasicEnemy : GridObject {
 
 	BasicEnemy();
 	~BasicEnemy();
@@ -15,14 +15,16 @@ struct BasicEnemy : SentientGO {
 
 	//virtual void control(float dt);
 
-	BasicEnemy& move(u8 dir, float dt);
+	BasicEnemy& move(u8 dir);
 
 	list<u8> moves = {};
 
 	//bool onScreen();
 
 	BasicEnemy& producePath();
-	BasicEnemy& update(float dt);
+	BasicEnemy& update();
+
+	BasicEnemy& bounceinit(float kickback);
 
 	Grid*& scan(u8 r);
 	Grid*& unscan(u8 r);
@@ -36,15 +38,16 @@ BasicEnemy::BasicEnemy() {}
 //obligatory destructor
 BasicEnemy::~BasicEnemy() { if (!ob.instance) return; }
 
-BasicEnemy::BasicEnemy(Grid* grid, u16 x, u16 y, zLayer z, u8 id) : SentientGO(grid, x, y, z, "resources/bob.png", 0.75, 3) {
+BasicEnemy::BasicEnemy(Grid* grid, u16 x, u16 y, zLayer z, u8 id) : GridObject(grid, x, y, z, "resources/bob.png", 0.75, 3, CHARA) {
 	health = 250;
 	state = IDLE;
-	speed = 20;
+	speed = 10;
 	range = 1;
 	power = 5;
 }
 
-BasicEnemy& BasicEnemy::move(u8 dir, float dt) {
+BasicEnemy& BasicEnemy::move(u8 dir) {
+
 	switch (mmb.sequence) {
 		case SELECTION: {
 			//moves if given direction is a valid direction
@@ -53,9 +56,10 @@ BasicEnemy& BasicEnemy::move(u8 dir, float dt) {
 				mmb.sequence = MOVEINIT;
 			}
 		} break;
+		
 
 		default: {
-			SentientGO::move(dt, 0.75);
+			GridObject::move(0.75);
 		} break;
 	}
 
@@ -64,15 +68,23 @@ BasicEnemy& BasicEnemy::move(u8 dir, float dt) {
 	return*this;
 }
 
-BasicEnemy& BasicEnemy::update(float dt) {
+BasicEnemy& BasicEnemy::bounceinit(float kickback) {
+	getObjectVector(mmb.direction, 1, xG, yG, 2)->takeDamage(20);
+
+	GridObject::bounceinit(kickback);
+
+	return *this;
+}
+
+BasicEnemy& BasicEnemy::update() {
 	if ((mmb.sequence == MOVEEND || moves.empty() == 1)) {producePath();}
 
 	if (mmb.sequence == SELECTION && moves.empty() == 0) {
-		move(moves.front(), dt);
+		move(moves.front());
 		moves.pop_front();
 	}
 	else {
-		move(4, dt);
+		move(4);
 	}
 
 
@@ -82,10 +94,10 @@ BasicEnemy& BasicEnemy::update(float dt) {
 BasicEnemy& BasicEnemy::producePath() {
 	grid->setStart(xG, yG);
 
-	scan(2);
+	scan(3);
 	grid->createPath();
 	grid->createDirections(&moves);
-	unscan(2);
+	unscan(3);
 
 	return *this;
 }

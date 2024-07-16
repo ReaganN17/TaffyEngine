@@ -24,6 +24,9 @@
     <Filter Include="Resource Files">
       <UniqueIdentifier>{edff532c-34ed-4a94-8321-679799c2732e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\events">
+      <UniqueIdentifier>{b7171172-2621-4c39-8a82-4ef6d5f1c41d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="win32platform.cpp">
@@ -74,7 +77,7 @@
     <ClCompile Include="enemy.cpp">
       <Filter>Source Files\game related</Filter>
     </ClCompile>
-    <ClCompile Include="events.cpp">
+    <ClCompile Include="events1.cpp">
       <Filter>Source Files\game related\Game Events</Filter>
     </ClCompile>
     <ClCompile Include="game.cpp">
@@ -83,11 +86,17 @@
     <ClCompile Include="gameevents.cpp">
       <Filter>Source Files\game related\Game Events</Filter>
     </ClCompile>
-    <ClCompile Include="sentientGO.cpp">
-      <Filter>Source Files\game related</Filter>
-    </ClCompile>
     <ClCompile Include="gridv2.cpp">
       <Filter>Source Files\game related</Filter>
+    </ClCompile>
+    <ClCompile Include="playerUI.cpp">
+      <Filter>Source Files\game related</Filter>
+    </ClCompile>
+    <ClCompile Include="events.cpp">
+      <Filter>Source Files\events</Filter>
+    </ClCompile>
+    <ClCompile Include="basicEvents.cpp">
+      <Filter>Source Files\events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

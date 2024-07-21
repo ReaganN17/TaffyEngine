@@ -3,14 +3,14 @@ enum MoveTypes {
 };
 
 struct Camera {
-	float x, y;
+	int x, y;
 	float zoom;
 	u8 alpha;
 
-	Camera(float x, float y, float zoom);
+	Camera(int x, int y, float zoom);
 	~Camera();
 
-	Camera& setPos(float x, float y);
+	Camera& setPos(int x, int y);
 	Camera& setZoom(float zoom);
 
 
@@ -18,11 +18,11 @@ struct Camera {
 	Camera& update(float dt);
 };
 
-Camera::Camera(float x, float y, float zoom) : x(x), y(y), zoom(zoom) {}
+Camera::Camera(int x, int y, float zoom): x(x), y(y), zoom(zoom) {}
 
 Camera::~Camera() {}
 
-Camera& Camera::setPos(float x, float y) {
+Camera& Camera::setPos(int x, int y) {
 
 	this->x = x;
 	this->y = y;

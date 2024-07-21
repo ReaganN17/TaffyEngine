@@ -129,7 +129,7 @@ internal void renderRect(float x, float y, float half_size_x, float half_size_y,
 	}
 }
 
-internal void renderImageV2(Image* img, int x, int y, int w, int h, u8 shade = 0) {
+internal void renderImageV2(Image* img, float x, float y, float w, float h, u8 shade = 0) {
 
 	int size_x = w * render_scale;
 	int size_y = h * render_scale;

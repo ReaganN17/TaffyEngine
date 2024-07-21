@@ -19,6 +19,10 @@ global_var bool running = true;
 
 //if backround doesnt exist, set to enable black bg;
 global_var bool background = false;
+//other bools
+global_var bool render = true;
+global_var bool update = true;
+global_var bool runevents = true;
 //^do not mess with names, meant to be constants
 
 //basic elements
@@ -27,6 +31,8 @@ global_var bool background = false;
 #include "objects.cpp"
 
 //game elements
+global_var u8 levelUnlocked = 1;
+global_var u8 curLevel = 0;
 
 enum GameScreens {
 	INTRO, MAINMENU, 
@@ -50,6 +56,8 @@ struct PControls {
 	Inputs power = ENTER;
 };
 
+PControls controls;
+
 
 #include "gridv2.cpp"
 #include "gridobject.cpp"
@@ -61,22 +69,34 @@ internal void gameinit() {
 
 Image globalSpriteSheet("resources/MegaSpriteSheet.png");
 
-#include "events1.cpp"
+#include "intro.cpp"
+#include "levels.cpp"
+#include "gameevents.cpp"
+
+
+BasicEvent* screen = nullptr;
 
 internal void gameloop() {
 	//default background
 	if (background) renderBG();
 
 	switch (currentScreen) {
-		case INTRO: {
-			intro();
-		} break;
-		case MAINMENU: {
-			mainMenu();
-		}break;
-		case GAME: {
-			game();
-		} break;
+	case INTRO: {
+		if (screen == nullptr) { screen = new IntroEvent(&screen); screen->start(); }
+	} break;
+	case MAINMENU: {
+		if (screen == nullptr) { screen = new MainScreen(&screen); screen->start(); }
+	}break;
+	case GAME: {
+		if (screen == nullptr) { screen = new GameEvent(&screen); screen->start(); }
+	} break;
 	}
+
+
+	if (runevents) { runEvents(); }
+	if (update) {updateAllObjects();}
+	if (render) { renderAllObjects(); }
+	
+	//draw_number(events.size(), 0, 0, 20);
 	
 }

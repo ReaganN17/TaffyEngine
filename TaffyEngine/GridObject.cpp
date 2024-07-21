@@ -14,6 +14,18 @@ union MovementByte {
 	};
 };
 
+union Instance {
+	u8 byte = 0;
+
+	union {
+		u8 space : 6;
+		bool stateChange : 1;
+		bool healthChange : 1;
+	};
+
+
+};
+
 enum GOType {
 	CHARA, COLLECT, OBSTACLE
 };
@@ -41,6 +53,8 @@ struct GridObject : Object {
 	u8 power;
 	u8 range;
 	u8 speed;
+
+	Instance inst;
 
 	GridObject();
 	~GridObject();

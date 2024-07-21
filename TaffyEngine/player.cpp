@@ -4,6 +4,7 @@ enum GeoState {
 
 struct Player : GridObject {
 
+
 	Player();
 	~Player();
 	Player(Grid* grid, u16 x, u16 y, Image *img);
@@ -49,9 +50,9 @@ void Player::control(PControls inputs) {
 }
 
 Player& Player::changeChar(PControls inputs) {
-	if (pressed(inputs.square)) { changeCrop(CropInfo(980, 37, 120, 113)); state = SQUARE; }
-	if (pressed(inputs.circle)) { changeCrop(CropInfo(1300, 34, 118, 116)); state = CIRCLE; }
-	if (pressed(inputs.triangle)) { changeCrop(CropInfo(1114, 34, 158, 114)); state = TRIANGLE; }
+	if (pressed(inputs.square)) { changeCrop(CropInfo(980, 37, 120, 113)); state = SQUARE; inst.stateChange = true; }
+	if (pressed(inputs.circle)) { changeCrop(CropInfo(1300, 34, 118, 116)); state = CIRCLE; inst.stateChange = true;}
+	if (pressed(inputs.triangle)) { changeCrop(CropInfo(1114, 34, 158, 114)); state = TRIANGLE; inst.stateChange = true;}
 
 	return *this;
 }
@@ -127,7 +128,7 @@ Player& Player::takeDamage(short base) {
 		case TRIANGLE: base *= 1.2; break;
 		case CIRCLE: break;
 	}
-
+	inst.healthChange = true;
 	GridObject::takeDamage(base);
 
 	return *this;
@@ -173,6 +174,8 @@ Player& Player::update() {
 	if (mmb.sequence == MOVEEND || grid->nodeEnd == nullptr) {
 		grid->setEnd(xG, yG);
 	}
+
+	inst.byte = 0;
 
 	return *this;
 }

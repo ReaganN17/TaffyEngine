@@ -7,8 +7,7 @@ struct PlayerUI {
 	UIObject* HealthEnd;
 	UIObject* PowerUP;
 	UIObject* State;
-	int x, y, w, h;
-	u8 stateInstance = SQUARE;
+	float x, y, w, h;
 
 	PlayerUI();
 	~PlayerUI();
@@ -79,7 +78,7 @@ PlayerUI& PlayerUI::update(Player* player) {
 	float health = (max((float)player->health, 0));
 
 
-	if (stateInstance != player->state) {
+	if (player->inst.stateChange) {
 		switch (player->state) {
 		case SQUARE: {
 			PowerUP->changeCrop(CropInfo(5, 275, 255, 130));
@@ -93,12 +92,12 @@ PlayerUI& PlayerUI::update(Player* player) {
 			PowerUP->changeCrop(CropInfo(54, 142, 255, 130));
 		} break;
 		}
-
-		stateInstance = player->state;
 	}
-	HealthEnd->setPos(health / 250 * 380 + 59, 220);
-	Health->setPos(health / 250 * 190 + 59, 220);
-	Health->setScale(health / 250 * 380, 40);
+
+	if (player->inst.healthChange) {
+		HealthEnd->animateToPos(health / 250 * 380 + 59, 220, HealthEnd->w, HealthEnd->h, 0.5, true);
+		Health->animateToPos(health / 250 * 190 + 59, 220, health / 250 * 380, 40, 0.5, true);
+	}
 
 
 

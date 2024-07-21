@@ -3,7 +3,8 @@ union EventByte{
 	unsigned char byte = 0;
 
 	struct {
-		u8 space : 4;
+		u8 space : 3;
+		bool pointer : 1;
 		bool restart : 1;
 		bool running : 1;
 		bool instance : 1;
@@ -12,15 +13,20 @@ union EventByte{
 };
 
 struct BasicEvent {
+	BasicEvent** pointer;
+	//god strike me down
 	EventByte eb;
 	
 	BasicEvent();
-	~BasicEvent();
+	BasicEvent(BasicEvent**);
+	virtual ~BasicEvent();
 
-
+	virtual void start();
 	virtual void init();
 	virtual void loop();
 	virtual void end();
+	virtual void endNtransfer();
+	virtual void endNstart();
 	virtual void interrupt();
 };
 
@@ -53,15 +59,17 @@ void unpauseEvents() {
 
 //cpp file
 
-BasicEvent::BasicEvent() {};
+BasicEvent::BasicEvent() {}
+BasicEvent::BasicEvent(BasicEvent** pointer) : pointer(pointer) { eb.pointer = true; };
 BasicEvent::~BasicEvent() {};
 
-void BasicEvent::init() {
+void BasicEvent::start() {
 	if (!eb.instance) {
 		events.push_back(&*this);
-		eb.instance = true;
 		eb.running = true;
+		eb.instance = true;
 		eb.interupt = false;
+		init();
 	}
 	else if (eb.restart) {
 		interrupt();
@@ -69,7 +77,12 @@ void BasicEvent::init() {
 		eb.running = true;
 		eb.instance = true;
 		eb.interupt = false;
+		init();
 	}
+}
+
+void BasicEvent::init() {
+	
 }
 
 void BasicEvent::loop() {
@@ -81,7 +94,27 @@ void BasicEvent::end() {
 	events.erase(find(events.begin(), events.end(), &*this));
 	eb.instance = false;
 	eb.running = false;
-	
+
+	if (eb.pointer) { *pointer = nullptr; }
+
+	BasicEvent::~BasicEvent();
+
+}
+
+void BasicEvent::endNstart() {
+	events.erase(find(events.begin(), events.end(), &*this));
+	eb.instance = false;
+	eb.running = false;
+
+	start();
+}
+
+void BasicEvent::endNtransfer() {
+	events.erase(find(events.begin(), events.end(), &*this));
+	eb.instance = false;
+	eb.running = false;
+
+	BasicEvent::~BasicEvent();
 }
 
 void BasicEvent::interrupt() {

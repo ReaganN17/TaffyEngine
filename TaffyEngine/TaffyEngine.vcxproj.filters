@@ -77,9 +77,6 @@
     <ClCompile Include="enemy.cpp">
       <Filter>Source Files\game related</Filter>
     </ClCompile>
-    <ClCompile Include="events1.cpp">
-      <Filter>Source Files\game related\Game Events</Filter>
-    </ClCompile>
     <ClCompile Include="game.cpp">
       <Filter>Source Files\game related\Game Events</Filter>
     </ClCompile>
@@ -97,6 +94,15 @@
     </ClCompile>
     <ClCompile Include="basicEvents.cpp">
       <Filter>Source Files\events</Filter>
+    </ClCompile>
+    <ClCompile Include="text.cpp">
+      <Filter>Source Files\objects</Filter>
+    </ClCompile>
+    <ClCompile Include="intro.cpp">
+      <Filter>Source Files\game related\Game Events</Filter>
+    </ClCompile>
+    <ClCompile Include="levels.cpp">
+      <Filter>Source Files\game related\Game Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

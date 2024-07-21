@@ -21,9 +21,9 @@ struct Node {
 //Grid Header
 
 struct Grid : Object{
-	Node* nodes;
+	Node* nodes = nullptr;
 	u16 gw = 0, gh = 0;
-	int dx = 0, dy = 0;
+	float dx = 0, dy = 0;
 	float grid_scale = 1;
 
 	Node* nodeStart = nullptr;
@@ -32,7 +32,7 @@ struct Grid : Object{
 	Grid();
 	~Grid();
 
-	Grid(int x, int y, float pixelsPerSqr, const char* gridMap, int offsetX, int offsetY, float pixelsPerSqrD, const char* displayMap, zLayer z);
+	Grid(float x, float y, float pixelsPerSqr, const char* gridMap, float offsetX, float offsetY, float pixelsPerSqrD, const char* displayMap, zLayer z);
 
 	Grid& PNGToGrid(const char* filename);
 	Grid& createEmpty(int w, int h);
@@ -66,7 +66,7 @@ Grid::Grid() {}
 Grid::~Grid() { if (!ob.instance) return; }
 
 //Actual Constructor
-Grid::Grid(int x, int y, float pixelsPerSqr, const char* gridMap, int offsetX, int offsetY, float pixelsPerSqrD, const char* displayMap, zLayer  z = BACK) : Object(0, 0, displayMap, z) {
+Grid::Grid(float x, float y, float pixelsPerSqr, const char* gridMap, float offsetX, float offsetY, float pixelsPerSqrD, const char* displayMap, zLayer  z = BACK) : Object(0, 0, displayMap, z) {
 	PNGToGrid(gridMap);
 	w = gw, h = gh;
 
@@ -101,7 +101,7 @@ Grid& Grid::PNGToGrid(const char* file) {
 
 //Create Array of Nodes
 Grid& Grid::createEmpty(int w, int h) {
-	delete[] nodes;
+	if (nodes != nullptr) delete[] nodes;
 
 	gw = w;
 	gh = h;

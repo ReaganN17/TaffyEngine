@@ -6,7 +6,8 @@ union ObjectByte
 
 	struct
 	{
-		u8 layer : 4;
+		u8 layer : 3;
+		bool isSprite : 1;
 		bool spriteSheet : 1;
 		bool instance : 1;
 		bool renderGroup : 1;
@@ -16,26 +17,27 @@ union ObjectByte
 
 struct Object {
 	Image* spritesheet;
+	BasicEvent* moveCommand = nullptr;
 	CropInfo crop;
 	Image sprite;
-	int x = 0, y = 0, w = 0, h = 0;
+	float x = 0, y = 0, w = 0, h = 0;
 	u32 color = 0;
 	u8 shade = 0;
 	ObjectByte ob;
 
 	Object();
-	Object(int x, int y);
-	Object(int x, int y, int w, int h);
-	Object(int x, int y, const char* filename, u8 z);
-	Object(int x, int y, int w, int h, const char* filename, u8 z);
+	Object(float x, float y);
+	Object(float x, float y, float w, float h);
+	Object(float x, float y, const char* filename, u8 z);
+	Object(float x, float y, float w, float h, const char* filename, u8 z);
 
 	//spritesheet option
-	Object(int x, int y, u8 z, Image* spritesheet, CropInfo crop);
-	Object(int x, int y, int w, int h, u8 z, Image* spritesheet, CropInfo crop);
+	Object(float x, float y, u8 z, Image* spritesheet, CropInfo crop);
+	Object(float x, float y, float w, float h, u8 z, Image* spritesheet, CropInfo crop);
 
 
-	Object(int x, int y, int w, int h, u32 c, u8 z);
-	~Object();
+	Object(float x, float y, float w, float h, u32 c, u8 z);
+	virtual ~Object();
 
 	virtual void render();
 	virtual Object& update();
@@ -45,13 +47,12 @@ struct Object {
 	void addObject(u8 z);
 	void removeObject();
 
-	bool isImg();
 	virtual bool collide(Object* obj);
 
-	Object& animateToPos(int x, int y, float time);
+	Object& animateToPos(float x, float y, float w, float h, float time, bool restart);
 
-	Object& setPos(int x, int y);
-	Object& setScale(int w, int h);
+	Object& setPos(float x, float y);
+	Object& setScale(float w, float h);
 	Object& setShade(u8 shade);
 	Object& changeImg(const char* filename);
 	Object& changeCrop(CropInfo crop);
@@ -72,11 +73,14 @@ vector<Object*> FarFront_4;
 
 global_var vector<vector<Object*>*> objects = { &FarBack_0, &Back_1, &Middle_2, &Front_3, &FarFront_4 };
 
-#include "basicEvents.cpp"
+
 
 #include "uibuttons.cpp"
 #include "maps.cpp"
+#include "text.cpp"
 #include "uiobjects.cpp"
+
+#include "basicEvents.cpp"
 
 //Render Objects
 
@@ -97,7 +101,6 @@ internal void renderAllObjects() {
 //destroys all objets in the render group
 internal void destroyAllObjects() {
 	for (auto it: objects) {
-
 
 		for (auto it1 : (*it)) {
 			(it1)->~Object();
@@ -127,48 +130,52 @@ internal void updateAllObjects() {
 Object::Object() {}
 
 //object point constructor
-Object::Object(int x, int y) : x(x), y(y) {}
+Object::Object(float x, float y) : x(x), y(y) {}
 
 //object rectangle constructor
-Object::Object(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) {}
+Object::Object(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {}
 
 //basic object image constructor
-Object::Object(int x, int y, const char* filename, u8 z) :Object(x, y) {
+Object::Object(float x, float y, const char* filename, u8 z) :Object(x, y) {
 	sprite.create(filename);
 	w = sprite.w;
 	h = sprite.h;
 	addObject(z);
+	ob.isSprite = true;
 	ob.cameraLinked = true;
 	ob.instance = true;
 }
 
 //advanced object image constructor (basic but with width and height)
-Object::Object(int x, int y, int w, int h, const char* filename, u8 z) : Object(x, y, w, h) {
+Object::Object(float x, float y, float w, float h, const char* filename, u8 z) : Object(x, y, w, h) {
 	sprite.create(filename);
 	addObject(z);
+	ob.isSprite = true;
 	ob.cameraLinked = true;
 	ob.instance = true;
 }
 
 //basic object constructor from spritesheet
-Object::Object(int x, int y, u8 z, Image* spritesheet, CropInfo crop) : Object(x, y) {
+Object::Object(float x, float y, u8 z, Image* spritesheet, CropInfo crop) : Object(x, y) {
 	new (&sprite) Image(spritesheet->produceCrop(crop.cx, crop.cy, crop.cw, crop.ch));
 	this->crop = crop;
 	this->spritesheet = spritesheet;
 	w = sprite.w;
 	h = sprite.h;
 	addObject(z);
+	ob.isSprite = true;
 	ob.instance = true;
 	ob.cameraLinked = true;
 	ob.spriteSheet = true;
 }
 
 //advanced object constructor from spritesheet
-Object::Object(int x, int y, int w, int h, u8 z, Image* spritesheet, CropInfo crop) : Object(x, y, w, h) {
+Object::Object(float x, float y, float w, float h, u8 z, Image* spritesheet, CropInfo crop) : Object(x, y, w, h) {
 	new (&sprite) Image(spritesheet->produceCrop(crop.cx, crop.cy, crop.cw, crop.ch));
 	this->crop = crop;
 	this->spritesheet = spritesheet;
 	addObject(z);
+	ob.isSprite = true;
 	ob.instance = true;
 	ob.cameraLinked = true;
 	ob.spriteSheet = true;
@@ -176,10 +183,12 @@ Object::Object(int x, int y, int w, int h, u8 z, Image* spritesheet, CropInfo cr
 
 
 //object colored rectangle constructor
-Object::Object(int x, int y, int w, int h, u32 color, u8 z) : Object(x, y, w, h) {
+Object::Object(float x, float y, float w, float h, u32 color, u8 z) : Object(x, y, w, h) {
 	this->color = color;
 	addObject(z);
 	ob.instance = true;
+	ob.isSprite = false;
+	ob.cameraLinked = true;
 }
 
 //decontructs object if it exists
@@ -246,7 +255,7 @@ void Object::cleanLayer(vector<Object*>* z) {
 
 //render
 void Object::render() {
-	switch (ob.cameraLinked | (isImg() << 1)) {
+	switch (ob.cameraLinked | (ob.isSprite << 1)) {
 	case 0: renderRect(x, y, w * 0.5, h * 0.5, color); break;
 	case 1:	renderRect((x - mainCam.x) * mainCam.zoom, (y - mainCam.y) * mainCam.zoom, w * 0.5 * mainCam.zoom, h * 0.5 * mainCam.zoom, color); break;
 	case 2: renderImageV2(&sprite, x, y, w, h, shade); break;
@@ -257,9 +266,6 @@ void Object::render() {
 //update loop
 Object& Object::update() { return *this; }
 
-//image or rectangle
-bool Object::isImg() { return sprite.data != NULL; }
-
 //collision (rect only)
 bool Object::collide(Object* obj) {
 	if (obj->x + 0.5 * obj->w > this->x - 0.5 * this->w) return true;
@@ -269,23 +275,28 @@ bool Object::collide(Object* obj) {
 	return false;
 }
 
-ObjectMove moveVar;
-Object& Object::animateToPos(int x, int y, float time) {
 
-	moveVar.init(&*this, x, y, time);
+Object& Object::animateToPos(float x, float y, float w, float h, float time, bool restart) {
 
+	if (moveCommand == nullptr) { moveCommand = new ObjectMove(&*this, x, y, w, h, time, &moveCommand); moveCommand->start(); }
+	else if (restart || moveCommand->eb.restart) {
+		moveCommand->interrupt(); 
+		moveCommand = new ObjectMove(&*this, x, y, w, h, time, &moveCommand); 
+		moveCommand->start();
+	}
+	
 	return *this;
 }
 
 //sets x and y pos
-Object& Object::setPos(int x, int y) { 
+Object& Object::setPos(float x, float y) { 
 
 	this->x = x; this->y = y; return *this;
 }
 
 
 //sets scale
-Object& Object::setScale(int w, int h) {
+Object& Object::setScale(float w, float h) {
 
 	this->w = w; this->h = h; return *this;
 }

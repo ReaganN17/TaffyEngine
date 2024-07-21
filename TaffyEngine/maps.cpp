@@ -3,7 +3,7 @@ struct Map : Object {
 	float rate = 1;
 	const char* file;
 
-	Map(int x0, int y0, int x1, int y1, const char* filename, u8 z, bool repeat, float rate);
+	Map(float x0, float y0, float x1, float y1, const char* filename, u8 z, bool repeat, float rate);
 	Map();
 	~Map();
 
@@ -15,7 +15,7 @@ Map::Map() {}
 
 Map::~Map() { if (!ob.instance) return; }
 
-Map::Map(int x0, int y0, int x1, int y1, const char*filename, u8 z = BACK, bool repeat = false, float rate = 1) 
+Map::Map(float x0, float y0, float x1, float y1, const char*filename, u8 z = BACK, bool repeat = false, float rate = 1) 
 	:Object(x0 + (x1 - x0) * 0.5, y0 + (y1 - y0) * 0.5, abs(x1 - x0), abs(y1 - y0), filename, z), repeat(repeat), rate(rate) {
 	file = filename;
 }

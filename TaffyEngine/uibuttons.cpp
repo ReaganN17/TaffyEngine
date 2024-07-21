@@ -21,9 +21,9 @@ struct Button : Object {
 	u16 dW, dH;
 	ButtonByte bb;
 
-	Button(int x, int y, int w, int h, u8 z, Image* spritesheet, CropInfo crop, bool stick, bool circle);
-	Button(int x, int y, int w, int h, const char* filename, u8 z, bool stick, bool circle);
-	Button(int x, int y, int w, int h, u32 color, u8 z, bool stick, bool circle);
+	Button(float x, float y, float w, float h, u8 z, Image* spritesheet, CropInfo crop, bool stick, bool circle);
+	Button(float x, float y, float w, float h, const char* filename, u8 z, bool stick, bool circle);
+	Button(float x, float y, float w, float h, u32 color, u8 z, bool stick, bool circle);
 	Button();
 
 	~Button();
@@ -38,14 +38,14 @@ Button::~Button() { if (!ob.instance) return; }
 Button::Button() {}
 
 //long ass constructor cause i dont feel like being neat
-Button::Button(int x, int y, int w, int h, const char* filename, u8 z = 2, bool stick = false, bool circle = false) : Object(x, y, w, h, filename, z) {
+Button::Button(float x, float y, float w, float h, const char* filename, u8 z = 2, bool stick = false, bool circle = false) : Object(x, y, w, h, filename, z) {
 	dW = w, dH = h;
 	bb.stick = stick;
 	bb.circle = circle;
 	ob.cameraLinked = false;
 }
 
-Button::Button(int x, int y, int w, int h, u8 z, Image* spritesheet, CropInfo crop, bool stick = false, bool circle = false)
+Button::Button(float x, float y, float w, float h, u8 z, Image* spritesheet, CropInfo crop, bool stick = false, bool circle = false)
 	:Object(x, y, w, h, z, spritesheet, crop) 
 {
 	dW = w, dH = h;
@@ -54,7 +54,7 @@ Button::Button(int x, int y, int w, int h, u8 z, Image* spritesheet, CropInfo cr
 	ob.cameraLinked = false;
 }
 
-Button::Button(int x, int y, int w, int h, u32 color, u8 z = 2, bool stick = false, bool circle = false) : Object(x, y, w, h, color, z) {
+Button::Button(float x, float y, float w, float h, u32 color, u8 z = 2, bool stick = false, bool circle = false) : Object(x, y, w, h, color, z) {
 	dW = w, dH = h;
 	bb.stick = stick;
 	bb.circle = circle;
@@ -68,7 +68,7 @@ Button& Button::update() {
 
 	bb.hover = isMouseOver();
 
-	if (bb.disable) bb.hover = false, bb.down = false;
+	if (bb.disable)  bb.hover = false, bb.down = false;
 
 	if (bb.stick) {
 		if (bb.hover && pressed(LEFT_MOUSE) && !bb.down) {

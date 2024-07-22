@@ -64,5 +64,3 @@ global_var float delta_time;
 #include "ImageUtils.cpp"
 
 #include "RGBUtils.cpp"
-
-#include "CameraUtils.cpp"

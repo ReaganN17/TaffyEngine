@@ -4,7 +4,7 @@ struct Button_State {
 };
 
 enum zLayer:u8 {
-	FARBACK, BACK, MIDDLE, FRONT, FARFRONT,
+	FARBACK, BACK, MIDDLE, FRONT, FARFRONT, UNRENDER
 };
 
 enum Inputs:u8 {

@@ -6,11 +6,17 @@ struct IntroEvent : BasicEvent {
 	IntroEvent(BasicEvent** pointer) : BasicEvent(pointer) {}
 
 	short alpha = 0;
+	float w, h;
 	bool into = true;
+
+	Image guh;
 
 	void init() {
 		alpha = 0;
 		into = true;
+		new (&guh) Image("resources/taffyEngine.png");
+		w = screenWidth / render_scale;
+		h = screenHeight / render_scale;
 	}
 
 	void loop() {
@@ -25,13 +31,18 @@ struct IntroEvent : BasicEvent {
 		
 		if (pressed(ENTER)) { into = false; }
 
-		renderStaticBG("resources/taffyEngine.png", clamp(0, alpha, 255), 0);
+		renderImageV2(&guh, 0, 0, w, h, 255 - clamp(0, alpha, 255));
 
 		if (alpha < 0) {
 			currentScreen = MAINMENU;  
-			end();
+
+			guh.~Image();
+
+			endNTransfer();
 		}
 	}
+
+	void endNTransfer();
 };
 
 //custom background
@@ -41,10 +52,20 @@ struct CustomBG : BasicEvent {
 	CustomBG(BasicEvent** pointer) : BasicEvent(pointer) {}
 
 	float customBGx = 0, customBGy = 0, change = 0;
+	float w, h;
 	u8 shade = 0;
+
+	Image* bgs;
 
 	void init() {
 		customBGx = 0, customBGy = 0, change = 0;
+		bgs = new Image[3];
+		new (&bgs[0]) Image("resources/triangles.png");
+		new (&bgs[1]) Image("resources/circles.png");
+		new (&bgs[2]) Image("resources/squares.png");
+
+		w = screenWidth / render_scale * 2;
+		h = screenHeight / render_scale * 2;
 	}
 
 	void loop() {
@@ -58,11 +79,13 @@ struct CustomBG : BasicEvent {
 		if (customBGx <= -960) customBGx += 960;
 		if (customBGy <= -540) customBGy += 540;
 
-		switch ((int)change % 3) {
-		case 0: { renderMovingBG("resources/triangles.png", customBGx + 480, customBGy + 270, 2, shade); } break;
-		case 1: { renderMovingBG("resources/circles.png", customBGx + 480, customBGy + 270, 2, shade); } break;
-		case 2: { renderMovingBG("resources/squares.png", customBGx + 480, customBGy + 270, 2, shade); } break;
-		}
+		renderImageV2(&bgs[(int)change % 3], customBGx + 480, customBGy + 270, w, h, shade);
+	}
+
+	void end() {
+		delete[] bgs;
+
+		BasicEvent::end();
 	}
 };
 
@@ -353,8 +376,30 @@ struct MainScreen : BasicEvent {
 	}
 
 	void loop() {
-		if (curScreen == nullptr) {currentScreen = GAME;  bg.end();  end();}
+		if (curScreen == nullptr) {currentScreen = GAME;  bg.end();  endNTransfer();}
 	}
 
-	void end() { destroyAllObjects(); BasicEvent::end(); }
+	void endNTransfer();
+
 };
+
+void IntroEvent::endNTransfer() {
+	*pointer = new MainScreen(pointer);
+
+	BasicEvent::endNtransfer();
+
+	(*pointer)->start();
+}
+
+#include "gameevents.cpp"
+
+void MainScreen::endNTransfer() {
+	destroyAllObjects();
+
+	*pointer = new GameEvent(pointer);
+
+	BasicEvent::endNtransfer();
+
+	(*pointer)->start();
+
+}

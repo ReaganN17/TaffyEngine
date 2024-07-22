@@ -25,7 +25,7 @@ internal void updateValues() {
 	xOffset = max((renderWindow.width - screenWidth) / 2, 0);
 	yOffset = max((renderWindow.height - screenHeight) / 2, 0);
 	screenOffset = xOffset + yOffset * renderWindow.width;
-	render_scale = (float) screenHeight / 540;
+	render_scale = (float) screenHeight / 540.f;
 }
 
 //no matter the size will stretch the image to the boundaries
@@ -52,41 +52,6 @@ internal void renderStaticBG(const char* file, u8 alpha, u32 background) {
 					if (alpha == 255) { *pixel++ = curPixel.toHexNoA(); }
 					else { *pixel++ = curPixel.toHexWithA(0, alpha); }
 				}
-			}
-		}
-	}
-}
-
-//renders moving BG, currently does not restrict empty space
-internal void renderMovingBG(const char* file, int x, int y, float scale, u8 shade = 0) {
-	Image img(file);
-
-	scale *= render_scale;
-
-	int size_x = scale * img.w;
-	int size_y = scale * img.h;
-
-	int x0 = (x * render_scale) + 0.5 * (screenWidth - size_x);
-	int y0 = (y * render_scale) + 0.5 * (screenHeight - size_y);
-
-	int offsetRight = max(0, x0 + size_x - screenWidth);
-	int offsetLeft = max(0, -x0);
-
-	int offsetBottom = max(0, -y0);
-	int offsetTop = max(0, y0 + size_y - screenHeight);
-
-	u32 src = 0;
-
-	if (scale > 0) {
-		for (int i = offsetTop; i < size_y - offsetBottom; i++) {
-			u32* pixel = (u32*)renderWindow.memory + x0 + offsetLeft + screenOffset + ((size_y - 1) - i + y0) * renderWindow.width;
-			for (int j = offsetLeft; j < size_x - offsetRight; j++) {
-				src = img.channels * ((int)(j / scale) + img.w * (int)(i / scale));
-
-				RGBAPixel curPixel(img.data, src, img.channels);
-
-				if (shade == 0) { *pixel++ = curPixel.toHexNoA(); }
-				else { *pixel++ = curPixel.toHexWithA(0, 255 - shade); }
 			}
 		}
 	}

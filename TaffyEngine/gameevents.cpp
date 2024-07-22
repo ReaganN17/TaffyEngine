@@ -1,4 +1,7 @@
 //main game event structure
+
+#include "levels.cpp"
+
 struct GameEvent : BasicEvent {
 	GameEvent() {}
 	~GameEvent() {}
@@ -28,10 +31,18 @@ struct GameEvent : BasicEvent {
 	void loop() {
 		if (trans != nullptr && GetTickCount() - 1000 > loadtime) { load(); }
 
+
 	}
 
 	void load() {
 		level->eb.running = true;
 		trans->eb.running = true;
+	}
+
+	void endNtransfer() {
+		*pointer = new MainScreen(pointer);
+
+		BasicEvent::endNtransfer();
+
 	}
 };

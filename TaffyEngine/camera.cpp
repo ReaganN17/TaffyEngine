@@ -1,9 +1,4 @@
-enum MoveTypes {
-	LINEAR, INQUAD, OUTQUAD, INOUTQUAD, INCUBE, OUTCUBE, INOUTCUBE,
-};
-
-struct Camera {
-	float x, y;
+struct Camera : Object {
 	float zoom;
 	u8 alpha;
 
@@ -13,12 +8,10 @@ struct Camera {
 	Camera& setPos(float x, float y);
 	Camera& setZoom(float zoom);
 
-
-
-	Camera& update(float dt);
+	Camera& update();
 };
 
-Camera::Camera(float x, float y, float zoom) : x(x), y(y), zoom(zoom) {}
+Camera::Camera(float x, float y, float zoom) : Object(x, y, 5),  zoom(zoom) {}
 
 Camera::~Camera() {}
 
@@ -35,6 +28,8 @@ Camera& Camera::setZoom(float z) {
 	return *this;
 }
 
-Camera& Camera::update(float dt) {
+Camera& Camera::update() {
 
+
+	return *this;
 }

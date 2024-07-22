@@ -7,10 +7,10 @@ union ObjectByte
 	struct
 	{
 		u8 layer : 3;
-		bool isSprite : 1;
+		bool renderable : 1;
 		bool spriteSheet : 1;
 		bool instance : 1;
-		bool renderGroup : 1;
+		bool objectList : 1;
 		bool cameraLinked : 1;
 	};
 };
@@ -26,8 +26,8 @@ struct Object {
 	ObjectByte ob;
 
 	Object();
-	Object(float x, float y);
-	Object(float x, float y, float w, float h);
+	Object(float x, float y, u8 z);
+	Object(float x, float y, float w, float h, u8 z);
 	Object(float x, float y, const char* filename, u8 z);
 	Object(float x, float y, float w, float h, const char* filename, u8 z);
 
@@ -70,10 +70,14 @@ vector<Object*> Back_1;
 vector<Object*> Middle_2;
 vector<Object*> Front_3;
 vector<Object*> FarFront_4;
+vector<Object*> UnRender;
 
-global_var vector<vector<Object*>*> objects = { &FarBack_0, &Back_1, &Middle_2, &Front_3, &FarFront_4 };
+global_var vector<vector<Object*>*> objects = { &FarBack_0, &Back_1, &Middle_2, &Front_3, &FarFront_4, &UnRender };
 
+#include "camera.cpp"
 
+//contains Camera that most objects will follow
+global_var Camera mainCam(0, 0, 1.5);
 
 #include "uibuttons.cpp"
 #include "maps.cpp"
@@ -130,52 +134,54 @@ internal void updateAllObjects() {
 Object::Object() {}
 
 //object point constructor
-Object::Object(float x, float y) : x(x), y(y) {}
+Object::Object(float x, float y, u8 z = 5) : x(x), y(y) {
+	addObject(z);
+	ob.instance = true;
+}
 
 //object rectangle constructor
-Object::Object(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {}
+Object::Object(float x, float y, float w, float h, u8 z = 5) : x(x), y(y), w(w), h(h) {
+	addObject(z);
+	ob.instance = true;
+}
 
 //basic object image constructor
-Object::Object(float x, float y, const char* filename, u8 z) :Object(x, y) {
+Object::Object(float x, float y, const char* filename, u8 z) :Object(x, y, z) {
 	sprite.create(filename);
 	w = sprite.w;
 	h = sprite.h;
-	addObject(z);
-	ob.isSprite = true;
+	ob.renderable = true;
 	ob.cameraLinked = true;
 	ob.instance = true;
 }
 
 //advanced object image constructor (basic but with width and height)
-Object::Object(float x, float y, float w, float h, const char* filename, u8 z) : Object(x, y, w, h) {
+Object::Object(float x, float y, float w, float h, const char* filename, u8 z) : Object(x, y, w, h, z) {
 	sprite.create(filename);
-	addObject(z);
-	ob.isSprite = true;
+	ob.renderable = true;
 	ob.cameraLinked = true;
 	ob.instance = true;
 }
 
 //basic object constructor from spritesheet
-Object::Object(float x, float y, u8 z, Image* spritesheet, CropInfo crop) : Object(x, y) {
+Object::Object(float x, float y, u8 z, Image* spritesheet, CropInfo crop) : Object(x, y, z) {
 	new (&sprite) Image(spritesheet->produceCrop(crop.cx, crop.cy, crop.cw, crop.ch));
 	this->crop = crop;
 	this->spritesheet = spritesheet;
 	w = sprite.w;
 	h = sprite.h;
-	addObject(z);
-	ob.isSprite = true;
+	ob.renderable = true;
 	ob.instance = true;
 	ob.cameraLinked = true;
 	ob.spriteSheet = true;
 }
 
 //advanced object constructor from spritesheet
-Object::Object(float x, float y, float w, float h, u8 z, Image* spritesheet, CropInfo crop) : Object(x, y, w, h) {
+Object::Object(float x, float y, float w, float h, u8 z, Image* spritesheet, CropInfo crop) : Object(x, y, w, h, z) {
 	new (&sprite) Image(spritesheet->produceCrop(crop.cx, crop.cy, crop.cw, crop.ch));
 	this->crop = crop;
 	this->spritesheet = spritesheet;
-	addObject(z);
-	ob.isSprite = true;
+	ob.renderable = true;
 	ob.instance = true;
 	ob.cameraLinked = true;
 	ob.spriteSheet = true;
@@ -183,11 +189,10 @@ Object::Object(float x, float y, float w, float h, u8 z, Image* spritesheet, Cro
 
 
 //object colored rectangle constructor
-Object::Object(float x, float y, float w, float h, u32 color, u8 z) : Object(x, y, w, h) {
+Object::Object(float x, float y, float w, float h, u32 color, u8 z) : Object(x, y, w, h, z) {
 	this->color = color;
-	addObject(z);
 	ob.instance = true;
-	ob.isSprite = false;
+	ob.renderable = true;
 	ob.cameraLinked = true;
 }
 
@@ -209,7 +214,7 @@ void Object::destroyObject() {
 //adds object to render group based on z layer
 //if already in render group, removes first
 void Object::addObject(u8 z) {
-	if (ob.renderGroup) return;
+	if (ob.objectList) return;
 
 	ob.layer = z;
 
@@ -219,14 +224,15 @@ void Object::addObject(u8 z) {
 	case 2: addLayer(&Middle_2); break;
 	case 3: addLayer(&Front_3); break;
 	case 4: addLayer(&FarFront_4); break;
+	case 5: addLayer(&UnRender); break;
 	}
 
-	ob.renderGroup = true;
+	ob.objectList = true;
 }
 
 //removes object render group, if already moved dont
 void Object::removeObject() {
-	if (!ob.renderGroup) return;
+	if (!ob.objectList) return;
 
 	switch (ob.layer) {
 	case 0: cleanLayer(&FarBack_0); break;
@@ -234,9 +240,10 @@ void Object::removeObject() {
 	case 2: cleanLayer(&Middle_2); break;
 	case 3: cleanLayer(&Front_3); break;
 	case 4: cleanLayer(&FarFront_4); break;
+	case 5: cleanLayer(&UnRender); break;
 	}
 
-	ob.renderGroup = false;
+	ob.objectList = false;
 }
 
 //add to a z layer
@@ -255,7 +262,9 @@ void Object::cleanLayer(vector<Object*>* z) {
 
 //render
 void Object::render() {
-	switch (ob.cameraLinked | (ob.isSprite << 1)) {
+	if (!ob.renderable) return;
+
+	switch (ob.cameraLinked | ((sprite.data != NULL) << 1)) {
 	case 0: renderRect(x, y, w * 0.5, h * 0.5, color); break;
 	case 1:	renderRect((x - mainCam.x) * mainCam.zoom, (y - mainCam.y) * mainCam.zoom, w * 0.5 * mainCam.zoom, h * 0.5 * mainCam.zoom, color); break;
 	case 2: renderImageV2(&sprite, x, y, w, h, shade); break;

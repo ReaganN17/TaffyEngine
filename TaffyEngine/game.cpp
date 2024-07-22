@@ -11,9 +11,6 @@ global_var Input input = {};
 #define pressed(b) (input.buttons[b].down && input.buttons[b].changed)
 #define released(b) (!input.buttons[b].down && input.buttons[b].changed)
 
-//contains Camera that most objects will follow
-global_var Camera mainCam(0, 0, 1.5);
-
 //runs the game, if set false will exit the window
 global_var bool running = true;
 
@@ -29,6 +26,8 @@ global_var bool runevents = true;
 #include "renderer.cpp"
 #include "events.cpp"
 #include "objects.cpp"
+
+
 
 //game elements
 global_var u8 levelUnlocked = 1;
@@ -63,40 +62,27 @@ PControls controls;
 #include "gridobject.cpp"
 #include "playerUI.cpp"
 
-internal void gameinit() {
-	clearEntireScreen(0x000000);
-}
-
 Image globalSpriteSheet("resources/MegaSpriteSheet.png");
 
-#include "intro.cpp"
-#include "levels.cpp"
-#include "gameevents.cpp"
-
-
 BasicEvent* screen = nullptr;
+
+#include "intro.cpp"
+
+
+internal void gameinit() {
+	clearEntireScreen(0x000000);
+	screen = new IntroEvent(&screen);
+	screen->start();
+}
 
 internal void gameloop() {
 	//default background
 	if (background) renderBG();
 
-	switch (currentScreen) {
-	case INTRO: {
-		if (screen == nullptr) { screen = new IntroEvent(&screen); screen->start(); }
-	} break;
-	case MAINMENU: {
-		if (screen == nullptr) { screen = new MainScreen(&screen); screen->start(); }
-	}break;
-	case GAME: {
-		if (screen == nullptr) { screen = new GameEvent(&screen); screen->start(); }
-	} break;
-	}
-
-
 	if (runevents) { runEvents(); }
 	if (update) {updateAllObjects();}
 	if (render) { renderAllObjects(); }
 	
-	//draw_number(events.size(), 0, 0, 20);
+	draw_number(Front_3.size(), 0, 0, 20);
 	
 }

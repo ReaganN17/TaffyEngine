@@ -1,34 +1,33 @@
 
 
-struct PlayerUI {
+struct PlayerUI : Object {
+	Player* player;
+
 	UIObject* HealthBar;
 	UIObject* HealthBackGround;
 	UIObject* Health;
 	UIObject* HealthEnd;
 	UIObject* PowerUP;
 	UIObject* State;
-	float x, y, w, h;
 
 	PlayerUI();
 	~PlayerUI();
 
-	PlayerUI(Image* spritesheet);
+	PlayerUI(Image* spritesheet, Player* player);
 
 	PlayerUI& destroy();
 
 	PlayerUI& hide();
 	PlayerUI& unhide();
 
-	PlayerUI& update(Player *player);
+	PlayerUI& update();
 
 };
 
 PlayerUI::PlayerUI() {}
 PlayerUI::~PlayerUI() {}
 
-PlayerUI::PlayerUI(Image* spritesheet) {
-	x = 0, y = 0, w = 960, h = 540;
-
+PlayerUI::PlayerUI(Image* spritesheet, Player* player) : Object(0, 0, 960, 540, 5) {
 	HealthBar = new UIObject(250, 220, 400, 50, FARFRONT, spritesheet, CropInfo(4, 18, 934, 120));
 	HealthBackGround = new UIObject(250, 220, 390, 40, 0x4f4f4f, FRONT);
 	Health = new UIObject(249, 220, 380, 40, 0xED1C24, FRONT);
@@ -36,6 +35,8 @@ PlayerUI::PlayerUI(Image* spritesheet) {
 
 	PowerUP = new UIObject(-200, 200, 100, 50, FRONT, spritesheet, CropInfo(5, 275, 255, 130));
 	State = new UIObject(-200, -200, 50, 50, FRONT, spritesheet, CropInfo(980, 37, 120, 113));
+
+	this->player = player;
 }
 
 PlayerUI& PlayerUI::destroy() {
@@ -51,30 +52,29 @@ PlayerUI& PlayerUI::destroy() {
 }
 
 PlayerUI& PlayerUI::hide() {
-	HealthBar->removeObject();
-	HealthBackGround->removeObject();
-	HealthEnd->removeObject();
-	Health->removeObject();
-
-	PowerUP->removeObject();
-	State->removeObject();
+	HealthBar->ob.renderable = false;
+	HealthBackGround->ob.renderable = false;
+	HealthEnd->ob.renderable = false;
+	Health->ob.renderable = false;
+	PowerUP->ob.renderable = false;
+	State->ob.renderable = false;
 
 	return *this;
 }
 
 PlayerUI& PlayerUI::unhide() {
-	HealthBar->addObject(FARFRONT);
-	HealthBackGround->addObject(FRONT);
-	HealthEnd->addObject(FRONT);
-	Health->addObject(FRONT);
+	HealthBar->ob.renderable = true;
+	HealthBackGround->ob.renderable = true;
+	HealthEnd->ob.renderable = true;
+	Health->ob.renderable = true;
 
-	PowerUP->addObject(FRONT);
-	State->addObject(FRONT);
+	PowerUP->ob.renderable = true;
+	State->ob.renderable = true;
 
 	return *this;
 }
 
-PlayerUI& PlayerUI::update(Player* player) {
+PlayerUI& PlayerUI::update() {
 	float health = (max((float)player->health, 0));
 
 
@@ -103,3 +103,4 @@ PlayerUI& PlayerUI::update(Player* player) {
 
 	return *this;
 }
+

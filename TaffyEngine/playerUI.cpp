@@ -92,11 +92,15 @@ PlayerUI& PlayerUI::update() {
 			PowerUP->changeCrop(CropInfo(54, 142, 255, 130));
 		} break;
 		}
+
+		player->inst.stateChange = false;
 	}
 
 	if (player->inst.healthChange) {
 		HealthEnd->animateToPos(health / 250 * 380 + 59, 220, HealthEnd->w, HealthEnd->h, 0.5, true);
 		Health->animateToPos(health / 250 * 190 + 59, 220, health / 250 * 380, 40, 0.5, true);
+
+		player->inst.healthChange = false;
 	}
 
 

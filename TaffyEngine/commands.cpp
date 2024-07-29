@@ -1,0 +1,3 @@
+struct GOMove : BasicEvent {
+
+};

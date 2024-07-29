@@ -159,6 +159,13 @@ void GridObject::destroyObject() {
 //parameters are dt for movement time and kickback for recovery time when hitting a wall or other object
 GridObject& GridObject::move(float kickback) {
 	//4 directional movement
+
+	if (moveCommand == nullptr) {
+
+	}
+
+	/*
+
 	switch (mmb.sequence) {
 	case SELECTION: {
 
@@ -231,6 +238,7 @@ GridObject& GridObject::move(float kickback) {
 		mmb.sequence = SELECTION;
 	}break;
 	}
+	*/
 
 	return *this;
 }

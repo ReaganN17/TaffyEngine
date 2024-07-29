@@ -175,8 +175,6 @@ Player& Player::update() {
 		grid->setEnd(xG, yG);
 	}
 
-	inst.byte = 0;
-
 	return *this;
 }
 

@@ -31,10 +31,15 @@ struct Level1Event : BasicEvent {
 
 
 		if (bob.health <= 0) {
-			bob.destroyObject();
+			eb.cond2 = true;
 		}
 
 
+	}
+
+	void end() {
+		destroyAllObjects();
+		BasicEvent::end();
 	}
 
 	

@@ -92,6 +92,7 @@ struct CustomBG : BasicEvent {
 struct Transition : BasicEvent {
 	Transition() {}
 	Transition(BasicEvent** pointer, bool down) : BasicEvent(pointer) { this->down = down; }
+	Transition(bool down) { this->down = down; }
 	~Transition() {}
 
 	Object guh;
@@ -361,15 +362,23 @@ void MainMenuS::endNtransfer(u8 s) {
 //main menu screen
 struct MainScreen : BasicEvent {
 	MainScreen() {}
-	MainScreen(BasicEvent** pointer) : BasicEvent(pointer) {}
+	MainScreen(BasicEvent** pointer, u8 cur) : BasicEvent(pointer) { curScreenNum = cur; }
 	~MainScreen() {}
 
 	CustomBG bg;
 	BasicEvent* curScreen;
+	u8 curScreenNum = 0;
 
 	void init() {
 		new (&bg) CustomBG();
-		curScreen = new MainMenuS(&curScreen, &bg);
+
+		switch (curScreenNum) {
+		case 0:curScreen = new MainMenuS(&curScreen, &bg); break;
+		case 1:curScreen = new LevelSelectS(&curScreen, &bg); break;
+		case 2: break;
+		case 3: break;
+		}
+		
 
 		curScreen->start();
 		bg.start();
@@ -384,7 +393,7 @@ struct MainScreen : BasicEvent {
 };
 
 void IntroEvent::endNTransfer() {
-	*pointer = new MainScreen(pointer);
+	*pointer = new MainScreen(pointer, 0);
 
 	BasicEvent::endNtransfer();
 

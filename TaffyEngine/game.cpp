@@ -82,7 +82,4 @@ internal void gameloop() {
 	if (runevents) { runEvents(); }
 	if (update) {updateAllObjects();}
 	if (render) { renderAllObjects(); }
-	
-	draw_number(Front_3.size(), 0, 0, 20);
-	
 }

@@ -3,7 +3,9 @@ union EventByte{
 	unsigned char byte = 0;
 
 	struct {
-		u8 space : 3;
+		bool cond1 : 1;
+		bool cond2 : 1;
+		bool cond3 : 1;
 		bool pointer : 1;
 		bool restart : 1;
 		bool running : 1;
@@ -11,7 +13,6 @@ union EventByte{
 		bool interupt : 1;
 	};
 };
-
 struct BasicEvent {
 	BasicEvent** pointer;
 	//god strike me down

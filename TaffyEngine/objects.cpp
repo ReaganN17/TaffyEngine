@@ -97,7 +97,9 @@ internal void renderZObjects(vector<Object*>* z) {
 
 //rendres all objects in the render group
 internal void renderAllObjects() {
-	for (auto i : objects) {
+	for (auto i : objects)
+	{
+		if (i == &UnRender) { break; }
 		renderZObjects(i);
 	}
 }

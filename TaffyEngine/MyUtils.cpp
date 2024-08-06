@@ -59,6 +59,10 @@ global_var RenderWindow renderWindow;
 global_var float delta_time;
 #define dt delta_time
 
+
+#define arrContainsBool(element, arr, sizeOfE) find(arr, arr + sizeof(arr) / sizeOfE, element) != arr + sizeof(arr) / sizeOfE
+#define vecContainsBool(element, vec) find(vec.begin(), vec.end(), element) != vec.end()
+
 #include "MathUtils.cpp"
 
 #include "ImageUtils.cpp"

@@ -97,10 +97,11 @@ PlayerUI& PlayerUI::update() {
 	}
 
 	if (player->inst.healthChange) {
+		player->inst.healthChange = false;
+
+
 		HealthEnd->animateToPos(health / 250 * 380 + 59, 220, HealthEnd->w, HealthEnd->h, 0.5, true);
 		Health->animateToPos(health / 250 * 190 + 59, 220, health / 250 * 380, 40, 0.5, true);
-
-		player->inst.healthChange = false;
 	}
 
 

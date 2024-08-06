@@ -3,8 +3,6 @@ enum Direction {
 	MRIGHT, MUP, MLEFT, MDOWN
 };
 
-
-
 //Node struct
 struct Node {
 	bool bObstacle = false;
@@ -14,7 +12,7 @@ struct Node {
 	u16 x;
 	u16 y;
 	vector<Node*> vecNeighbours;
-	vector<u8> occupants;
+	vector<Object*> occupants;
 	Node* parent;
 };
 
@@ -32,9 +30,9 @@ struct Grid : Object{
 	Grid();
 	~Grid();
 
-	Grid(float x, float y, float pixelsPerSqr, const char* gridMap, float offsetX, float offsetY, float pixelsPerSqrD, const char* displayMap, zLayer z);
+	Grid(float x, float y, float pixelsPerSqr, const char* gridMap, float offsetX, float offsetY, float pixelsPerSqrD, const char* displayMap, Object* wall, zLayer z);
 
-	Grid& PNGToGrid(const char* filename);
+	Grid& PNGToGrid(const char* filename, Object* wall);
 	Grid& createEmpty(int w, int h);
 	Grid& createNeighbors(u8 range);
 
@@ -46,18 +44,28 @@ struct Grid : Object{
 	bool createPath();
 	void createDirections(list<u8>* dir);
 
-	Node*& addID(int x, int y, u8 id);
-	Node*& removeID(int x, int y, u8 id);
+	Node*& addObj(u16 x, u16 y, Object* guh);
+	Node*& removeObj(u16 x, u16 y, Object* guh);
 
-	//temporary til better solution
-	u8 getID(u16 x, u16 y);
-	u8 getIDVector(u8 dir, float mag, u16 xG, u16 yG);
+	Object* getTObj(u16 x, u16 y);
+	Object* getTObjVec(u8 dir, float mag, u16 xG, u16 yG);
 
-	bool containsID(int x, int y, u8 id);
-	bool containsIDVector(u8 dir, int mag, int x, int y, u8 id);
+	Object* getIDObj(u16 x, u16 y, u8 id);
+	Object* getIDObjVec(u8 dir, float mag, u8 id, u16 xG, u16 yG);
+
+	bool checkID(u16 x, u16 y, u8 id);
+	bool checkIDVec(u8 dir, float mag, u8 id, u16 xG, u16 yG);
+
+	bool checkValid(int x, int y, initializer_list<u8> ids);
+	bool checkValidVec(u8 dir, float mag, initializer_list<u8> ids, u16 xG, u16 yG);
+
+	float getHighWidthObst(u16 x, u16 y, initializer_list<u8> ids);
+	float getHighWidthObstVec(u8 dir, float mag, initializer_list<u8> ids, u16 xG, u16 yG);
 };
 
 //End of Headers
+
+#include "gridobject.cpp"
 
 //Obligatory constructor
 Grid::Grid() {}
@@ -66,8 +74,8 @@ Grid::Grid() {}
 Grid::~Grid() { if (!ob.instance) return; }
 
 //Actual Constructor
-Grid::Grid(float x, float y, float pixelsPerSqr, const char* gridMap, float offsetX, float offsetY, float pixelsPerSqrD, const char* displayMap, zLayer  z = BACK) : Object(0, 0, displayMap, z) {
-	PNGToGrid(gridMap);
+Grid::Grid(float x, float y, float pixelsPerSqr, const char* gridMap, float offsetX, float offsetY, float pixelsPerSqrD, const char* displayMap, Object* wall, zLayer z = BACK) : Object(0, 0, displayMap, z) {
+	PNGToGrid(gridMap, wall);
 	w = gw, h = gh;
 
 	grid_scale = pixelsPerSqr, dx = x + grid_scale * 0.5, dy = y - grid_scale * 0.5;
@@ -81,7 +89,7 @@ Grid::Grid(float x, float y, float pixelsPerSqr, const char* gridMap, float offs
 
 
 //Translate PNG to grid
-Grid& Grid::PNGToGrid(const char* file) {
+Grid& Grid::PNGToGrid(const char* file, Object* wall) {
 	Image ref(file);
 
 	createEmpty(ref.w, ref.h);
@@ -91,7 +99,7 @@ Grid& Grid::PNGToGrid(const char* file) {
 		//learn how to do this better then fix
 		if (ref.data[ref.channels * (i)] == 0) {
 			nodes[i].bObstacle = true;
-			nodes[i].occupants.push_back(1);
+			nodes[i].occupants.push_back(wall);
 		}
 	}
 
@@ -265,71 +273,143 @@ void Grid::createDirections(list<u8>* directions) {
 }
 
 
-Node*& Grid::removeID(int x, int y, u8 id) {
-	x = clamp(0, x, gw - 1);
-	y = clamp(0, y, gh - 1);
+Node*& Grid::removeObj(u16 x, u16 y, Object* guh) {
+	x = min(x, gw - 1), y = min(y, gh - 1);
 
+	auto it = find(nodes[x + y * gw].occupants.begin(), nodes[x + y * gw].occupants.end(), guh);
 
-	//why
-	for (int i = 0; i < nodes[x + y * gw].occupants.size(); i++) {
-		if (nodes[x + y * gw].occupants.at(i) == id) {
-
-			auto it = nodes[x + y * gw].occupants.begin() + i;
-			nodes[x + y * gw].occupants.erase(it);
-			break;
-		}
+	if (it != nodes[x + y * gw].occupants.end()) {
+		nodes[x + y * gw].occupants.erase(it);
 	}
 
 	return nodes;
 }
 
-Node*& Grid::addID(int x, int y, u8 id) {
-	x = clamp(0, x, gw - 1);
-	y = clamp(0, y, gh - 1);
+Node*& Grid::addObj(u16 x, u16 y, Object*guh) {
+	x = min(x, gw - 1), y = min(y, gh - 1);
 
-	nodes[x + y * gw].occupants.push_back(id);
+	nodes[x + y * gw].occupants.push_back(guh);
 
 	return nodes;
 
 }
 
-//returns the top most ID
-u8 Grid::getID(u16 x, u16 y) {
-	if (nodes[x + y * gw].occupants.empty() == 1) return 0;
+//returns the top most Object
+Object* Grid::getTObj(u16 x, u16 y) {
+	x = min(x, gw - 1), y = min(y, gh - 1);
+
+	if (nodes[x + y * gw].occupants.empty() == 1) return nullptr;
+
 	return nodes[x + y * gw].occupants.back();
 }
 
-u8 Grid::getIDVector(u8 dir, float mag, u16 xG = 0, u16 yG = 0) {
+Object* Grid::getTObjVec(u8 dir, float mag, u16 xG = 0, u16 yG = 0) {
 	switch (dir) {
-		case MLEFT: return getID(xG - mag, yG);
-		case MRIGHT: return getID(xG + mag, yG);
-		case MUP: return getID(xG, yG - mag);
-		case MDOWN: return getID(xG, yG + mag);
+		case MLEFT: return getTObj(xG - mag, yG);
+		case MRIGHT: return getTObj(xG + mag, yG);
+		case MUP: return getTObj(xG, yG - mag);
+		case MDOWN: return getTObj(xG, yG + mag);
 	}
+
+	return nullptr;
 }
 
-bool Grid::containsID(int x, int y, u8 id) {
-	x = clamp(0, x, gw - 1);
-	y = clamp(0, y, gh - 1);
+Object* Grid::getIDObj(u16 x, u16 y, u8 id) {
+	x = min(x, gw - 1), y = min(y, gh - 1);
 
-	if (id == 0) return nodes[x + y * gw].occupants.empty() == 1;
+	GridObject* guh;
 
+	for (auto it : nodes[x + y * gw].occupants) {
+		guh = (GridObject*)it;
+		if (guh->id == id) { return it; }
+	}
+	
+	return nullptr;
+}
+
+Object* Grid::getIDObjVec(u8 dir, float mag, u8 id, u16 xG, u16 yG) {
+	switch (dir) {
+	case MLEFT: return getIDObj(xG - mag, yG, id);
+	case MRIGHT: return getIDObj(xG + mag, yG, id);
+	case MUP: return getIDObj(xG, yG - mag, id);
+	case MDOWN: return getIDObj(xG, yG + mag, id);
+	}
+
+	return nullptr;
+}
+
+
+bool Grid::checkID(u16 x, u16 y, u8 id) {
+	x = min(x, gw - 1), y = min(y, gh - 1);
+
+	vector<Object*> guh(nodes[x + y * gw].occupants);
+
+	if (id == 0) { return guh.size() == 0; }
+
+	for (auto i : guh) {
+		GridObject* h = (GridObject*)(i);
+		if (h->id == id) { return true; }
+	}
+
+	return false;
+}
+
+bool Grid::checkIDVec(u8 dir, float mag, u8 id, u16 xG = 0, u16 yG = 0) {
+	switch (dir) {
+	case MLEFT: return checkID(xG - mag, yG, id);
+	case MRIGHT: return checkID(xG + mag, yG, id);
+	case MUP: return checkID(xG, yG - mag, id);
+	case MDOWN: return checkID(xG, yG + mag, id);
+	}
+
+	return false;
+}
+
+bool Grid::checkValid(int x, int y, initializer_list<u8> ids) {
+	if (x < 0 || y < 0 || x >= gw || y >= gh) { return false; }
+
+	GridObject* guh;
 	for (auto i : nodes[x + y * gw].occupants) {
-		if (i == id) return true;
+		guh = (GridObject*)i;
+
+		if (vecContainsBool(guh->id, ids)) return false;
 	}
 
-	return false;
+	return true;
 }
 
-bool Grid::containsIDVector(u8 dir, int mag, int x, int y, u8 id) {
+bool Grid::checkValidVec(u8 dir, float mag, initializer_list<u8> ids, u16 xG, u16 yG) {
 	switch (dir) {
-		case MLEFT: return containsID(x - mag, y, id);
-		case MRIGHT: return containsID(x + mag, y, id);
-		case MUP: return containsID(x, y - mag, id);
-		case MDOWN: return containsID(x, y + mag, id);
+	case MLEFT: return checkValid(xG - mag, yG, ids);
+	case MRIGHT: return checkValid(xG + mag, yG, ids);
+	case MUP: return checkValid(xG, yG - mag, ids);
+	case MDOWN: return checkValid(xG, yG + mag, ids);
 	}
 
 	return false;
 }
 
+float Grid::getHighWidthObst(u16 x, u16 y, initializer_list<u8> ids) {
+	x = min(x, gw - 1), y = min(y, gh - 1);
+	float width = 0;
+	GridObject* pointah;
 
+	for (auto it : nodes[x + y * gw].occupants) {
+		pointah = (GridObject*)it;
+
+		if (vecContainsBool(pointah->id, ids)) width = max(width, (float) pointah->scale / 1000.f);
+	}
+
+	return width;
+}
+
+float Grid::getHighWidthObstVec(u8 dir, float mag, initializer_list<u8> ids, u16 xG, u16 yG) {
+	switch (dir) {
+	case MLEFT: return getHighWidthObst(xG - mag, yG, ids);
+	case MRIGHT: return getHighWidthObst(xG + mag, yG, ids);
+	case MUP: return getHighWidthObst(xG, yG - mag, ids);
+	case MDOWN: return getHighWidthObst(xG, yG + mag, ids);
+	}
+
+	return 0;
+}

@@ -37,7 +37,7 @@ Player::Player(Grid* grid, u16 x, u16 y, Image *spritesheet) : GridObject(grid, 
 {	
 	health = 250;
 	state = SQUARE;
-	speed = 0;
+	speed = 30;
 	range = 1;
 	power = 5;
 }
@@ -50,16 +50,16 @@ void Player::control(PControls inputs) {
 }
 
 Player& Player::changeChar(PControls inputs) {
-	if (pressed(inputs.square)) { changeCrop(CropInfo(980, 37, 120, 113)); state = SQUARE; inst.stateChange = true; }
-	if (pressed(inputs.circle)) { changeCrop(CropInfo(1300, 34, 118, 116)); state = CIRCLE; inst.stateChange = true;}
-	if (pressed(inputs.triangle)) { changeCrop(CropInfo(1114, 34, 158, 114)); state = TRIANGLE; inst.stateChange = true;}
+	if (pressed(inputs.square)) { changeCrop(CropInfo(980, 37, 120, 113)); state = SQUARE; speed = 30;  inst.stateChange = true; }
+	if (pressed(inputs.circle)) { changeCrop(CropInfo(1300, 34, 118, 116)); state = CIRCLE; speed = 100; inst.stateChange = true; }
+	if (pressed(inputs.triangle)) { changeCrop(CropInfo(1114, 34, 158, 114)); state = TRIANGLE; speed = 60; inst.stateChange = true; }
 
 	return *this;
 }
 
 Player& Player::rotate(PControls inputs) {
-	if (pressed(inputs.rotleft)) { mmb.direction++;}
-	if (pressed(inputs.rotright)) { mmb.direction--;}
+	if (pressed(inputs.rotleft)) { inst.direction++;}
+	if (pressed(inputs.rotright)) { inst.direction--;}
 
 	return *this;
 }
@@ -69,7 +69,7 @@ Player& Player::ability(PControls inputs) {
 		switch (state) {
 			case SQUARE: break;
 			case TRIANGLE: break;
-			case CIRCLE: mmb.sequence = MOVEINIT; range = 7; rate = 70; break;
+			case CIRCLE: range = 7; speed = 70; GridObject::move(0.2); range = 1; speed = 60; break;
 		}
 	}
 
@@ -78,45 +78,10 @@ Player& Player::ability(PControls inputs) {
 
 Player& Player::move(PControls inputs) {
 	
-	//4 directional movement
-	switch (mmb.sequence) {
-		case SELECTION: {
-
-			if (pressed(inputs.left)) { mmb.direction = MLEFT; mmb.sequence = MOVEINIT; }
-			if (pressed(inputs.right)) { mmb.direction = MRIGHT; mmb.sequence = MOVEINIT; }
-			if (pressed(inputs.up)) { mmb.direction = MUP; mmb.sequence = MOVEINIT; }
-			if (pressed(inputs.down)) { mmb.direction = MDOWN; mmb.sequence = MOVEINIT; }
-
-		} break;
-	
-		case MOVEINIT: {
-			//custom rate can overwrite speed
-			if (rate == 0) {
-				switch (state) {
-				case SQUARE: speed = 30; break;
-				case TRIANGLE: speed = 60; break;
-				case CIRCLE: speed = 100; break;
-				}
-			}
-			else { speed = rate; }
-
-			moveinit();
-			mmb.sequence = MOVE;
-		} break;
-
-		
-		case MOVEEND: {
-
-			//reset range
-			range = 1;
-			moveend();
-			mmb.sequence = SELECTION;
-		} break;
-
-		default: {
-			GridObject::move(0.2);
-		} break;
-	}
+	if (pressed(inputs.left)) { inst.direction = MLEFT; GridObject::move(0.2); }
+	if (pressed(inputs.right)) { inst.direction = MRIGHT; GridObject::move(0.2);}
+	if (pressed(inputs.up)) { inst.direction = MUP; GridObject::move(0.2);}
+	if (pressed(inputs.down)) { inst.direction = MDOWN; GridObject::move(0.2);}
 
 	return *this;
 }
@@ -128,7 +93,6 @@ Player& Player::takeDamage(short base) {
 		case TRIANGLE: base *= 1.2; break;
 		case CIRCLE: break;
 	}
-	inst.healthChange = true;
 	GridObject::takeDamage(base);
 
 	return *this;
@@ -143,7 +107,7 @@ void Player::render() {
 		case CIRCLE: new(&arrow) Image(spritesheet->produceCrop(1312, 188, 95, 29)); break;
 	}
 
-	switch (mmb.direction) {
+	switch (inst.direction) {
 		case MLEFT:arrow.rotate(90); break;
 		case MRIGHT:arrow.rotate(-90); break;
 		case MUP: break;
@@ -151,7 +115,7 @@ void Player::render() {
 	}
 
 	if (state == TRIANGLE) {
-		switch (mmb.direction) {
+		switch (inst.direction) {
 			case MLEFT:sprite.rotateTo(90); break;
 			case MRIGHT:sprite.rotateTo(-90); break;
 			case MUP: sprite.rotateTo(0); break;
@@ -159,10 +123,10 @@ void Player::render() {
 		}
 	}
 	
-	int paraX = (((this->x) + ((mmb.direction == MLEFT) ? -0.5 : (mmb.direction == MRIGHT) ? 0.5 : 0) * grid->grid_scale) - mainCam.x) * mainCam.zoom;
-	int paraY = (((this->y) + ((mmb.direction == MDOWN) ? -0.5 : (mmb.direction == MUP) ? 0.5 : 0) * grid->grid_scale) - mainCam.y) * mainCam.zoom;
-	int paraW = ((mmb.direction % 2 == 0) ? 10 : 20) * mainCam.zoom;
-	int paraH = ((mmb.direction % 2 == 1) ? 10 : 20) * mainCam.zoom;
+	int paraX = (((this->x) + ((inst.direction == MLEFT) ? -0.5 : (inst.direction == MRIGHT) ? 0.5 : 0) * grid->grid_scale) - mainCam.x) * mainCam.zoom;
+	int paraY = (((this->y) + ((inst.direction == MDOWN) ? -0.5 : (inst.direction == MUP) ? 0.5 : 0) * grid->grid_scale) - mainCam.y) * mainCam.zoom;
+	int paraW = ((inst.direction % 2 == 0) ? 10 : 20) * mainCam.zoom;
+	int paraH = ((inst.direction % 2 == 1) ? 10 : 20) * mainCam.zoom;
 
 	renderImageV2(&arrow, paraX, paraY, paraW, paraH);
 	
@@ -171,9 +135,7 @@ void Player::render() {
 }
 
 Player& Player::update() {
-	if (mmb.sequence == MOVEEND || grid->nodeEnd == nullptr) {
-		grid->setEnd(xG, yG);
-	}
+	grid->setEnd(xG, yG);
 
 	return *this;
 }

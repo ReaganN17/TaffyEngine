@@ -56,10 +56,10 @@ struct PControls {
 };
 
 PControls controls;
-
+static float debug_num = 0;
 
 #include "gridv2.cpp"
-#include "gridobject.cpp"
+
 #include "playerUI.cpp"
 
 Image globalSpriteSheet("resources/MegaSpriteSheet.png");
@@ -67,7 +67,6 @@ Image globalSpriteSheet("resources/MegaSpriteSheet.png");
 BasicEvent* screen = nullptr;
 
 #include "intro.cpp"
-
 
 internal void gameinit() {
 	clearEntireScreen(0x000000);
@@ -82,4 +81,8 @@ internal void gameloop() {
 	if (runevents) { runEvents(); }
 	if (update) {updateAllObjects();}
 	if (render) { renderAllObjects(); }
+
+	//draw_number(debug_num, 0, 0, 20);
+
+
 }

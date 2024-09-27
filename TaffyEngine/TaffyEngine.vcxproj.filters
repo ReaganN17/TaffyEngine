@@ -27,6 +27,9 @@
     <Filter Include="Source Files\events">
       <UniqueIdentifier>{b7171172-2621-4c39-8a82-4ef6d5f1c41d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\game related\UI">
+      <UniqueIdentifier>{0acb6a21-69e2-4ee1-9c5d-896f85d255ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="win32platform.cpp">
@@ -83,9 +86,6 @@
     <ClCompile Include="gridv2.cpp">
       <Filter>Source Files\game related</Filter>
     </ClCompile>
-    <ClCompile Include="playerUI.cpp">
-      <Filter>Source Files\game related</Filter>
-    </ClCompile>
     <ClCompile Include="events.cpp">
       <Filter>Source Files\events</Filter>
     </ClCompile>
@@ -109,6 +109,12 @@
     </ClCompile>
     <ClCompile Include="BasicWall.cpp">
       <Filter>Source Files\game related</Filter>
+    </ClCompile>
+    <ClCompile Include="playerUI.cpp">
+      <Filter>Source Files\game related\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthBar.cpp">
+      <Filter>Source Files\game related\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

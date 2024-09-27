@@ -1,41 +1,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 
-#include "STBI_ImageUtils.cpp"
+#include "TaffyEngine.h"
 
-struct Image {
-
-	u8* data = NULL;
-	size_t size = 0;
-	u16 w = 0, h = 0;
-	u8 channels = 0;
-	short rotation = 0;
-
-	Image();
-	Image(const char* filename);
-	Image(int w, int h, int channels);
-	Image(const Image& img);
-
-	~Image();
-	
-	bool read(const char* filename);
-	bool isPNG(const char* filename);
-
-	Image& rotate(short rot);
-	Image& rotateTo(short rot);	
-	Image& copy(Image img);
-
-	Image& grayscale_avg();
-	Image& create(const char* filename);
-	Image& crop(u16 cx, u16 cy, u16 cw, u16 ch);
-
-	Image produceCrop(u16 cx, u16 cy, u16 cw, u16 ch);
-	void produceCropImage(u16 cx, u16 cy, u16 cw, u16 ch, Image* img);
-};
-//End of Header
 
 //start of class functions
 
-Image::Image() {}
+Image::Image() { Image::Image(1, 1, 3); }
 
 Image::Image(const char* filename) {
 	if (read(filename)) {
@@ -82,19 +52,43 @@ bool Image::isPNG(const char* filename) {
 	return false;
 }
 
+Image& Image::create(const char* filename) {
+	if (read(filename)) {
+		size = w * h * channels;
+	}
+	else {
+
+	}
+	return *this;
+}
+
+Image& Image::copy(Image& img) {
+	w = img.w;
+	h = img.h;
+	channels = img.channels;
+	size = w * h * channels;
+
+	delete[] data;
+	data = new u8[size];
+
+	memcpy(data, img.data, size);
+
+	return *this;
+}
+
 Image& Image::rotateTo(short rot) {
 	rot /= 90;
 	rot *= 90;
 	rot = (rot + 180) % 360 - 180;
 	
-	if ((rot + 360) % 360 - 180 == rotation) { rotate(-180); }
-	if ((rot + 270) % 360 - 180 == rotation) { rotate(-90); }
-	if ((rot + 450) % 360 - 180 == rotation) { rotate(90);  }
+	if ((rot + 360) % 360 - 180 == rotation) { rotateBy(-180); }
+	if ((rot + 270) % 360 - 180 == rotation) { rotateBy(-90); }
+	if ((rot + 450) % 360 - 180 == rotation) { rotateBy(90);  }
 
 	return *this;
 }
 
-Image& Image::rotate(short rot) {
+Image& Image::rotateBy(short rot) {
 	rot /= 90;
 	rot *= 90;
 	rot = (rot + 180) % 360 - 180;
@@ -145,29 +139,6 @@ Image& Image::rotate(short rot) {
 	return *this;
 }
 
-Image& Image::grayscale_avg() {
-	if (channels < 3) {
-
-	}
-	else {
-		for (int i = 0; i < size; i += channels) {
-			int gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
-			memset(data + i, gray, 3);
-		}
-	}
-	return *this;
-}
-
-Image& Image::create(const char* filename) {
-	if (read(filename)) {
-		size = w * h * channels;
-	}
-	else {
-
-	}
-	return *this;
-}
-
 Image& Image::crop(u16 cx, u16 cy, u16 cw, u16 ch) {
 	size = cw * ch * channels;
 	u8* croppedImage = new u8[size];
@@ -190,6 +161,12 @@ Image& Image::crop(u16 cx, u16 cy, u16 cw, u16 ch) {
 	return *this;
 }
 
+Image& Image::crop(CropInfo ci) {
+	crop(ci.cx, ci.cy, ci.ch, ci.cw);
+
+	return *this;
+}
+
 Image Image::produceCrop(u16 cx, u16 cy, u16 cw, u16 ch) {
 	Image cropped(cw, ch, channels);
 
@@ -204,41 +181,222 @@ Image Image::produceCrop(u16 cx, u16 cy, u16 cw, u16 ch) {
 	return cropped;
 }
 
-void Image::produceCropImage(u16 cx, u16 cy, u16 cw, u16 ch, Image* img) {
-	img->w = cw;
-	img->h = ch;
-	img->channels = channels;
-	img->size = channels * cw * ch;
-
-	delete[] img->data;
-	img->data = new u8[img->size];
-	memset(img->data, 0, size);
-
-	for (u16 y = 0; y < ch; ++y) {
-
-		if (y + cy >= h) break;
-
-		for (u16 x = 0; x < cw; ++x) {
-			if (x + cx >= w) break;
-			memcpy(&img->data[(x + y * cw) * channels], &data[(x + cx + (y + cy) * w) * channels], channels);
-		}
-	}
+Image Image::produceCrop(CropInfo ci) {
+	return produceCrop(ci.cx, ci.cy, ci.cw, ci.ch);
 }
 
-Image& Image::copy(Image img) {
-	w = img.w;
-	h = img.h;
-	channels = img.channels;
-	size = w * h * channels;
+
+Image& Image::combineTR(Image img) {
+	u8 tempc = max(channels, img.channels);
+	u16 tempw = (w + img.w);
+	u16 temph = max(h, img.h);
+
+	u8* combined = new u8[tempw * temph * tempc];
+	memset(combined, 0, sizeof(combined));
+
+	this->convertChannels(tempc);
+	img.convertChannels(tempc);
+
+	for (int y = 0; y < temph; y++) {
+		if (y < h) { memcpy(&combined[y * tempw * tempc], &data[y * w * tempc], w * tempc); }
+
+		if (y < img.h) { memcpy(&combined[y * tempw * tempc + w * tempc], &img.data[y * img.w * tempc], img.w * tempc); }
+	}
+
 
 	delete[] data;
-	data = new u8[size];
+	data = combined;
+	combined = nullptr;
 
-	memset(data, 0, size);
-	memcpy(&data, &img.data, size);
+	w = tempw, h = temph, channels = tempc;
+	size = w * h * channels;
 
 	return *this;
 }
 
+Image& Image::combineBL(Image img) {
+	u8 tempc = max(channels, img.channels);
+	u16 temph = (h + img.h);
+	u16 tempw = max(w, img.w);
 
+	u8* combined = new u8[tempw * temph * tempc];
+	memset(combined, 0, sizeof(combined));
+
+	this->convertChannels(tempc);
+	img.convertChannels(tempc);
+
+
+	for (int y = 0; y < temph; y++) {
+		if (y < h) { memcpy(&combined[y * tempw * tempc], &data[y * w * tempc], w * tempc); }
+		else if (y >= h) { memcpy(&combined[y * tempw * tempc], &img.data[(y - h) * img.w * tempc], img.w * tempc); }
+	}
+
+
+	delete[] data;
+	data = combined;
+	combined = nullptr;
+
+	w = tempw, h = temph, channels = tempc;
+	size = w * h * channels;
+
+	return *this;
+}
+
+Image& Image::grayscale_avg() {
+	if (channels < 3) {
+
+	}
+	else {
+		for (int i = 0; i < size; i += channels) {
+			int gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
+			memset(data + i, gray, 3);
+		}
+	}
+	return *this;
+}
+
+Image& Image::convertChannels(u8 channels) {
+	if (this->channels == channels) return *this;
+
+	u8* convert = new u8[w * h * channels];
+
+
+	//looking for better method
+	{
+		switch (this->channels) {
+
+		case 1: {
+			switch (channels) {
+
+			case 2: {
+				for (int i = 0; i < w * h; i++) {
+					memcpy(&convert[i * channels], &data[i * this->channels], 1);
+					memset(&convert[i * channels + 1], 0, 1);
+				}
+			} break;
+
+			case 3: {
+				for (int i = 0; i < w * h; i++) {
+					memcpy(&convert[i * channels], &data[i * this->channels], 1);
+					memcpy(&convert[i * channels + 1], &data[i * this->channels], 1);
+					memcpy(&convert[i * channels + 2], &data[i * this->channels], 1);
+				}
+			} break;
+			case 4: {
+				for (int i = 0; i < w * h; i++) {
+					memcpy(&convert[i * channels], &data[i * this->channels], 1);
+					memcpy(&convert[i * channels + 1], &data[i * this->channels], 1);
+					memcpy(&convert[i * channels + 2], &data[i * this->channels], 1);
+					memset(&convert[i * channels + 3], 0, 1);
+				}
+			} break;
+
+			}
+		} break;
+
+		case 2: {
+
+			switch (channels) {
+
+			case 1: {
+				for (int i = 0; i < w * h; i++) { memcpy(&convert[i * channels], &data[i * this->channels], 1); }
+			} break;
+
+			case 3: {
+				for (int i = 0; i < w * h; i++) {
+					memcpy(&convert[i * channels], &data[i * this->channels], 1);
+					memcpy(&convert[i * channels + 1], &data[i * this->channels], 1);
+					memcpy(&convert[i * channels + 2], &data[i * this->channels], 1);
+				}
+			} break;
+
+			case 4: {
+				for (int i = 0; i < w * h; i++) {
+					memcpy(&convert[i * channels], &data[i * this->channels], 1);
+					memcpy(&convert[i * channels + 1], &data[i * this->channels], 1);
+					memcpy(&convert[i * channels + 2], &data[i * this->channels], 1);
+
+					memcpy(&convert[i * channels + 3], &data[i * this->channels + 1], 1);
+				}
+			} break;
+
+			}
+
+		} break;
+
+		case 3: {
+
+			switch (channels) {
+
+			case 1: {
+				for (int i = 0; i < w * h; i++) {
+					int gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
+					convert[i * channels] = gray;
+				}
+			} break;
+			case 2: {
+				for (int i = 0; i < w * h; i++) {
+					int gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
+					convert[i * channels] = gray;
+					memset(&convert[i * channels + 1], 0, 1);
+				}
+			} break;
+
+			case 4: {
+				for (int i = 0; i < w * h; i++) {
+					memcpy(&convert[i * channels], &data[i * this->channels], 3);
+					memset(&convert[i * channels + 3], 255, 1);
+				}
+			} break;
+
+			}
+
+
+
+		} break;
+
+		case 4: {
+
+			switch (channels) {
+
+			case 1: {
+				for (int i = 0; i < w * h; i++) {
+					int gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
+					convert[i * channels] = gray;
+				}
+			} break;
+
+			case 2: {
+				for (int i = 0; i < w * h; i++) {
+					int gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
+					convert[i * channels] = gray;
+
+					memcpy(&convert[i * channels + 1], &data[i * this->channels + 3], 1);
+
+				}
+			} break;
+
+			case 3: {
+				for (int i = 0; i < w * h; i++) {
+					memcpy(&convert[i * channels], &data[i * this->channels], 3);
+				}
+			} break;
+			}
+
+
+
+		} break;
+
+		}
+	}
+
+	size = w * h * channels;
+	this->channels = channels;
+
+	delete[] data;
+	data = convert;
+	convert = nullptr;
+
+	return *this;
+}
 

@@ -10,7 +10,6 @@ void loop() {
 }
 
 int main() {
-
 	EngineBase::run(init, loop);
 
 	return 0;

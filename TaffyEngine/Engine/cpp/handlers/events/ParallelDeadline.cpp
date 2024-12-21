@@ -9,7 +9,7 @@ Runs until deadline event done, then all events will cancel (also means interrup
 */
 ParallelDeadline::ParallelDeadline() {}
 ParallelDeadline::ParallelDeadline(Event* deadline, std::initializer_list<Event*> events) {
-	this->deadline == deadline;
+	this->deadline = deadline;
 	addRequirements(deadline->getRequirements());
 	addEvents(events);
 }

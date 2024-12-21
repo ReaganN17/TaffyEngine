@@ -39,16 +39,16 @@ public:
 	//dont use any of lambdas - still figuring it out
 	ParallelEvent* alongWith(std::initializer_list<Event*> events);
 	SequentialEvent* andThen(std::initializer_list<Event*> events);
-	SequentialEvent* andThen(void (*run)(), std::initializer_list<Object*> requirements);
+	SequentialEvent* andThen(std::function<void()> run, std::initializer_list<Object*> requirements);
 	SequentialEvent* beforeStarting(Event* before);
-	SequentialEvent* beforeStarting(void (*before)(), std::initializer_list<Object*> requirements);
+	SequentialEvent* beforeStarting(std::function<void()> before, std::initializer_list<Object*> requirements);
 	ParallelDeadline* deadlineWith(std::initializer_list<Event*> events);
-	ConditionalEvent* onlyIf(bool (*condition)());
-	ParallelRace* onlyWhile(bool (*condition)());
+	ConditionalEvent* onlyIf(std::function<bool()> condition);
+	ParallelRace* onlyWhile(std::function<bool()> condition);
 	ParallelRace* raceWith(std::initializer_list<Event*> parallel);
 	RepeatEvent* repeatedly();
-	ConditionalEvent* unless(bool (*condition)());
-	ParallelRace* until(bool (*condition)());
+	ConditionalEvent* unless(std::function<bool()> condition);
+	ParallelRace* until(std::function<bool()> condition);
 	ParallelRace* withTimeout(long ms);
 
 	std::vector<Object*>& getRequirements();

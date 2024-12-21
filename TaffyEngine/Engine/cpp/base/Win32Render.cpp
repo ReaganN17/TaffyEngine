@@ -5,8 +5,6 @@ int Win32Render::screenOffset, Win32Render::yOffset, Win32Render::xOffset;
 float Win32Render::render_scale, Win32Render::aspect_ratio = 16 / 9.f;
 int Win32Render::coord_height = 540, Win32Render::coord_width;
 void* Win32Render::memory;
-int Win32Render::camera_x = 0, Win32Render::camera_y = 0;
-float Win32Render::camera_zoom = 0;
 
 void Win32Render::updateValues() {
 	coord_width = coord_height * aspect_ratio;
@@ -78,13 +76,12 @@ void Win32Render::renderFillerBG() {
 }
 
 //render rectangle
-void Win32Render::renderRect(float x, float y, float w, float h, u32 color, Shader shade, bool camera = false) {
-	if (camera) {
-		x += camera_x * camera_zoom;
-		y += camera_y * camera_zoom;
-		w *= camera_zoom;
-		h *= camera_zoom;
-	}
+void Win32Render::renderRect(float x, float y, float w, float h, u32 color, Shader& shade, Camera* camera = &Camera::default_camera) {
+	if (!camera->isActivated()) return;
+	x += camera->getX() * camera->getZoom();
+	y += camera->getY() * camera->getZoom();
+	w *= camera->getZoom();
+	h *= camera->getZoom();
 
 	int size_x = w * render_scale;
 	int size_y = h * render_scale;
@@ -106,13 +103,12 @@ void Win32Render::renderRect(float x, float y, float w, float h, u32 color, Shad
 	}
 }
 
-void Win32Render::renderImage(Image& img, float x, float y, float w, float h, Shader shade, bool camera = false) {
-	if (camera) {
-		x += camera_x * camera_zoom;
-		y += camera_y * camera_zoom;
-		w *= camera_zoom;
-		h *= camera_zoom;
-	}
+void Win32Render::renderImage(Image& img, float x, float y, float w, float h, Shader& shade, Camera* camera = &Camera::default_camera) {
+	if (!camera->isActivated()) return;
+	x += camera->getX() * camera->getZoom();
+	y += camera->getY() * camera->getZoom();
+	w *= camera->getZoom();
+	h *= camera->getZoom();
 
 	int size_x = w * render_scale;
 	int size_y = h * render_scale;
@@ -168,6 +164,7 @@ void Win32Render::draw_number(int number, float x, float y, float size) {
 void Win32Render::draw_digit(int digit, float x, float y, float size) {
 	u32 color = 0xff0000;
 	Shader alpha(255, 0, 0);
+
 	digit %= 10;
 	if (digit != 1) renderRect(x - size * 0.2, y + size * 0.4, size * 0.2, size * 0.2, color, alpha);
 	if (digit != 1 && digit != 4) renderRect(x, y + size * 0.4, size * 0.2, size * 0.2, color, alpha);

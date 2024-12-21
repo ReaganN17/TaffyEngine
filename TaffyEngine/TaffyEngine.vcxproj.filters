@@ -144,6 +144,9 @@
     <ClCompile Include="Engine\cpp\utils\STBI_image.cpp">
       <Filter>Engine\cpp\utils</Filter>
     </ClCompile>
+    <ClCompile Include="GameExample.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\include\handlers\events\ConditionalEvent.h">

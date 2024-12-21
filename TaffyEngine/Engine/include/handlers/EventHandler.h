@@ -2,11 +2,21 @@
 
 #include "events/EventHeader.h"
 #include "objects/Objects.h"
+#include "../base/EngineBase.h"
 
 struct EventHandler {
+
+	friend Event;
+
 private:
 	
 	static EventHandler instance;
+
+	bool addEvent(Event* event);
+	bool removeEvent(Event* event);
+	bool checkRequirements(std::vector<Object*> objects);
+
+	void cancelRequirements(std::vector<Object*> objects);
 public:
 	std::vector<Event*> events;
 
@@ -14,12 +24,7 @@ public:
 
 	void scheduleEvent(Event* event);
 
-	bool addEvent(Event* event);
+	
 	void runEvents();
 	void clearEvents();
-	bool removeEvent(Event* event);
-
-	bool checkRequirements(std::vector<Object*> objects);
-
-	void cancelRequirements(std::vector<Object*> objects);
 };

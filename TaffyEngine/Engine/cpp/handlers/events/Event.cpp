@@ -84,23 +84,23 @@ ParallelEvent* Event::alongWith(std::initializer_list<Event*> events) {
 SequentialEvent* Event::andThen(std::initializer_list<Event*> events) {
 	return new SequentialEvent(this, events);
 }
-SequentialEvent* Event::andThen(void (*run)(), std::initializer_list<Object*> requirements) {
+SequentialEvent* Event::andThen(std::function<void()> run, std::initializer_list<Object*> requirements) {
 	return new SequentialEvent({ this, new InstantEvent(run, requirements) });
 }
 SequentialEvent* Event::beforeStarting(Event* before) {
 	return new SequentialEvent({ before, this });
 }
-SequentialEvent* Event::beforeStarting(void (*before)(), std::initializer_list<Object*> requirements) {
+SequentialEvent* Event::beforeStarting(std::function<void()> before, std::initializer_list<Object*> requirements) {
 	return new SequentialEvent({ new InstantEvent(before, requirements), this});
 }
 ParallelDeadline* Event::deadlineWith(std::initializer_list<Event*> events) {
 	return new ParallelDeadline(this, events);
 }
-ConditionalEvent* Event::onlyIf(bool (*condition)()) {
+ConditionalEvent* Event::onlyIf(std::function<bool()> condition) {
 	return new ConditionalEvent(this, new WaitUntil((long)0), condition);
 }
-ParallelRace* Event::onlyWhile(bool (*condition)()) {
-	return new ParallelRace({ this, new WaitUntil(condition) });
+ParallelRace* Event::onlyWhile(std::function<bool()> condition) {
+	return new ParallelRace({ this, new WaitUntil([condition]() {return !condition(); }) });
 }
 ParallelRace* Event::raceWith(std::initializer_list<Event*> parallel) {
 	return new ParallelRace(this, parallel);
@@ -108,11 +108,11 @@ ParallelRace* Event::raceWith(std::initializer_list<Event*> parallel) {
 RepeatEvent* Event::repeatedly() {
 	return new RepeatEvent(this);
 }
-ConditionalEvent* Event::unless(bool (*condition)()) {
+ConditionalEvent* Event::unless(std::function<bool()> condition) {
 	return new ConditionalEvent(new WaitUntil((long)0), this, condition);
 }
-ParallelRace* Event::until(bool (*condition)()) {
-	return new ParallelRace({ this, new WaitUntil([]() {return false; }) });//place holder - looking into lambdas a bit more
+ParallelRace* Event::until(std::function<bool()> condition) {
+	return new ParallelRace({ this, new WaitUntil(condition) });//place holder - looking into lambdas a bit more
 }
 ParallelRace* Event::withTimeout(long ms) {
 	return new ParallelRace({ this, new WaitUntil(ms) });

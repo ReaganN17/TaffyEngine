@@ -2,10 +2,14 @@
 
 struct Camera final{
 private:
-	float x = 0, y = 0, zoom = 0;
-	bool activated = false;
+	float x = 0, y = 0, zoom = 1;
+	bool activated = true;
 public:
+	static Camera default_camera;
+
 	Camera();
+	Camera(float x, float y);
+	Camera(float x, float y, float z);
 	void setPos(float x, float y);
 	void activate();
 	void deactivate();

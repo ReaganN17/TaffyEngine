@@ -5,7 +5,7 @@ ConditionalEvent
 
 this or that given a boolean method
 */
-ConditionalEvent::ConditionalEvent(Event* onTrue, Event* onFalse, bool(*condition)()) {
+ConditionalEvent::ConditionalEvent(Event* onTrue, Event* onFalse, std::function<bool()> condition) {
 	on_true = onTrue;
 	on_false = onFalse;
 	this->condition = condition;
@@ -18,10 +18,8 @@ void ConditionalEvent::init() {
 	setBool(condition());
 
 	if (getBool()) {
-		if (on_true != nullptr) {
-			on_true->init();
-			on_true->setRunning(true);
-		}
+		on_true->init();
+		on_true->setRunning(true);
 	}
 	else {
 		on_false->init();

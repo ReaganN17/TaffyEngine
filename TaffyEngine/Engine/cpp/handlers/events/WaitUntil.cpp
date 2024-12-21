@@ -13,7 +13,7 @@ WaitUntil::WaitUntil(long ms) {
 	time = ms;
 }
 
-WaitUntil::WaitUntil(bool (*condition)()) {
+WaitUntil::WaitUntil(std::function<bool()> condition) {
 	time = -1;
 	this->condition = condition;
 }
@@ -22,10 +22,10 @@ void WaitUntil::init() { start = GetTickCount(); }
 void WaitUntil::loop() {}
 void WaitUntil::end(bool interrupted) {}
 bool WaitUntil::isFinished() {
-	if (condition != nullptr) {
-		return !condition();
+	if (time < 0) {
+		return condition();
 	}
 	else {
-		return start + time < GetTickCount();
+		return (start + time) < GetTickCount();
 	}
 }

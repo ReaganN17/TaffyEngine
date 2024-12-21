@@ -7,8 +7,6 @@ namespace Win32Render {
 	extern int screenOffset, yOffset, xOffset;
 	extern float render_scale, aspect_ratio;
 	extern int coord_height, coord_width;
-	extern int camera_x, camera_y;
-	extern float camera_zoom;
 
 	extern void* memory;
 
@@ -22,8 +20,8 @@ namespace Win32Render {
 	void renderFillerBG();
 
 	//renders a rectangle
-	void renderRect(float x, float y, float w, float h, u32 color, Shader shade, bool camera);
-	void renderImage(Image& img, float x, float y, float w, float h, Shader shade, bool camera);
+	void renderRect(float x, float y, float w, float h, u32 color, Shader& shade, Camera* camera);
+	void renderImage(Image& img, float x, float y, float w, float h, Shader& shade, Camera* camera);
 
 	//used for debugging, will delete soon
 	void draw_number(int number, float x, float y, float size);

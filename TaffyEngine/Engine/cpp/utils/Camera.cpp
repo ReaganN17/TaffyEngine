@@ -1,6 +1,12 @@
 #include "../../include/utils/Utils.h"
 
+Camera Camera::default_camera;
+
 Camera::Camera() {}
+
+Camera::Camera(float x, float y) : x(x), y(y) {}
+
+Camera::Camera(float x, float y, float zoom) : x(x), y(y), zoom(zoom) {}
 
 void Camera::setPos(float x, float y) {
 	this->x = x;

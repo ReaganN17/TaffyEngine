@@ -1,16 +1,11 @@
 #include "Engine/include/TaffyEngine.h"
 
+#include "GameExample.cpp"
 
-void init() {
-
-}
-
-void loop() {
-
-}
+GameExample game;
 
 int main() {
-	EngineBase::run(init, loop);
+	EngineBase::run([]() {game.init(); }, []() {game.play(); });
 
 	return 0;
 }

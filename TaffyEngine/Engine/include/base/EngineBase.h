@@ -1,10 +1,10 @@
 #pragma once
 
 namespace EngineBase {
-    extern void (*init)();
-    extern void (*loop)();
+    extern std::function<void()> init_outside;
+    extern std::function<void()> loop_outside;
 
     void initialize();
     void execute();
-    void run(void (*init)(), void (*loop)());
+    void run(std::function<void()> init, std::function<void()> loop);
 }

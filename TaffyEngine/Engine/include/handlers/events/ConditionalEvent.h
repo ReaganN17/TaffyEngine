@@ -4,12 +4,12 @@
 
 struct ConditionalEvent final : Event {
 public:
-	ConditionalEvent(Event* onTrue, Event* onFalse, bool(*condition)());
+	ConditionalEvent(Event* onTrue, Event* onFalse, std::function<bool()> condition);
 protected:
 private:
 	Event* on_true = nullptr;
 	Event* on_false = nullptr;
-	bool(*condition)() = nullptr;
+	std::function<bool()> condition = []() {return false; };
 
 	void init();
 	void loop();

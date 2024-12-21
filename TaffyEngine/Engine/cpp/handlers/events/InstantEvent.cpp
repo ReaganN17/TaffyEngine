@@ -5,6 +5,6 @@ InstantEvent
 method that runs on init then ends instantly
 */
 
-InstantEvent::InstantEvent(void (*init)(), std::initializer_list<Object*> requirements)
-	: FunctionalEvent(init, nullptr, nullptr, []() {return true; }, requirements) {
+InstantEvent::InstantEvent(std::function<void()> init, std::initializer_list<Object*> requirements)
+	: FunctionalEvent(init, []() {}, []() {}, []() {return true; }, requirements) {
 }

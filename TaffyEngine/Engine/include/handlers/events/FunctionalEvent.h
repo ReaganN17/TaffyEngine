@@ -2,12 +2,12 @@
 #include "EventHeader.h"
 struct FunctionalEvent : Event {
 public:
-	FunctionalEvent(void (*init)(), void (*loop)(), void (*end)(), bool(*isFinshed)(), std::initializer_list<Object*> requirements);
+	FunctionalEvent(std::function<void()> init_lamb, std::function<void()> loop_lamb, std::function<void()> end_lamb, std::function<bool()> bool_lamb, std::initializer_list<Object*> requirements);
 private:
-	void (*init_lamb)() = nullptr;
-	void (*loop_lamb)() = nullptr;
-	void (*end_lamb)() = nullptr;
-	bool (*isFinished_lamb)() = nullptr;
+	std::function<void()> init_lamb = []() {};
+	std::function<void()> loop_lamb = []() {};
+	std::function<void()> end_lamb = []() {};
+	std::function<bool()> bool_lamb = []() {return false; };
 
 	void init();
 	void loop();

@@ -9,7 +9,6 @@ Object::Object(float x, float y, u8 z) : x(x), y(y) {
 	ObjectHandler::getInstance().addObject(this, z);
 	ob.layer = z;
 	ob.sprite = false;
-	ob.camera = false;
 	ob.render = false;
 	ob.instance = true;
 	color = 0x000000;
@@ -27,7 +26,6 @@ Object::Object(float x, float y, const char* sprite, u8 z) : x(x), y(y) {
 	ObjectHandler::getInstance().addObject(this, z);
 	ob.layer = z;
 	ob.sprite = this->sprite != nullptr;
-	ob.camera = false;
 	ob.render = true;
 	ob.instance = true;
 	color = 0x000000;
@@ -43,7 +41,6 @@ Object::Object(float x, float y, float w, float h, u32 c, u8 z) : x(x), y(y), w(
 	ObjectHandler::getInstance().addObject(this, z);
 	ob.layer = z;
 	ob.sprite = false;
-	ob.camera = false;
 	ob.render = true;
 	ob.instance = true;
 }
@@ -57,10 +54,10 @@ Object::~Object() {
 void Object::render() {
 	if (ob.render) {
 		if (ob.sprite) {
-			Win32Render::renderImage(sprite->sprite_image, x, y, w, h, shader, ob.camera);
+			Win32Render::renderImage(sprite->sprite_image, x, y, w, h, shader, camera);
 		}
 		else {
-			Win32Render::renderRect(x, y, w, h, color, shader, ob.camera);
+			Win32Render::renderRect(x, y, w, h, color, shader, camera);
 		}
 	}
 }
@@ -80,10 +77,10 @@ float Object::getY() { return y; }
 float Object::getW() { return w; }
 float Object::getH() { return h; }
 
-void Object::setCamera(bool cam) { ob.camera = cam; }
 void Object::hide(bool hide) { ob.render = hide; }
 void Object::setShader(u8 opac, u32 color, u8 scale) { setShader(opac); setShader(color, scale); }
 void Object::setShader(u32 color, u8 scale) { shader.shade_color = color; shader.shade_scale = scale; }
 void Object::setShader(u8 opac) { shader.opacity = opac; }
+void Object::connectCamera(Camera& camera) { this->camera = &camera; }
 
 Sprite* Object::getSprite() { return sprite; }

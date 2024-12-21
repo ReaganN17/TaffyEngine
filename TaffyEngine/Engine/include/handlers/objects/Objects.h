@@ -13,9 +13,8 @@ union ObjectByte
 		bool render : 1;
 		bool instance : 1;
 		bool sprite : 1;
-		bool camera : 1;
 
-		bool space : 1;
+		u8 space : 2;
 	};
 };
 
@@ -30,6 +29,7 @@ private:
 	u32 color = 0x000000;
 	ObjectByte ob;
 	Shader shader;
+	Camera* camera = &Camera::default_camera;
 
 	float x, y, w = -1, h = -1;
 
@@ -56,11 +56,11 @@ public:
 	float getW();
 	float getH();
 
-	void setCamera(bool cam);
 	void hide(bool hide);
 	void setShader(u8 opac, u32 color, u8 scale);
 	void setShader(u32 color, u8 scale);
 	void setShader(u8 opac);
+	void connectCamera(Camera& camera);
 
 	Sprite* getSprite();
 };

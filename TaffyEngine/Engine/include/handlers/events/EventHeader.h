@@ -14,7 +14,6 @@ struct RunEvent;
 
 #include "Event.h"
 #include "ConditionalEvent.h"
-#include "FunctionalEvent.h"
 #include "ParallelDeadline.h"
 #include "ParallelEvent.h"
 #include "ParallelRace.h"

@@ -28,15 +28,19 @@ Sprite* SpriteHandler::getSprite(const char* sprite_name) {
 	return sprites[sprite_name];
 }
 
+//TODO: figure out how to not do this jank; possible combining objects into one list, etc
 void SpriteHandler::handleSprites() {
 	for (auto sprite : sprites) {
+		bool double_break = false;
 		for (auto it : ObjectHandler::getInstance().objects) {
 			for (auto object : *it) {
 				if (object->getSprite() == sprite.second) {
+					double_break = true;
 					break;
 				}
-				sprite.second->unload();
 			}
+			if (double_break) break;
 		}
+		if (!double_break) sprite.second->unload();
 	}
 }

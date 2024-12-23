@@ -19,9 +19,6 @@ void Event::schedule() {
 		eb.running = true;
 		init();
 	}
-	else {
-		destruct();
-	}
 }
 
 //overrides interruptability
@@ -64,9 +61,6 @@ std::vector<Object*>& Event::getRequirements() {return requirements;}
 void Event::run() {
 	if (isFinished()) { kill(); }
 	loop();
-
-
-	
 }
 
 void Event::kill() {
@@ -112,7 +106,7 @@ ConditionalEvent* Event::unless(std::function<bool()> condition) {
 	return new ConditionalEvent(new WaitUntil((long)0), this, condition);
 }
 ParallelRace* Event::until(std::function<bool()> condition) {
-	return new ParallelRace({ this, new WaitUntil(condition) });//place holder - looking into lambdas a bit more
+	return new ParallelRace({ this, new WaitUntil(condition) });
 }
 ParallelRace* Event::withTimeout(long ms) {
 	return new ParallelRace({ this, new WaitUntil(ms) });

@@ -15,4 +15,5 @@
 #include "base/Win32Render.h"
 #include "base/Win32Window.h"
 
-
+#include "base/controls/Trigger.h"
+#include "base/controls/Controls.h"

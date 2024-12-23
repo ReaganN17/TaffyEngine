@@ -69,9 +69,6 @@
     <ClCompile Include="Engine\cpp\handlers\events\Event.cpp">
       <Filter>Engine\cpp\handler\events</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\events\FunctionalEvent.cpp">
-      <Filter>Engine\cpp\handler\events</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\cpp\handlers\events\InstantEvent.cpp">
       <Filter>Engine\cpp\handler\events</Filter>
     </ClCompile>
@@ -147,6 +144,12 @@
     <ClCompile Include="GameExample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\cpp\base\controls\Trigger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\cpp\base\controls\Controls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\include\handlers\events\ConditionalEvent.h">
@@ -156,9 +159,6 @@
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
     <ClInclude Include="Engine\include\handlers\events\EventHeader.h">
-      <Filter>Engine\include\handler\events</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\include\handlers\events\FunctionalEvent.h">
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
     <ClInclude Include="Engine\include\handlers\events\InstantEvent.h">
@@ -234,6 +234,12 @@
       <Filter>Engine\include</Filter>
     </ClInclude>
     <ClInclude Include="Engine\include\utils\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\include\base\controls\Trigger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\include\base\controls\Controls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

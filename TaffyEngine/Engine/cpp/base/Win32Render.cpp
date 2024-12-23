@@ -78,8 +78,8 @@ void Win32Render::renderFillerBG() {
 //render rectangle
 void Win32Render::renderRect(float x, float y, float w, float h, u32 color, Shader& shade, Camera* camera = &Camera::default_camera) {
 	if (!camera->isActivated()) return;
-	x += camera->getX() * camera->getZoom();
-	y += camera->getY() * camera->getZoom();
+	x = (x - camera->getX()) * camera->getZoom();
+	y = (y - camera->getY()) * camera->getZoom();
 	w *= camera->getZoom();
 	h *= camera->getZoom();
 
@@ -104,9 +104,9 @@ void Win32Render::renderRect(float x, float y, float w, float h, u32 color, Shad
 }
 
 void Win32Render::renderImage(Image& img, float x, float y, float w, float h, Shader& shade, Camera* camera = &Camera::default_camera) {
-	if (!camera->isActivated()) return;
-	x += camera->getX() * camera->getZoom();
-	y += camera->getY() * camera->getZoom();
+	if (!camera->isActivated() || img.data == NULL) return;
+	x = (x - camera->getX()) * camera->getZoom();
+	y = (y - camera->getY()) * camera->getZoom();
 	w *= camera->getZoom();
 	h *= camera->getZoom();
 
@@ -131,17 +131,8 @@ void Win32Render::renderImage(Image& img, float x, float y, float w, float h, Sh
 		for (int i = offsetTop; i < size_y - offsetBottom; i++) {
 			u32* pixel = (u32*)memory + x0 + offsetLeft + screenOffset + ((size_y - 1) - i + y0) * Win32Window::window_width;
 			for (int j = offsetLeft; j < size_x - offsetRight; j++) {
-				if (img.data == NULL) {
-					*pixel++;
-				}
-				else {
-					src = img.channels * ((int)(j / wscale) + img.w * (int)(i / hscale));
-
-					RGBA curPixel(img.data, src, img.channels);
-
-
-					*pixel++ = curPixel.shade(shade.shade_color, shade.shade_scale).toHex(*pixel, shade.opacity);
-				}
+				src = img.channels * ((int)(j / wscale) + img.w * (int)(i / hscale));
+				*pixel++ = RGBA(img.data, src, img.channels).shade(shade.shade_color, shade.shade_scale).toHex(*pixel, shade.opacity);
 			}
 		}
 	}

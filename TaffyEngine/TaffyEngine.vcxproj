@@ -127,6 +127,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\cpp\base\controls\Controls.cpp" />
+    <ClCompile Include="Engine\cpp\base\controls\Trigger.cpp" />
     <ClCompile Include="Engine\cpp\base\EngineBase.cpp" />
     <ClCompile Include="Engine\cpp\base\Input.cpp" />
     <ClCompile Include="Engine\cpp\base\Win32Render.cpp" />
@@ -134,7 +136,6 @@
     <ClCompile Include="Engine\cpp\handlers\EventHandler.cpp" />
     <ClCompile Include="Engine\cpp\handlers\events\ConditionalEvent.cpp" />
     <ClCompile Include="Engine\cpp\handlers\events\Event.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\events\FunctionalEvent.cpp" />
     <ClCompile Include="Engine\cpp\handlers\events\InstantEvent.cpp" />
     <ClCompile Include="Engine\cpp\handlers\events\ParallelDeadline.cpp" />
     <ClCompile Include="Engine\cpp\handlers\events\ParallelEvent.cpp" />
@@ -163,6 +164,8 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\include\base\controls\Controls.h" />
+    <ClInclude Include="Engine\include\base\controls\Trigger.h" />
     <ClInclude Include="Engine\include\base\EngineBase.h" />
     <ClInclude Include="Engine\include\base\Input.h" />
     <ClInclude Include="Engine\include\base\Win32Render.h" />
@@ -171,7 +174,6 @@
     <ClInclude Include="Engine\include\handlers\events\ConditionalEvent.h" />
     <ClInclude Include="Engine\include\handlers\events\Event.h" />
     <ClInclude Include="Engine\include\handlers\events\EventHeader.h" />
-    <ClInclude Include="Engine\include\handlers\events\FunctionalEvent.h" />
     <ClInclude Include="Engine\include\handlers\events\InstantEvent.h" />
     <ClInclude Include="Engine\include\handlers\events\ParallelDeadline.h" />
     <ClInclude Include="Engine\include\handlers\events\ParallelEvent.h" />

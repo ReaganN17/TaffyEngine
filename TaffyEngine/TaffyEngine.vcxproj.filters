@@ -261,4 +261,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Engine\TODO.txt">
+      <Filter>Engine</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

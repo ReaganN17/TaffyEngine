@@ -3,8 +3,6 @@
 std::function<void()> EngineBase::init_outside = []() {};
 std::function<void()> EngineBase::loop_outside = []() {};
 
-
-
 void EngineBase::initialize() {
     Win32Render::updateValues();
 

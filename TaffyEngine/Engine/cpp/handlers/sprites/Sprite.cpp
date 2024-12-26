@@ -1,7 +1,5 @@
 #include "../../../include/TaffyEngine.h"
 
-//TODO: add deconstructor and prevent sprite map value replacement
-
 Sprite::Sprite(const char* sprite) {
 	sprite_sheet = sprite;
 	ci = CropInfo(0, 0, -1, -1);

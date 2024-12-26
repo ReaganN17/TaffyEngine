@@ -1,0 +1,71 @@
+12/26
+
+General
+- Make clear difference in struct and class (I think i mixed them up a bit already oops)
+- Add ButtonObject class
+
+Controls
+- Make it cleaner ig? (it's sorta annoying to add a trigger)
+- Maybe allow it to be inheritted for keyboard? (steps away from broadness)
+
+Triggers
+- Add boolean/condition properties, expand from buttons
+
+Does it really need to be namespaced? (consider structs with static methods)
+- EngineBase
+- Input
+- Win32Render
+- Win32Window
+
+Does it need to have getInstance? (again consider structs with static methods)
+- EventHandler
+- ObjectHandler
+- SpriteHandler
+
+Win32Window and Win32Render
+- Organize Variables
+
+Object and ObjectHandler
+- consider separting addObject from object constructor
+
+Sprite
+- add deconstructor and prevent sprite map value replacement
+- actual load check (ie image.data == NULL) instead of abstract boolean
+
+EventHandler and Event
+- test checkRequirements and cancelRequirements (are they really necessary?)
+
+RGBA
+- (low priority) optimize calculations
+
+Timer
+- (low priority) add more potentially useful features (ie lap, pause, accumlation)
+
+Add documentary/comments
+ConditionalEvent
+Event
+EventHader
+InstantEvent
+ParallelDeadline
+ParallelEvent
+ParallelRace
+RepeatEvent
+RunEvent
+SequentialEvent
+WaitUntil
+Object
+Sprite
+EventHandler
+ObjectHandler
+SpriteHandler
+Camera
+CropInfo
+Image
+Math
+RGBA
+Shader
+Timer
+Utils
+TaffyEngine
+
+

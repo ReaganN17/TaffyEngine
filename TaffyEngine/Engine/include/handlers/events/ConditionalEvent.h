@@ -4,8 +4,9 @@
 
 struct ConditionalEvent final : Event {
 public:
+
 	ConditionalEvent(Event* onTrue, Event* onFalse, std::function<bool()> condition);
-protected:
+
 private:
 	Event* on_true = nullptr;
 	Event* on_false = nullptr;

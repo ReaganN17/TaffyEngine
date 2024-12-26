@@ -1,8 +1,6 @@
 #include "../../../include/base/controls/Trigger.h"
 #include "../../../include/base/Input.h"
 
-//TODO make triggers boolean based and not just button based
-
 void Trigger::update() {
 	switch (type) {
 	case ON_TRUE: {

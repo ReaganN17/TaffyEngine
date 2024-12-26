@@ -1,7 +1,5 @@
 #include "../../../include/TaffyEngine.h"
 
-//TODO: maybe separate addobject to handler from constructor
-
 Object::Object() {
 	x = 0;
 	y = 0;

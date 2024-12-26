@@ -215,6 +215,9 @@
     <ClInclude Include="Engine\include\utils\Timer.h" />
     <ClInclude Include="Engine\include\utils\Utils.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Engine\TODO.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

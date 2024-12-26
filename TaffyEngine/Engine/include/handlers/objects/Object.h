@@ -3,23 +3,13 @@
 #include "../../utils/Utils.h"
 #include "../sprites/Sprites.h"
 
-union ObjectByte
-{
-	unsigned char byte = 0;
-
-	struct
-	{
-		u8 layer : 3;
-		bool render : 1;
-		bool instance : 1;
-		bool sprite : 1;
-
-		u8 space : 2;
-	};
-};
-
 enum zLayer :u8 {
-	FARBACK, BACK, MIDDLE, FRONT, FARFRONT, UNRENDER
+	Z_FARBACK, 
+	Z_BACK, 
+	Z_MIDDLE, 
+	Z_FRONT, 
+	Z_FARFRONT, 
+	Z_NORENDER
 };
 
 struct Object {
@@ -27,23 +17,25 @@ struct Object {
 private:
 	Sprite* sprite = nullptr;
 	u32 color = 0x000000;
-	ObjectByte ob;
+	zLayer z_layer = Z_NORENDER;
+	bool hidden = false;
+	bool instance = false;
 	Shader shader;
 	Camera* camera = &Camera::default_camera;
 
-	float x, y, w = -1, h = -1;
+	float x = 0, y = 0, w = 0, h = 0;
 
 public:
 	Object();
-	Object(float x, float y, u8 z);
-	Object(float x, float y, float w, float h, u8 z);
+	Object(float x, float y, zLayer z);
+	Object(float x, float y, float w, float h, zLayer z);
 
-	Object(float x, float y, const char* sprite, u8 z);
-	Object(float x, float y, float w, float h, const char* sprite, u8 z);
+	Object(float x, float y, const char* sprite, zLayer z);
+	Object(float x, float y, float w, float h, const char* sprite, zLayer z);
 
-	Object(float x, float y, float w, float h, u32 c, u8 z);
+	Object(float x, float y, float w, float h, u32 c, zLayer z);
 
-	virtual ~Object();
+
 
 	virtual void render();
 	virtual void update();
@@ -63,6 +55,5 @@ public:
 	void connectCamera(Camera& camera);
 
 	Sprite* getSprite();
+	void setSprite(const char* sprite_name, bool sprite_dimensions = false);
 };
-
-

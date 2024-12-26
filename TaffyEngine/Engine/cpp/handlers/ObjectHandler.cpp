@@ -7,7 +7,7 @@ ObjectHandler& ObjectHandler::getInstance() {
 }
 
 void ObjectHandler::renderAllObjects() {
-	for (auto it : objects) {
+	for (auto it : render_objects) {
 		for (auto obj : (*it)) {
 			obj->render();
 		}

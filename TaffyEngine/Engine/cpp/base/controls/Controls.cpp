@@ -2,6 +2,8 @@
 
 Controls Controls::instance;
 
+Controls::Controls() {}
+
 Controls& Controls::getInstance() { return instance; }
 
 void Controls::initialize() {

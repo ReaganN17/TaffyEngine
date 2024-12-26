@@ -155,7 +155,26 @@
     <ClCompile Include="Engine\cpp\utils\RGBA.cpp" />
     <ClCompile Include="Engine\cpp\utils\Shader.cpp" />
     <ClCompile Include="Engine\cpp\utils\STBI_image.cpp" />
+    <ClCompile Include="Engine\cpp\utils\Timer.cpp" />
     <ClCompile Include="GameExample.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GameExample\GameLobby.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GameExample\LogoIntro.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GameExample\MoveBackground.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -183,7 +202,7 @@
     <ClInclude Include="Engine\include\handlers\events\SequentialEvent.h" />
     <ClInclude Include="Engine\include\handlers\events\WaitUntil.h" />
     <ClInclude Include="Engine\include\handlers\ObjectHandler.h" />
-    <ClInclude Include="Engine\include\handlers\objects\Objects.h" />
+    <ClInclude Include="Engine\include\handlers\objects\Object.h" />
     <ClInclude Include="Engine\include\handlers\SpriteHandler.h" />
     <ClInclude Include="Engine\include\handlers\sprites\Sprites.h" />
     <ClInclude Include="Engine\include\TaffyEngine.h" />
@@ -193,6 +212,7 @@
     <ClInclude Include="Engine\include\utils\Math.h" />
     <ClInclude Include="Engine\include\utils\RGBA.h" />
     <ClInclude Include="Engine\include\utils\Shader.h" />
+    <ClInclude Include="Engine\include\utils\Timer.h" />
     <ClInclude Include="Engine\include\utils\Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

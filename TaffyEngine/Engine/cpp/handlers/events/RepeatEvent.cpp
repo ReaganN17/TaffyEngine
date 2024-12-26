@@ -23,7 +23,7 @@ void RepeatEvent::loop() {
 	event->loop();
 
 	if (event->isFinished()) {
-		event->end(true);
+		event->end(false);
 		event->init();
 	}
 }

@@ -10,18 +10,53 @@ namespace Win32Render {
 
 	extern void* memory;
 
+	//Update screen values upon window creation and window movement
 	void updateValues();
-	//clears ENTIRE screen, used for when window size changes
-	void clearEntireScreen(u32 color);
-	void clearScreen(u32 color);
-	void renderStaticBG(Image& img, bool stretch, Shader shade);
 
-	//render current BG that i use
+	/**
+	* clears ENTIRE screen, used for when window size changes
+	* 
+	* @param color to clear screen with
+	*/
+	void clearEntireScreen(u32 color);
+
+	/**
+	* clears graphic screen (based on aspect ratio)
+	*
+	* @param color to clear screen with
+	*/
+	void clearScreen(u32 color);
+
+	/**
+	* Renders an image to the corners of the screen; used for backgrounds
+	* 
+	* @param Image to render
+	* @param Image shader
+	*/
+	void renderStaticBG(Image& img, Shader shade);
+
+	//Renders a filler BG I use; delete soon
 	void renderFillerBG();
 
-	//renders a rectangle
-	void renderRect(float x, float y, float w, float h, u32 color, Shader& shade, Camera* camera);
-	void renderImage(Image& img, float x, float y, float w, float h, Shader& shade, Camera* camera);
+	/**
+	* Renders a basic rectangle
+	* 
+	* @param x, y Location
+	* @param w, h Dimensions
+	* @param Color of Rectangle
+	* @param Shader of Rectangle
+	*/
+	void renderRect(float x, float y, float w, float h, u32 color, Shader& shade);
+
+	/**
+	* Renders an Image
+	*
+	* @param Image to rdner
+	* @param x, y Location
+	* @param w, h Dimensions
+	* @param Shader of Rectangle
+	*/
+	void renderImage(Image& img, float x, float y, float w, float h, Shader& shade);
 
 	//used for debugging, will delete soon
 	void draw_number(int number, float x, float y, float size);

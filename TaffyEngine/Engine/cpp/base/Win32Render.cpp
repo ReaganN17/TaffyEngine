@@ -17,7 +17,6 @@ void Win32Render::updateValues() {
 
 }
 
-//clears ENTIRE screen, used for when window size changes
 void Win32Render::clearEntireScreen(u32 color) {
 	u32* pixel = (u32*)memory;
 	for (int y = 0; y < Win32Window::window_height; y++) {
@@ -27,7 +26,6 @@ void Win32Render::clearEntireScreen(u32 color) {
 	}
 }
 
-//clears screen, used for filler
 void Win32Render::clearScreen(u32 color) {
 	for (int y = 0; y < screenHeight; y++) {
 		u32* pixel = (u32*)memory + screenOffset + y * Win32Window::window_width;
@@ -37,11 +35,7 @@ void Win32Render::clearScreen(u32 color) {
 	}
 }
 
-
-//no matter the size will stretch the image to the boundaries
-//image needs to be cropped or sized beforehand
-
-void Win32Render::renderStaticBG(Image& img, bool stretch, Shader shade) {
+void Win32Render::renderStaticBG(Image& img, Shader shade) {
 	float wscale = ((float)screenWidth / img.w);
 	float hscale = ((float)screenHeight / img.h);
 
@@ -75,14 +69,7 @@ void Win32Render::renderFillerBG() {
 	}
 }
 
-//render rectangle
-void Win32Render::renderRect(float x, float y, float w, float h, u32 color, Shader& shade, Camera* camera = &Camera::default_camera) {
-	if (!camera->isActivated()) return;
-	x = (x - camera->getX()) * camera->getZoom();
-	y = (y - camera->getY()) * camera->getZoom();
-	w *= camera->getZoom();
-	h *= camera->getZoom();
-
+void Win32Render::renderRect(float x, float y, float w, float h, u32 color, Shader& shade) {
 	int size_x = w * render_scale;
 	int size_y = h * render_scale;
 
@@ -103,12 +90,8 @@ void Win32Render::renderRect(float x, float y, float w, float h, u32 color, Shad
 	}
 }
 
-void Win32Render::renderImage(Image& img, float x, float y, float w, float h, Shader& shade, Camera* camera = &Camera::default_camera) {
-	if (!camera->isActivated() || img.data == NULL) return;
-	x = (x - camera->getX()) * camera->getZoom();
-	y = (y - camera->getY()) * camera->getZoom();
-	w *= camera->getZoom();
-	h *= camera->getZoom();
+void Win32Render::renderImage(Image& img, float x, float y, float w, float h, Shader& shade) {
+	if (img.data == NULL) return;
 
 	int size_x = w * render_scale;
 	int size_y = h * render_scale;
@@ -138,8 +121,6 @@ void Win32Render::renderImage(Image& img, float x, float y, float w, float h, Sh
 	}
 }
 
-
-//used for debugging, will delete soon
 void Win32Render::draw_number(int number, float x, float y, float size) {
 
 	while (number != 0) {

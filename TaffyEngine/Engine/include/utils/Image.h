@@ -35,4 +35,6 @@ struct Image final {
 
 	Image& grayscale_avg();
 	Image& convertChannels(u8 channels);
+
+	Image& unloadData();
 };

@@ -1,28 +1,37 @@
+#include "GameExample/LogoIntro.cpp"
+#include "GameExample/GameLobby.cpp"
+
+
+enum Screen {
+	LOGO_INTRO,
+	GAME_LOBBY
+};
 
 struct GameExample {
-	Object bg;
-	Object mr_test;
-	Controls& controller = Controls::getInstance();
-	void configureBindings() {
-		controller.addTrigger(
-			new Trigger('A', WHILE_TRUE, [&]() {return
-				new RunEvent([&]() {mr_test.setPos(mr_test.getX() + 20 * Win32Window::delta_time, mr_test.getY()); }, { &mr_test }); }));
+
+	Screen cur_screen = LOGO_INTRO;
+	SpriteHandler& sprites = SpriteHandler::getInstance();
+
+	void configureSprites() {
+		sprites.addSprite("Taffy_Logo", new Sprite("Resources/taffyEngine.png"));
+		sprites.addSprite("Moving_BG_0", new Sprite("Resources/Circles.png"));
+		sprites.addSprite("Moving_BG_1", new Sprite("Resources/Triangles.png"));
+		sprites.addSprite("Moving_BG_2", new Sprite("Resources/Squares.png"));
+		sprites.addSprite("Title", new Sprite("Resources/MegaSpriteSheet.png", CropInfo(490, 680, 463, 281)));
 	}
 
+	void configureBindings() {
+
+	}
 
 	void init() {
-		SpriteHandler::getInstance().addSprite("test_sprite", new Sprite("Resources/bob.png"));
-		SpriteHandler::getInstance().addSprite("map", new Sprite("Resources/circles.png"));
-		new (&mr_test) Object(0, 0, "test_sprite", MIDDLE);
-		new (&bg) Object(0, 0, "map", BACK);
 
-		configureBindings();
+		configureSprites();
+		EventHandler::getInstance().scheduleEvent((new LogoIntro())->andThen({ new GameLobby()}));
 	}
 
 	void play() {
-		if (pressed('Q')) { bg.~Object(); }
 
-		if (pressed(VK_ESCAPE)) { Win32Window::end(); }
 	}
 
 	

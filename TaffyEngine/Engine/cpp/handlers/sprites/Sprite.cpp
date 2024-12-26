@@ -1,5 +1,7 @@
 #include "../../../include/TaffyEngine.h"
 
+//TODO: add deconstructor and prevent sprite map value replacement
+
 Sprite::Sprite(const char* sprite) {
 	sprite_sheet = sprite;
 	ci = CropInfo(0, 0, -1, -1);
@@ -20,4 +22,19 @@ void Sprite::unload() {
 	if (!loaded) { return; }
 	sprite_image.~Image();
 	loaded = false;
+}
+
+float Sprite::getW() {
+	return sprite_image.w;
+}
+float Sprite::getH() {
+	return sprite_image.h;
+}
+
+bool Sprite::isLoaded() {
+	return loaded;
+}
+
+Image& Sprite::getImage() {
+	return sprite_image;
 }

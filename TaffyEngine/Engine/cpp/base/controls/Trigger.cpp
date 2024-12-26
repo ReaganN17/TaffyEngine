@@ -1,55 +1,57 @@
 #include "../../../include/base/controls/Trigger.h"
 #include "../../../include/base/Input.h"
 
+//TODO make triggers boolean based and not just button based
+
 void Trigger::update() {
 	switch (type) {
 	case ON_TRUE: {
-		if (pressed(button)) {
+		if (Input::is_pressed(button)) {
 			allocateEvent();
 		}
 	} break;
 	case ON_FALSE: {
-		if (released(button)) {
+		if (Input::is_released(button)) {
 			allocateEvent();
 		}
 	} break;
 	case ON_CHANGE: {
-		if (pressed(button) || released(button)) {
+		if (Input::is_pressed(button) || Input::is_released(button)) {
 			allocateEvent();
 		}
 	} break;
 
 	case WHILE_FALSE: {
-		if (pressed(button)) {
+		if (Input::is_pressed(button)) {
 			deallocateEvent();
 		}
-		if (released(button)) {
+		if (Input::is_released(button)) {
 			allocateEvent();
 		}
 	} break;
 	case WHILE_TRUE: {
-		if (pressed(button)) {
+		if (Input::is_pressed(button)) {
 			allocateEvent();
 		}
-		if (released(button)) {
+		if (Input::is_released(button)) {
 			deallocateEvent();
 		}
 	} break;
 
 	case TOGGLE_ON_FALSE: {
-		if (pressed(button) && event != nullptr) {
+		if (Input::is_pressed(button) && event != nullptr) {
 			allocateEvent();
 		}
-		if (pressed(button) && event == nullptr) {
+		if (Input::is_pressed(button) && event == nullptr) {
 			deallocateEvent();
 		}
 	} break;
 
 	case TOGGLE_ON_TRUE: {
-		if (pressed(button) && event == nullptr) {
+		if (Input::is_pressed(button) && event == nullptr) {
 			allocateEvent();
 		}
-		if (pressed(button) && event != nullptr) {
+		if (Input::is_pressed(button) && event != nullptr) {
 			deallocateEvent();
 		}
 	} break;

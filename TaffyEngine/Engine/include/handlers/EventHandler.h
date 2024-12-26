@@ -1,7 +1,7 @@
 #pragma once
 
 #include "events/EventHeader.h"
-#include "objects/Objects.h"
+#include "objects/Object.h"
 #include "../base/EngineBase.h"
 
 struct EventHandler {

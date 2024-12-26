@@ -5,14 +5,11 @@
 
 //start of class functions
 
-Image::Image() { Image::Image(1, 1, 3); }
+Image::Image() { }
 
 Image::Image(const char* filename) {
 	if (read(filename)) {
 		size = w * h * channels;
-	}
-	else {
-		Image::Image(1, 1, 3);
 	}
 }
 
@@ -20,9 +17,6 @@ Image::Image(const char* filename, CropInfo ci) {
 	if (read(filename)) {
 		size = w * h * channels;
 		crop(ci);
-	}
-	else {
-		Image::Image(1, 1, 3);
 	}
 }
 
@@ -37,9 +31,7 @@ Image::Image(const Image& img) :Image(img.w, img.h, img.channels) {
 }
 
 Image::~Image() {
-	stbi_image_free(data);
-	data = NULL;
-	delete[] data;
+	unloadData();
 }
 
 bool Image::read(const char* filename) {
@@ -67,9 +59,6 @@ Image& Image::create(const char* filename) {
 	if (read(filename)) {
 		size = w * h * channels;
 	}
-	else {
-
-	}
 	return *this;
 }
 
@@ -83,6 +72,14 @@ Image& Image::copy(const Image& img) {
 	data = new u8[size];
 
 	memcpy(data, img.data, size);
+
+	return *this;
+}
+
+Image& Image::unloadData() {
+	stbi_image_free(data);
+	data = NULL;
+	delete[] data;
 
 	return *this;
 }
@@ -151,8 +148,9 @@ Image& Image::rotateBy(short rot) {
 }
 
 Image& Image::crop(u16 cx, u16 cy, u16 cw, u16 ch) {
-	return *this;
-	size = min(cw, w) * min(ch, h) * channels;
+	cw = min(cw, w - cx);
+	ch = min(ch, h - cy);
+	size = cw * ch * channels;
 	u8* croppedImage = new u8[size];
 	memset(croppedImage, 0, size);
 
@@ -174,7 +172,7 @@ Image& Image::crop(u16 cx, u16 cy, u16 cw, u16 ch) {
 }
 
 Image& Image::crop(CropInfo ci) {
-	crop(ci.cx, ci.cy, ci.ch, ci.cw);
+	crop(ci.cx, ci.cy, ci.cw, ci.ch);
 
 	return *this;
 }

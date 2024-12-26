@@ -13,7 +13,7 @@ SequentialEvent::SequentialEvent(std::initializer_list<Event*> events) { addEven
 SequentialEvent::SequentialEvent(Event* first, std::initializer_list<Event*> following) { addEvents({ first }); addEvents(following); }
 
 void SequentialEvent::addEvents(std::initializer_list<Event*> events) {
-	this->events.insert(this->events.begin(), events.begin(), events.end());
+	this->events.insert(this->events.end(), events.begin(), events.end());
 
 	for (auto event : events) {
 		addRequirements(event->getRequirements());

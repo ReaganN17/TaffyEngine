@@ -22,3 +22,13 @@ void Input::updateMouse(HWND window) {
 	mouse.x = math::clamp(-Win32Render::coord_width * 0.5, (float)mouse.x, Win32Render::coord_width * 0.5f);
 	mouse.y = math::clamp(-Win32Render::coord_height * 0.5, (float)mouse.y, Win32Render::coord_height * 0.5f);
 }
+
+bool Input::is_down(u8 button) {
+	return buttons[button].down;
+}
+bool Input::is_pressed(u8 button) {
+	return buttons[button].down && Input::buttons[button].changed;
+}
+bool Input::is_released(u8 button) {
+	return !buttons[button].down && Input::buttons[button].changed;
+}

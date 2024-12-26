@@ -28,3 +28,4 @@ typedef unsigned long u64;
 #include "Math.h"
 #include "RGBA.h"
 #include "Shader.h"
+#include "Timer.h"

@@ -96,9 +96,6 @@
     <ClCompile Include="Engine\cpp\handlers\sprites\Sprite.cpp">
       <Filter>Engine\cpp\handler\sprites</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\objects\Object.cpp">
-      <Filter>Engine\cpp\handler\objects</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\cpp\handlers\EventHandler.cpp">
       <Filter>Engine\cpp\handler</Filter>
     </ClCompile>
@@ -150,6 +147,24 @@
     <ClCompile Include="Engine\cpp\base\controls\Controls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\cpp\handlers\objects\Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\cpp\handlers\objects\Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameExample\MoveBackground.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameExample\LogoIntro.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameExample\GameLobby.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\cpp\utils\Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\include\handlers\events\ConditionalEvent.h">
@@ -184,9 +199,6 @@
     </ClInclude>
     <ClInclude Include="Engine\include\handlers\events\WaitUntil.h">
       <Filter>Engine\include\handler\events</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\include\handlers\objects\Objects.h">
-      <Filter>Engine\include\handler\objects</Filter>
     </ClInclude>
     <ClInclude Include="Engine\include\handlers\sprites\Sprites.h">
       <Filter>Engine\include\handler\sprites</Filter>
@@ -240,6 +252,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\include\base\controls\Controls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\include\handlers\objects\Object.h">
+      <Filter>Engine\include\handler\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\include\utils\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

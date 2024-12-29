@@ -1,5 +1,8 @@
 12/26
 
+Lookup how to spell inherits 
+All Events
+
 General
 - Make clear difference in struct and class (I think i mixed them up a bit already oops)
 - Add ButtonObject class
@@ -42,10 +45,6 @@ Timer
 - (low priority) add more potentially useful features (ie lap, pause, accumlation)
 
 Add documentary/comments
-ConditionalEvent
-Event
-EventHader
-InstantEvent
 ParallelDeadline
 ParallelEvent
 ParallelRace

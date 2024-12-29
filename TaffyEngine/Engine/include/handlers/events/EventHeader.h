@@ -1,5 +1,8 @@
 #pragma once
 
+//Header file for all the Events
+
+//Forward Declarations
 struct Event;
 struct WaitUntil;
 struct ParallelRace;
@@ -12,6 +15,7 @@ struct FunctionalEvent;
 struct InstantEvent;
 struct RunEvent;
 
+//Include files
 #include "Event.h"
 #include "ConditionalEvent.h"
 #include "ParallelDeadline.h"

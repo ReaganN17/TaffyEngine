@@ -1,5 +1,5 @@
 
-#include "../../../include/TaffyEngine.h"
+#include "../../../include/handlers/events/ConditionalEvent.h"
 /*
 ConditionalEvent
 
@@ -15,9 +15,9 @@ ConditionalEvent::ConditionalEvent(Event* onTrue, Event* onFalse, std::function<
 }
 
 void ConditionalEvent::init() {
-	setBool(condition());
+	post_condition = condition();
 
-	if (getBool()) {
+	if (post_condition) {
 		on_true->init();
 		on_true->setRunning(true);
 	}
@@ -27,7 +27,7 @@ void ConditionalEvent::init() {
 }
 
 void ConditionalEvent::loop() {
-	if (getBool()) {
+	if (post_condition) {
 		on_true->loop();
 	}
 	else {
@@ -36,7 +36,7 @@ void ConditionalEvent::loop() {
 }
 
 void ConditionalEvent::end(bool interrupted) {
-	if (getBool()) {
+	if (post_condition) {
 		on_true->end(interrupted);
 	}
 	else {
@@ -44,7 +44,7 @@ void ConditionalEvent::end(bool interrupted) {
 	}
 }
 bool ConditionalEvent::isFinished() {
-	if (getBool()) {
+	if (post_condition) {
 		return on_true->isFinished();
 	}
 	else {

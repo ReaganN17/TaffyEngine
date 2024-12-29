@@ -1,12 +1,4 @@
-#include "../../../include/TaffyEngine.h"
-
-/*
-SequentialEvent
-
-Group of events, but only this one itself is "scheduled" to the Event handler
-Events run in order, when one ends, the next one starts
-(avoid using non self terminating commands)
-*/
+#include "../../../include/handlers/events/SequentialEvent.h"
 
 SequentialEvent::SequentialEvent() {}
 SequentialEvent::SequentialEvent(std::initializer_list<Event*> events) { addEvents(events); }

@@ -1,68 +1,64 @@
 #include "../../../include/base/controls/Trigger.h"
-#include "../../../include/base/Input.h"
 
 void Trigger::update() {
 	switch (type) {
 	case ON_TRUE: {
-		if (Input::is_pressed(button)) {
+		if (!previous_condition && condition()) {
 			allocateEvent();
 		}
 	} break;
 	case ON_FALSE: {
-		if (Input::is_released(button)) {
+		if (previous_condition && !condition()) {
 			allocateEvent();
 		}
 	} break;
 	case ON_CHANGE: {
-		if (Input::is_pressed(button) || Input::is_released(button)) {
+		if (previous_condition != condition()) {
 			allocateEvent();
 		}
 	} break;
 
 	case WHILE_FALSE: {
-		if (Input::is_pressed(button)) {
+		if (!previous_condition && condition()) {
 			deallocateEvent();
 		}
-		if (Input::is_released(button)) {
+		if (previous_condition && !condition()) {
 			allocateEvent();
 		}
 	} break;
 	case WHILE_TRUE: {
-		if (Input::is_pressed(button)) {
+		if (!previous_condition && condition()) {
 			allocateEvent();
 		}
-		if (Input::is_released(button)) {
+		if (previous_condition && !condition()) {
 			deallocateEvent();
 		}
 	} break;
 
 	case TOGGLE_ON_FALSE: {
-		if (Input::is_pressed(button) && event != nullptr) {
+		if (!previous_condition && condition() && event != nullptr) {
 			allocateEvent();
 		}
-		if (Input::is_pressed(button) && event == nullptr) {
+		if (!previous_condition && condition() && event == nullptr) {
 			deallocateEvent();
 		}
 	} break;
 
 	case TOGGLE_ON_TRUE: {
-		if (Input::is_pressed(button) && event == nullptr) {
+		if (!previous_condition && condition() && event == nullptr) {
 			allocateEvent();
 		}
-		if (Input::is_pressed(button) && event != nullptr) {
+		if (!previous_condition && condition() && event != nullptr) {
 			deallocateEvent();
 		}
 	} break;
 	}
+
+	previous_condition = condition();
 }
 
 void Trigger::initialize() {
-	switch (type) {
-	case WHILE_FALSE:
-	case TOGGLE_ON_FALSE:{
-		allocateEvent();
-	} break;
-	}
+	previous_condition = !condition();
 }
 
 void Trigger::allocateEvent() {
@@ -75,8 +71,8 @@ void Trigger::deallocateEvent() {
 	event = nullptr;
 }
 
-Trigger::Trigger(u8 button, TriggerType type, std::function<Event* ()> factory) 
-:button(button), type(type), factory(factory){}
+Trigger::Trigger(std::function<bool()> condition, TriggerType type, std::function<Event* ()> factory)
+:condition(condition), type(type), factory(factory){}
 
 Trigger::~Trigger() {
 	deallocateEvent();

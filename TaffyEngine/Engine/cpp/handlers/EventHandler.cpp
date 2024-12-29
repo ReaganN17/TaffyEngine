@@ -1,10 +1,4 @@
-#include "../../include/TaffyEngine.h"
-
-EventHandler EventHandler::instance;
-
-EventHandler& EventHandler::getInstance() {
-	return instance;
-}
+#include "../../include/handlers/EventHandler.h"
 
 bool EventHandler::addEvent(Event* event) {
 	auto key = std::find(events.begin(), events.end(), event);
@@ -37,24 +31,43 @@ bool EventHandler::removeEvent(Event* event) {
 	return false;
 }
 
+bool EventHandler::checkRequirements(std::initializer_list<Object*> objects) {
+	for (auto event : events) {
+		for (auto object : objects) {
+			if (find(event->getRequirements().begin(), event->getRequirements().end(), object) != event->getRequirements().end()) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 bool EventHandler::checkRequirements(std::vector<Object*> objects) {
 	for (auto event : events) {
 		for (auto object : objects) {
 			if (find(event->getRequirements().begin(), event->getRequirements().end(), object) != event->getRequirements().end()) {
-				return false;
+				return true;
 			}
 		}
 	}
-	return true;
+	return false;
+}
+
+void EventHandler::cancelRequirements(std::initializer_list<Object*> objects) {
+	for (auto event : events) {
+		for (auto object : objects) {
+			if (find(event->getRequirements().begin(), event->getRequirements().end(), object) != event->getRequirements().end()) {
+				event->cancel();
+			}
+		}
+	}
 }
 
 void EventHandler::cancelRequirements(std::vector<Object*> objects) {
 	for (auto event : events) {
 		for (auto object : objects) {
 			if (find(event->getRequirements().begin(), event->getRequirements().end(), object) != event->getRequirements().end()) {
-				if (event->isInterruptable()) {
-					event->cancel();
-				} 
+				event->cancel();
 			}
 		}
 	}

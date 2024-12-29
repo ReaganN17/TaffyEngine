@@ -1,11 +1,5 @@
-#include "../../../include/TaffyEngine.h"
+#include "../../../include/handlers/events/RunEvent.h"
 
-
-/*
-RunEvent
-
-method that runs and continues to run
-*/
 RunEvent::RunEvent(std::function<void()> running, std::initializer_list<Object*> requirements){
 	this->running = running;
 	addRequirements(requirements);

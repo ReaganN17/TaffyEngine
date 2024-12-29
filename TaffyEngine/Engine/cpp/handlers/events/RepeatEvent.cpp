@@ -1,13 +1,4 @@
-#include "../../../include/TaffyEngine.h"
-
-/*
-RepeatEvent
-
-Frame for the repeating event
-when it ends, it inits and starts running again
-
-ends when canceled
-*/
+#include "../../../include/handlers/events/RepeatEvent.h"
 
 RepeatEvent::RepeatEvent(Event* event) {
 	this->event = event;
@@ -16,6 +7,8 @@ RepeatEvent::RepeatEvent(Event* event) {
 }
 
 void RepeatEvent::init() {
+	if (event == nullptr) event = new WaitUntil((long)0);
+
 	event->init();
 	event->setRunning(true);
 }

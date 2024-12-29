@@ -1,12 +1,6 @@
-#include "../../include/TaffyEngine.h"
+#include "../../include/base/Win32Window.h"
 
-bool Win32Window::running;
-LPCWSTR Win32Window::window_name = L"Default Name";
-HWND Win32Window::window;
-MONITORINFO Win32Window::mi;
-BITMAPINFO Win32Window::bitmap_info;
-int Win32Window::window_width, Win32Window::window_height, Win32Window::window_sizeInBits;
-float Win32Window::delta_time;
+bool Win32Window::running = false;
 
 LRESULT CALLBACK Win32Window::window_callback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	LRESULT result = 0;
@@ -131,6 +125,10 @@ void Win32Window::run(void (*init)(), void(*loop)()) {
 
 void Win32Window::end() {
 	running = false;
+}
+
+float Win32Window::getDT() {
+	return delta_time;
 }
 
 

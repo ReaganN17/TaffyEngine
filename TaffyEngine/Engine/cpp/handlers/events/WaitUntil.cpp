@@ -1,13 +1,4 @@
-#include "../../../include/TaffyEngine.h"
-
-/*
-WaitUntil Event
-
-Runs until condition is met or timer is up
-Used for a condition or timer event for other events, especially event groups
-
-
-*/
+#include "../../../include/handlers/events/WaitUntil.h"
 
 WaitUntil::WaitUntil(long ms) {
 	time = ms;
@@ -18,7 +9,9 @@ WaitUntil::WaitUntil(std::function<bool()> condition) {
 	this->condition = condition;
 }
 
-void WaitUntil::init() { start = GetTickCount(); }
+void WaitUntil::init() { 
+	timer.start();
+}
 void WaitUntil::loop() {}
 void WaitUntil::end(bool interrupted) {}
 bool WaitUntil::isFinished() {
@@ -26,6 +19,6 @@ bool WaitUntil::isFinished() {
 		return condition();
 	}
 	else {
-		return (start + time) < GetTickCount();
+		return timer.hasElapsed(time);
 	}
 }

@@ -3,31 +3,49 @@
 #include "SpriteHandler.h"
 #include "objects/Object.h"
 
-struct ObjectHandler {
+/*
+ObjectHandler Class
+
+Contains and manages all registered objects
+*/
+class ObjectHandler final {
 
 	friend SpriteHandler;
+
 private:
-	static ObjectHandler instance;
+	static std::vector<Object*> FarBack_0;
+	static std::vector<Object*> Back_1;
+	static std::vector<Object*> Middle_2;
+	static std::vector<Object*> Front_3;
+	static std::vector<Object*> FarFront_4;
+	static std::vector<Object*> NoRender_5;
 
-	ObjectHandler() {}
+	static std::vector<Object*>* render_objects[5];
+	static std::vector<Object*>* objects[6];
 
-	std::vector<Object*> FarBack_0;
-	std::vector<Object*> Back_1;
-	std::vector<Object*> Middle_2;
-	std::vector<Object*> Front_3;
-	std::vector<Object*> FarFront_4; 
-	std::vector<Object*> NoRender_5;
+	//Renders all renderable objects
+	static void renderAllObjects();
 
-	std::vector<Object*>* render_objects[5] = {&FarBack_0, &Back_1, &Middle_2, &Front_3, &FarFront_4};
-	std::vector<Object*>* objects[6] = { &FarBack_0, &Back_1, &Middle_2, &Front_3, &FarFront_4, &NoRender_5 };
+	//Updates all objects
+	static void updateAllObjects();
 
+	ObjectHandler() = delete;
 public:
-	static ObjectHandler& getInstance();
 
-	void renderAllObjects();
-	void destroyAllObjects();
-	void updateAllObjects();
+	/**
+	* Adds Object to Object List; placed by its Z value
+	*
+	* @param Object to add
+	*/
+	static void addObject(Object* obj);
 
-	void addObject(Object* obj, u8 z);
-	void removeObject(Object* obj);
+	/**
+	* Removes Object to Object List; placed by its Z value
+	*
+	* @param Object to add
+	*/
+	static void removeObject(Object* obj);
+
+	//Destroys all objects and clears Object list
+	static void destroyAllObjects();
 };

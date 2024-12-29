@@ -1,9 +1,4 @@
-#include "../../../include/TaffyEngine.h"
-/*
-InstantEvent
-
-method that runs on init then ends instantly
-*/
+#include "../../../include/handlers/events/InstantEvent.h"
 
 InstantEvent::InstantEvent(std::function<void()> instant, std::initializer_list<Object*> requirements) {
 	this->instant = instant;

@@ -1,54 +1,40 @@
 #pragma once
 
-#include "../../TaffyEngine.h"
-
-//Forward Declaration
-class Trigger;
-
+#include "../../base/controls/Trigger.h"
 
 /*
 Controls Class
  
-Basically just stores all the triggers
-Only one instance; no outside construction
- 
-TODO: refine addTrigger method
+Stores and manages all Triggers
 */
 class Controls final{
-	static Controls instance;
-	std::vector<Trigger*> triggers;
-
-	//Disables outside construction
-	Controls();
+private:
+	static std::vector<Trigger*> triggers;
+	
+	//Disables construction
+	Controls() = delete;
 public:
 
-	/**
-	* Get the one instance of Controls
-	* 
-	* @return reference to the instance of Controls
-	*/
-	static Controls& getInstance();
-
 	//initializes triggers; specifically WHILE_FALSE and TOGGLE_ON_FALSE as they schedule the event at the start
-	void initialize();
+	static void initialize();
 
 	//updates triggers periodically; allows the triggers to schedule and cancel events based on button status.
-	void update();
+	static void update();
 
 	/**
 	* Adds the trigger to the controller so it can be used
 	* 
 	* @param Trigger Constructor
 	*/
-	void addTrigger(Trigger* trigger);
+	static void addTrigger(Trigger* trigger);
 
 	/**
-	* Destroys any triggers associated with a specific button
-	* 
-	* @param Button to clear
+	* Removes the trigger to the controller
+	*
+	* @param Trigger Pointer
 	*/
-	void clearTrigger(u8 button);
+	static void removeTrigger(Trigger* trigger);
 
-	//Clears all controls
-	void clearControls();
+	//Clears all Triggers
+	static void clearTriggers();
 };

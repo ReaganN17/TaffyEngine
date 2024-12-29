@@ -1,44 +1,29 @@
-#include "../../../include/TaffyEngine.h"
+#include "../../../include/handlers/events/Event.h"
 
-/*
-Event cpp
+Event::Event() {}
 
-Basic Event structure
-- init, loop, end, isFinished are the main inherited methods
-- [fill in later]
-*/
-
-Event::Event() {
-	eb.interruptable = true;
-}
-
-void Event::destruct() { if (eb.linked) delete this; }
+void Event::destruct() { if (linked) delete this; }
 
 void Event::schedule() {
-	if (EventHandler::getInstance().addEvent(this)) {
-		eb.running = true;
+	if (EventHandler::addEvent(this)) {
+		running = true;
 		init();
 	}
 }
 
-//overrides interruptability
 void Event::cancel() {
-	eb.running = false;
+	running = false;
 	end(true);
-	EventHandler::getInstance().removeEvent(this);
+	EventHandler::removeEvent(this);
 
 	destruct();
 }
 
-bool Event::isInterruptable() { return eb.interruptable; }
-bool Event::isRunning() { return eb.running; }
-bool Event::isLinked() { return eb.linked; }
-bool Event::getBool() { return eb.free_bool; }
+bool Event::isRunning() { return running; }
+bool Event::isLinked() { return linked; }
 
-void Event::setLink(bool link) { eb.linked = link; }
-void Event::setInterrupted(bool interruptable) { eb.interruptable = interruptable; }
-void Event::setRunning(bool run) { eb.running = run; }
-void Event::setBool(bool boo) { eb.free_bool = boo; }
+void Event::setLink(bool link) { linked = link; }
+void Event::setRunning(bool run) { running = run; }
 
 void Event::addRequirements(std::initializer_list<Object*> objs) {
 	requirements.insert(requirements.end(), objs.begin(), objs.end());
@@ -64,9 +49,9 @@ void Event::run() {
 }
 
 void Event::kill() {
-	eb.running = false;
+	running = false;
 	end(false);
-	EventHandler::getInstance().removeEvent(this);
+	EventHandler::removeEvent(this);
 
 	//self destruct
 	destruct();

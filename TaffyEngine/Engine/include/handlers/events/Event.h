@@ -1,24 +1,7 @@
 #pragma once
+
 #include "EventHeader.h"
 #include "../EventHandler.h"
-
-/*
-EventByte union
-
-Storage of booleans for the Event Class to use
-*/
-union EventByte {
-	u8 byte = 0;
-
-	struct {
-		bool interruptable : 1;
-		bool running : 1;
-		bool linked : 1;
-		bool free_bool : 1;
-		u8 space : 4;
-	};
-};
-
 
 /*
 Event Class
@@ -26,7 +9,7 @@ Event Class
 Events hold 4 required methods: init, loop, end, and isFinished
 User can create Event, by class inheritance, to wrap methods to be called in more advanced ways,
 */
-struct Event {
+class Event {
 	friend ParallelRace;
 	friend ParallelEvent;
 	friend ParallelDeadline;
@@ -44,13 +27,6 @@ public:
 
 	//Cancels the event; will interrupt the event regardless of its interruptability
 	virtual void cancel();
-
-	/**
-	* Returns if the event can be interrupted outside of cancel()
-	* 
-	* @return If the event can be interrupted
-	*/
-	bool isInterruptable();
 
 	/**
 	* Returns if the event is currently running
@@ -73,13 +49,6 @@ public:
 	* @param set or not set if its linked
 	*/
 	void setLink(bool link);
-
-	/**
-	* Sets the event's interruptablility
-	* 
-	* @param set or not set interruptable
-	*/
-	void setInterrupted(bool interruptable);
 
 	/**
 	* Allows this Event to be ran with other Events
@@ -264,7 +233,9 @@ protected:
 	virtual bool isFinished() = 0;
 	
 private:
-	EventByte eb;
+	bool running = false;
+	bool linked = false;
+
 	std::vector<Object*> requirements;
 	
 	//Ends the event without interruption
@@ -280,8 +251,4 @@ private:
 
 	//Sets the running status of the Event
 	void setRunning(bool run);
-
-	//Sets the free_bool value of the Event
-	void setBool(bool boo);
-	bool getBool();
 }; 

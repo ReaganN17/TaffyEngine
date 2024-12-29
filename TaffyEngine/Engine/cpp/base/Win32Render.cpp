@@ -1,10 +1,7 @@
-#include "../../include/TaffyEngine.h"
+#include "../../include/base/Win32Render.h"
 
-int Win32Render::screenWidth, Win32Render::screenHeight;
-int Win32Render::screenOffset, Win32Render::yOffset, Win32Render::xOffset;
-float Win32Render::render_scale, Win32Render::aspect_ratio = 16 / 9.f;
-int Win32Render::coord_height = 540, Win32Render::coord_width;
-void* Win32Render::memory;
+float Win32Render::aspect_ratio = 16 / 9.f;
+int Win32Render::coord_height = 540;
 
 void Win32Render::updateValues() {
 	coord_width = coord_height * aspect_ratio;
@@ -31,31 +28,6 @@ void Win32Render::clearScreen(u32 color) {
 		u32* pixel = (u32*)memory + screenOffset + y * Win32Window::window_width;
 		for (int x = 0; x < screenWidth; x++) {
 			*pixel++ = color;
-		}
-	}
-}
-
-void Win32Render::renderStaticBG(Image& img, Shader shade) {
-	float wscale = ((float)screenWidth / img.w);
-	float hscale = ((float)screenHeight / img.h);
-
-	u32 src;
-
-	if (wscale > 0 && hscale > 0) {
-		for (int i = 0; i < screenHeight; i++) {
-			u32* pixel = (u32*)memory + screenOffset + i * Win32Window::window_width;
-			for (int j = 0; j < screenWidth; j++) {
-				if (img.data == NULL) {
-					*pixel++ = 0x000000;
-				}
-				else {
-					src = img.channels * ((int)(j / wscale) + img.w * (int)((screenHeight - i - 1) / hscale));
-
-					RGBA curPixel(img.data, src, img.channels);
-
-					*pixel++ = curPixel.shade(shade.shade_color, shade.shade_scale).toHex(*pixel, shade.opacity);
-				}
-			}
 		}
 	}
 }
@@ -119,6 +91,14 @@ void Win32Render::renderImage(Image& img, float x, float y, float w, float h, Sh
 			}
 		}
 	}
+}
+
+int Win32Render::getCoordHeight() {
+	return coord_height;
+}
+
+int Win32Render::getCoordHeight() {
+	return coord_width;
 }
 
 void Win32Render::draw_number(int number, float x, float y, float size) {

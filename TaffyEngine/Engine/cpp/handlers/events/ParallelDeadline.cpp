@@ -1,13 +1,7 @@
-#include "../../../include/TaffyEngine.h"
+#include "../../../include/handlers/events/ParallelDeadline.h"
 
-/*
-ParallelDeadline
+ParallelDeadline::ParallelDeadline() {};
 
-Group of events, but only this one itself is "scheduled" to the Event handler
-Runs until deadline event done, then all events will cancel (also means interruptibility is null)
-
-*/
-ParallelDeadline::ParallelDeadline() {}
 ParallelDeadline::ParallelDeadline(Event* deadline, std::initializer_list<Event*> events) {
 	this->deadline = deadline;
 	addRequirements(deadline->getRequirements());
@@ -25,7 +19,13 @@ void ParallelDeadline::addEvents(std::initializer_list<Event*> events) {
 	}
 }
 
+void ParallelDeadline::setDeadline(Event* deadline) {
+	this->deadline = deadline;
+}
+
 void ParallelDeadline::init() {
+	if (deadline == nullptr) deadline == new WaitUntil((long)0);
+
 	deadline->init();
 	deadline->setRunning(true);
 

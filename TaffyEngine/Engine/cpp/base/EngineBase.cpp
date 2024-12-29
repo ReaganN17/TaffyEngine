@@ -1,24 +1,25 @@
-#include "../../include/TaffyEngine.h"
+#include "../../include/base/EngineBase.h"
 
-std::function<void()> EngineBase::init_outside = []() {};
-std::function<void()> EngineBase::loop_outside = []() {};
+std::function<void()> init_outside = []() {};
+std::function<void()> loop_outside = []() {};
 
 void EngineBase::initialize() {
     Win32Render::updateValues();
 
     init_outside();
-    Controls::getInstance().initialize();
+    Controls::initialize();
 }
 void EngineBase::execute() {
     Win32Render::clearScreen(0x000000);
 
     loop_outside();
 
-    Controls::getInstance().update();
-    ObjectHandler::getInstance().updateAllObjects();
-	EventHandler::getInstance().runEvents();
-    SpriteHandler::getInstance().handleSprites();
-	ObjectHandler::getInstance().renderAllObjects();
+    Controls::update();
+    ObjectHandler::updateAllObjects();
+	EventHandler::runEvents();
+    SpriteHandler::handleSprites();
+	ObjectHandler::renderAllObjects();
+
     Win32Render::draw_number(Win32Window::delta_time * 10000, 0, 0, 50);
 }
 void EngineBase::run(std::function<void()> init, std::function<void()> loop) {

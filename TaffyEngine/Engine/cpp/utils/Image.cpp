@@ -1,9 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 
-#include "../../include/utils/Utils.h"
+#include "../../include/utils/Image.h"
 #include "STBI_image.cpp"
-
-//start of class functions
 
 Image::Image() { }
 

@@ -1,42 +1,49 @@
 #pragma once
 
 #include "../utils/Utils.h"
+#include "Win32Window.h"
+#include "../handlers/objects/Object.h"
+#include "EngineBase.h"
+#include "Input.h"
 
-namespace Win32Render {
-	extern int screenWidth, screenHeight;
-	extern int screenOffset, yOffset, xOffset;
-	extern float render_scale, aspect_ratio;
-	extern int coord_height, coord_width;
+/*
+Win32Render Class
 
-	extern void* memory;
+Contains window render methods and properties
+*/
+class Win32Render final {
+	friend Win32Window;
+	friend Object;
+	friend EngineBase;
+	friend Input;
+
+private:
+	static int screenWidth, screenHeight;
+	static int screenOffset, yOffset, xOffset;
+	static float render_scale, aspect_ratio;
+	static int coord_height, coord_width;
+
+	static void* memory;
+
+	//Disables construction
+	Win32Render() = delete;
 
 	//Update screen values upon window creation and window movement
-	void updateValues();
+	static void updateValues();
 
 	/**
 	* clears ENTIRE screen, used for when window size changes
 	* 
 	* @param color to clear screen with
 	*/
-	void clearEntireScreen(u32 color);
+	static void clearEntireScreen(u32 color);
 
 	/**
 	* clears graphic screen (based on aspect ratio)
 	*
 	* @param color to clear screen with
 	*/
-	void clearScreen(u32 color);
-
-	/**
-	* Renders an image to the corners of the screen; used for backgrounds
-	* 
-	* @param Image to render
-	* @param Image shader
-	*/
-	void renderStaticBG(Image& img, Shader shade);
-
-	//Renders a filler BG I use; delete soon
-	void renderFillerBG();
+	static void clearScreen(u32 color);
 
 	/**
 	* Renders a basic rectangle
@@ -46,7 +53,7 @@ namespace Win32Render {
 	* @param Color of Rectangle
 	* @param Shader of Rectangle
 	*/
-	void renderRect(float x, float y, float w, float h, u32 color, Shader& shade);
+	static void renderRect(float x, float y, float w, float h, u32 color, Shader& shade);
 
 	/**
 	* Renders an Image
@@ -56,9 +63,27 @@ namespace Win32Render {
 	* @param w, h Dimensions
 	* @param Shader of Rectangle
 	*/
-	void renderImage(Image& img, float x, float y, float w, float h, Shader& shade);
+	static void renderImage(Image& img, float x, float y, float w, float h, Shader& shade);
+
+public:
+	/**
+	* Returns the coordinate height of the render window
+	* 
+	* @return int value of the coordinate height
+	*/
+	static int getCoordHeight();
+
+	/**
+	* Returns the coordinate width of the render window
+	* 
+	* @return int value of the coordinate width
+	*/
+	static int getCoordWidth();
 
 	//used for debugging, will delete soon
-	void draw_number(int number, float x, float y, float size);
-	void draw_digit(int digit, float x, float y, float size);
+	static void draw_number(int number, float x, float y, float size);
+	static void draw_digit(int digit, float x, float y, float size);
+
+	//Renders a filler BG I use; delete soon
+	static void renderFillerBG();
 };

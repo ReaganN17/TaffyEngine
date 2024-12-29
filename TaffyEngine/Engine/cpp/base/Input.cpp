@@ -1,7 +1,4 @@
-#include "../../include/TaffyEngine.h"
-
-Button_State Input::buttons[255];
-POINT Input::mouse;
+#include "../../include/base/Input.h"
 
 void Input::processButtons(u32 vk, bool d) {
 	buttons[vk].changed = d != buttons[vk].down;
@@ -31,4 +28,8 @@ bool Input::is_pressed(u8 button) {
 }
 bool Input::is_released(u8 button) {
 	return !buttons[button].down && Input::buttons[button].changed;
+}
+
+POINT& Input::getMouse() {
+	return mouse;
 }

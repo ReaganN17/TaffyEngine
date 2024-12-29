@@ -1,12 +1,4 @@
-#include "../../../include/TaffyEngine.h"
-
-/*
-ParallelRace
-
-Group of events, but only this one itself is "scheduled" to the Event handler
-Runs until first event done, then all events will cancel (also means interruptibility is null)
-
-*/
+#include "../../../include/handlers/events/ParallelRace.h"
 
 ParallelRace::ParallelRace() {}
 ParallelRace::ParallelRace(std::initializer_list<Event*> events) { addEvents(events); }

@@ -6,7 +6,7 @@ Object::Object() {
 }
 
 Object::Object(float x, float y, zLayer z) : x(x), y(y), z_layer(z) {
-	ObjectHandler::getInstance().addObject(this, z);
+	ObjectHandler::addObject(this, z);
 	instance = true;
 }
 Object::Object(float x, float y, float w, float h, zLayer z) : Object(x, y, z) {
@@ -15,15 +15,15 @@ Object::Object(float x, float y, float w, float h, zLayer z) : Object(x, y, z) {
 }
 
 Object::Object(float x, float y, const char* sprite, zLayer z) : Object(x, y, z) {
-	this->sprite = SpriteHandler::getInstance().getSprite(sprite);
-	SpriteHandler::getInstance().loadSprite(sprite);
+	this->sprite = SpriteHandler::getSprite(sprite);
+	SpriteHandler::loadSprite(sprite);
 
 	this->w = (sprite != nullptr) ? this->sprite->getW() : 0;
 	this->h = (sprite != nullptr) ? this->sprite->getH() : 0;
 }
 Object::Object(float x, float y, float w, float h, const char* sprite, zLayer z) : Object(x, y, z) {
-	this->sprite = SpriteHandler::getInstance().getSprite(sprite);
-	SpriteHandler::getInstance().loadSprite(sprite);
+	this->sprite = SpriteHandler::getSprite(sprite);
+	SpriteHandler::loadSprite(sprite);
 
 	this->w = w;
 	this->h = h;
@@ -72,15 +72,20 @@ float Object::getW() { return w; }
 float Object::getH() { return h; }
 
 void Object::hide(bool hide) { hidden = hide; }
-void Object::setShader(u8 opac, u32 color, u8 scale) { setShader(opac); setShader(color, scale); }
-void Object::setShader(u32 color, u8 scale) { shader.shade_color = color; shader.shade_scale = scale; }
-void Object::setShader(u8 opac) { shader.opacity = opac; }
+
+void Object::setShader(Shader shader) {
+	setOpacity(shader.opacity);
+	setShade(shader.shade_color, shader.shade_scale);
+}
+
+void Object::setShade(u32 color, u8 scale) { shader.shade_color = color; shader.shade_scale = scale; }
+void Object::setOpacity(u8 opac) { shader.opacity = opac; }
 void Object::connectCamera(Camera& camera) { this->camera = &camera; }
 
 Sprite* Object::getSprite() { return sprite; }
 void Object::setSprite(const char* sprite_name, bool sprite_dimensions) {
-	this->sprite = SpriteHandler::getInstance().getSprite(sprite_name);
-	SpriteHandler::getInstance().loadSprite(sprite_name);
+	this->sprite = SpriteHandler::getSprite(sprite_name);
+	SpriteHandler::loadSprite(sprite_name);
 
 	if (sprite_dimensions) {
 		w = (sprite != nullptr) ? this->sprite->getW() : 0;

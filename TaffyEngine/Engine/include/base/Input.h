@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../utils/Utils.h"
+#include "../base/Win32Window.h"
+#include "../base/Win32Render.h"
 
 union Button_State {
 	u8 byte = 0;
@@ -11,18 +13,26 @@ union Button_State {
 	};
 };
 
-namespace Input {
-	extern Button_State buttons[255];
-	extern POINT mouse;
+/*
+Input Class
+
+Manages the keybaord and mouse inputs
+*/
+class Input final {
+	friend Win32Window;
+
+private:
+	static Button_State buttons[255];
+	static POINT mouse;
 
 	//updates the key to not changed
-	void setKeyUnchanged();
+	static void setKeyUnchanged();
 
 	/**updates Mouse coordinates
 	* 
 	* @param Window Handle
 	*/
-	void updateMouse(HWND window);
+	static void updateMouse(HWND window);
 
 	/**
 	* processes buttons and updates their status
@@ -30,15 +40,18 @@ namespace Input {
 	* @param vk key code
 	* @param associated status
 	*/
-	void processButtons(u32 vkcode, bool d);
+	static void processButtons(u32 vkcode, bool d);
 
+	//Disables Construction
+	Input() = delete;
+public:
 	/**
 	* returns down status of button
 	* 
 	* @param button
 	* @return is button down
 	*/
-	bool is_down(u8 button);
+	static bool is_down(u8 button);
 
 	/**
 	* returns pressed status of button
@@ -46,7 +59,7 @@ namespace Input {
 	* @param button
 	* @return was button pressed
 	*/
-	bool is_pressed(u8 button);
+	static bool is_pressed(u8 button);
 
 	/**
 	* returns released status of button
@@ -54,5 +67,12 @@ namespace Input {
 	* @param button
 	* @return was button released
 	*/
-	bool is_released(u8 button);
+	static bool is_released(u8 button);
+
+	/**
+	* returns a reference to the mouse position
+	*
+	* @return reference to a POINT struct
+	*/
+	static POINT& getMouse();
 };

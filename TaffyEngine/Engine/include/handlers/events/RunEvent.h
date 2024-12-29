@@ -1,8 +1,21 @@
 #pragma once
 #include "EventHeader.h"
-struct RunEvent final : Event {
-	RunEvent(std::function<void()> run, std::initializer_list<Object*> requirements);
 
+/*
+RunEvent Class; inherits Event Class
+
+Given a method, will run it on loop until event is cancelled externally
+*/
+class RunEvent final : Event {
+public:
+	/**
+	* Constructor
+	* 
+	* @param lambda method to run on loop
+	* @param Object requirements
+	*/
+	RunEvent(std::function<void()> run, std::initializer_list<Object*> requirements);
+private:
 	std::function<void()> running = []() {};
 
 	void init();

@@ -1,14 +1,32 @@
 #pragma once
 #include "EventHeader.h"
-struct WaitUntil final : Event   {
+
+/**
+* WaitUntil Class; inherits Event Class
+* 
+* Event that waits until a condition is true or a certain time has pass before self-terminating
+*/
+class WaitUntil final : Event   {
 public:
+	/**
+	* Constructor for time Event
+	* 
+	* @param Duration in milliseconds
+	*/
 	WaitUntil(long ms);
+
+	/**
+	* Constructor for condition Event
+	*
+	* @param Condition method
+	*/
 	WaitUntil(std::function<bool()> condition);
 
 private:
-	long start = 0;
+	Timer timer;
 	long time = 0;
 	std::function<bool()> condition = []() {return false; };
+
 	void init();
 	void loop();
 	void end(bool interrupted);

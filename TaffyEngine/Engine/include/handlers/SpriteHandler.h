@@ -1,24 +1,62 @@
 #pragma once
 
 #include "../utils/Utils.h"
-struct SpriteHandler {
+#include "../base/EngineBase.h"
+
+class SpriteHandler final {
+	friend EngineBase;
+
 private:
-	std::map<const char*, Sprite*> sprites;
-	static SpriteHandler instance;
+	static std::map<const char*, Sprite*> sprites;
 
-	SpriteHandler() {}
+	static void handleSprites();
+
+	//Disables Construction
+	SpriteHandler() = delete;
+
 public:
-	static SpriteHandler& getInstance();
 
-	void addSprite(const char* sprite_name, Sprite* sprite);
+	/**
+	* Adds Sprite to be used
+	* 
+	* @param String name to be called by
+	* @param Sprite to add
+	*/
+	static void addSprite(const char* sprite_name, Sprite* sprite);
 
-	void loadSprite(const char* sprite);
-	void loadSprite(Sprite* sprite);
+	/**
+	* Loads the Sprite bitmap into memory
+	* 
+	* @param String name for the Sprite
+	*/
+	static void loadSprite(const char* sprite);
 
-	void unloadSprite(const char* sprite);
-	void unloadSprite(Sprite* sprite);
+	/**
+	* Loads the Sprite bitmap into memory
+	*
+	* @param Sprite pointer
+	*/
+	static void loadSprite(Sprite* sprite);
 
-	void handleSprites();
+	/**
+	* Unloads the Sprite bitmap from memory
+	* 
+	* @param String name for the sprite
+	*/
+	static void unloadSprite(const char* sprite);
 
-	Sprite* getSprite(const char* sprite_name);
+	/**
+	* Unloads the Sprite bitmap from memory
+	*
+	* @param Sprite pointer
+	*/
+	static void unloadSprite(Sprite* sprite);
+
+	/**
+	* Gets the Sprite from name
+	* 
+	* @param String name for the sprite
+	* @return Sprite pointer
+	*/
+	static Sprite* getSprite(const char* sprite_name);
 };

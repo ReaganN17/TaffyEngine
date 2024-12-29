@@ -1,10 +1,7 @@
-#include "../../include/TaffyEngine.h"
+#include "../../include/handlers/ObjectHandler.h"
 
-ObjectHandler ObjectHandler::instance;
-
-ObjectHandler& ObjectHandler::getInstance() {
-	return instance;
-}
+std::vector<Object*>* ObjectHandler::render_objects[5] = { &FarBack_0, &Back_1, &Middle_2, &Front_3, &FarFront_4 };
+std::vector<Object*>* ObjectHandler::render_objects[6] = { &FarBack_0, &Back_1, &Middle_2, &Front_3, &FarFront_4, &NoRender_5 };
 
 void ObjectHandler::renderAllObjects() {
 	for (auto it : render_objects) {
@@ -29,10 +26,10 @@ void ObjectHandler::updateAllObjects() {
 	}
 }
 
-void ObjectHandler::addObject(Object* obj, u8 z) {
+void ObjectHandler::addObject(Object* obj) {
 	removeObject(obj);
 
-	objects[z]->push_back(obj);
+	objects[obj->z_layer]->push_back(obj);
 }
 void ObjectHandler::removeObject(Object* obj) {
 	for (auto it : objects) {

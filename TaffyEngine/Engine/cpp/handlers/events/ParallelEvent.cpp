@@ -1,12 +1,5 @@
-#include "../../../include/TaffyEngine.h"
+#include "../../../include/handlers/events/ParallelEvent.h"
 
-/*
-ParallelEvent
-
-Group of events, but only this one itself is "scheduled" to the Event handler
-All events run at the same time, ending at different times
-Ends when all events have finished
-*/
 ParallelEvent::ParallelEvent() {}
 ParallelEvent::ParallelEvent(std::initializer_list<Event*> events) { addEvents(events); }
 ParallelEvent::ParallelEvent(Event* event, std::initializer_list<Event*> other_events) { addEvents(other_events); addEvents({ event }); }

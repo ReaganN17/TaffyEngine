@@ -1,11 +1,5 @@
 #include "../../../include/base/controls/Controls.h"
 
-Controls Controls::instance;
-
-Controls::Controls() {}
-
-Controls& Controls::getInstance() { return instance; }
-
 void Controls::initialize() {
 	for (auto trigger : triggers) {
 		trigger->initialize();
@@ -17,19 +11,18 @@ void Controls::update() {
 		trigger->update();
 	}
 }
+
 void Controls::addTrigger(Trigger* trigger) {
+	auto key = std::find(triggers.begin(), triggers.end(), trigger);
+	if (key != triggers.end()) { triggers.erase(key); }
 	triggers.push_back(trigger);
 }
-void Controls::clearTrigger(u8 button) {
-	//do i kill myself
-	for (int i = triggers.size() - 1; i >= 0; i--) {
-		if (triggers[i]->button == button) { 
-			triggers[i]->~Trigger(); 
-			triggers.erase(triggers.begin() + i);
-		}
-	}
+
+void Controls::removeTrigger(Trigger* trigger) {
+	auto key = std::find(triggers.begin(), triggers.end(), trigger);
+	if (key != triggers.end()) { triggers.erase(key); }
 }
-void Controls::clearControls() {
+void Controls::clearTriggers() {
 	for (auto trigger : triggers) {
 		trigger->~Trigger();
 	}

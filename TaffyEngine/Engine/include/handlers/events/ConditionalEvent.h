@@ -2,13 +2,12 @@
 
 #include "EventHeader.h"
 
-
 /*
 ConditionalEvent Class; inherits Event Class
 
 Given two events and a condition, will check condition upon initialization and select one of the events based on the condition
 */
-struct ConditionalEvent final : Event {
+class ConditionalEvent final : Event {
 public:
 
 	/**
@@ -23,6 +22,7 @@ private:
 
 	Event* on_true = nullptr;
 	Event* on_false = nullptr;
+	bool post_condition = false;
 	std::function<bool()> condition = []() {return false; };
 
 	//Checks condition upon initialization and initializes the corresponding Event

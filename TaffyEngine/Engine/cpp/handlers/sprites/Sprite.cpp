@@ -1,4 +1,4 @@
-#include "../../../include/TaffyEngine.h"
+#include "../../../include/handlers/sprites/Sprites.h"
 
 Sprite::Sprite(const char* sprite) {
 	sprite_sheet = sprite;

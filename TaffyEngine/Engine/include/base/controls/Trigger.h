@@ -1,37 +1,37 @@
 #pragma once
 
-#include "../../TaffyEngine.h"
-
-class Controls;
+#include "../../base/controls/Controls.h"
+#include "../../utils/Utils.h"
 
 //Trigger Types
 enum TriggerType : u8 {
-	ON_CHANGE, //Schedules Event on button change
-	ON_TRUE, //Schedules Event on button press
-	ON_FALSE, //Schedules Event on button release
-	WHILE_TRUE, //Schedules Event on button press; cancels on release
-	WHILE_FALSE, //Schedules Event on button release; cancels on press
-	TOGGLE_ON_TRUE, //Schedules or cancels Event on button press; starts on schedule
-	TOGGLE_ON_FALSE //Schedules or cancels Event on button press; starts on cancel
+	ON_CHANGE, //Schedules Event on condition change
+	ON_TRUE, //Schedules Event on condition change to true
+	ON_FALSE, //Schedules Event on condition change to false
+	WHILE_TRUE, //Schedules Event on condition change to true; cancels on condition change to false
+	WHILE_FALSE, //Schedules Event on condition change to false; cancels on condition change to true
+	TOGGLE_ON_TRUE, //Schedules or cancels Event on condition change to true
+	TOGGLE_ON_FALSE //Schedules or cancels Event on condition change to false
 };
 
 /*
 Trigger Class
 
-Allows event to be scheduled based on button activity
+Allows an event to be scheduled based on condition activity
 */
 class Trigger final {
 	friend Controls;
 
-	std::function<Event* ()> factory = []() {return new WaitUntil((long)0); };
+	std::function<Event*()> factory = []() {return new WaitUntil((long)0); };
+	std::function<bool()> condition = []() {return false; };
 	Event* event = nullptr;
-	u8 button = 0;
 	TriggerType type = ON_CHANGE;
+	bool previous_condition = false;
 
 	//Updates the trigger periodically
 	void update();
 
-	//Initializes the trigger; specifacally WHILE_FALSE and TOGGLE_ON_FALSE to schedule an event beforehand
+	//Initializes the trigger
 	void initialize();
 
 	//Allocates and schedules the event via the event factory
@@ -42,14 +42,14 @@ class Trigger final {
 
 	//Deconstructor
 	~Trigger();
-public: 
 
+public: 
 	/**
 	* Trigger Constructor
 	* 
-	* @param Button to be associated with
+	* @param Condition to be associated with
 	* @param Trigger type
 	* @param Method to construct the event
 	*/
-	Trigger(u8 button, TriggerType type, std::function<Event* ()> factory);
+	Trigger(std::function<bool()> condition, TriggerType type, std::function<Event* ()> factory);
 };

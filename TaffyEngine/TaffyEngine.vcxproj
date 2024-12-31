@@ -27,26 +27,26 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -127,110 +127,73 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\cpp\base\controls\Controls.cpp" />
-    <ClCompile Include="Engine\cpp\base\controls\Trigger.cpp" />
-    <ClCompile Include="Engine\cpp\base\EngineBase.cpp" />
-    <ClCompile Include="Engine\cpp\base\Input.cpp" />
-    <ClCompile Include="Engine\cpp\base\Win32Render.cpp" />
-    <ClCompile Include="Engine\cpp\base\Win32Window.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\EventHandler.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\events\ConditionalEvent.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\events\Event.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\events\InstantEvent.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\events\ParallelDeadline.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\events\ParallelEvent.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\events\ParallelRace.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\events\RepeatEvent.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\events\RunEvent.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\events\SequentialEvent.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\events\WaitUntil.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\ObjectHandler.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\objects\Object.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\objects\ScreenButton.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\SpriteHandler.cpp" />
-    <ClCompile Include="Engine\cpp\handlers\sprites\Sprite.cpp" />
-    <ClCompile Include="Engine\cpp\utils\Camera.cpp" />
-    <ClCompile Include="Engine\cpp\utils\CropInfo.cpp" />
-    <ClCompile Include="Engine\cpp\utils\Image.cpp" />
-    <ClCompile Include="Engine\cpp\utils\Math.cpp" />
-    <ClCompile Include="Engine\cpp\utils\RGBA.cpp" />
-    <ClCompile Include="Engine\cpp\utils\Shader.cpp" />
-    <ClCompile Include="Engine\cpp\utils\STBI_image.cpp" />
-    <ClCompile Include="Engine\cpp\utils\Timer.cpp" />
-    <ClCompile Include="GameExample.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="GameExample\GameLobby.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="GameExample\LogoIntro.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="GameExample\MoveBackground.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="GameExample\MoveObject.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="GameExample\MyButton.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="cpp\base\controls\Controls.cpp" />
+    <ClCompile Include="cpp\base\controls\Trigger.cpp" />
+    <ClCompile Include="cpp\base\EngineBase.cpp" />
+    <ClCompile Include="cpp\base\Input.cpp" />
+    <ClCompile Include="cpp\base\Win32Render.cpp" />
+    <ClCompile Include="cpp\base\Win32Window.cpp" />
+    <ClCompile Include="cpp\handlers\EventHandler.cpp" />
+    <ClCompile Include="cpp\handlers\events\ConditionalEvent.cpp" />
+    <ClCompile Include="cpp\handlers\events\Event.cpp" />
+    <ClCompile Include="cpp\handlers\events\InstantEvent.cpp" />
+    <ClCompile Include="cpp\handlers\events\ParallelDeadline.cpp" />
+    <ClCompile Include="cpp\handlers\events\ParallelEvent.cpp" />
+    <ClCompile Include="cpp\handlers\events\ParallelRace.cpp" />
+    <ClCompile Include="cpp\handlers\events\RepeatEvent.cpp" />
+    <ClCompile Include="cpp\handlers\events\RunEvent.cpp" />
+    <ClCompile Include="cpp\handlers\events\SequentialEvent.cpp" />
+    <ClCompile Include="cpp\handlers\events\WaitUntil.cpp" />
+    <ClCompile Include="cpp\handlers\ObjectHandler.cpp" />
+    <ClCompile Include="cpp\handlers\objects\Object.cpp" />
+    <ClCompile Include="cpp\handlers\objects\ScreenButton.cpp" />
+    <ClCompile Include="cpp\handlers\SpriteHandler.cpp" />
+    <ClCompile Include="cpp\handlers\sprites\Sprite.cpp" />
+    <ClCompile Include="cpp\utils\Camera.cpp" />
+    <ClCompile Include="cpp\utils\CropInfo.cpp" />
+    <ClCompile Include="cpp\utils\Image.cpp" />
+    <ClCompile Include="cpp\utils\Math.cpp" />
+    <ClCompile Include="cpp\utils\RGBA.cpp" />
+    <ClCompile Include="cpp\utils\Shader.cpp" />
+    <ClCompile Include="cpp\utils\STBI_image.cpp" />
+    <ClCompile Include="cpp\utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\include\base\controls\Controls.h" />
-    <ClInclude Include="Engine\include\base\controls\Trigger.h" />
-    <ClInclude Include="Engine\include\base\EngineBase.h" />
-    <ClInclude Include="Engine\include\base\Input.h" />
-    <ClInclude Include="Engine\include\base\Win32Render.h" />
-    <ClInclude Include="Engine\include\base\Win32Window.h" />
-    <ClInclude Include="Engine\include\handlers\EventHandler.h" />
-    <ClInclude Include="Engine\include\handlers\events\ConditionalEvent.h" />
-    <ClInclude Include="Engine\include\handlers\events\Event.h" />
-    <ClInclude Include="Engine\include\handlers\events\EventHeader.h" />
-    <ClInclude Include="Engine\include\handlers\events\InstantEvent.h" />
-    <ClInclude Include="Engine\include\handlers\events\ParallelDeadline.h" />
-    <ClInclude Include="Engine\include\handlers\events\ParallelEvent.h" />
-    <ClInclude Include="Engine\include\handlers\events\ParallelRace.h" />
-    <ClInclude Include="Engine\include\handlers\events\RepeatEvent.h" />
-    <ClInclude Include="Engine\include\handlers\events\RunEvent.h" />
-    <ClInclude Include="Engine\include\handlers\events\SequentialEvent.h" />
-    <ClInclude Include="Engine\include\handlers\events\WaitUntil.h" />
-    <ClInclude Include="Engine\include\handlers\ObjectHandler.h" />
-    <ClInclude Include="Engine\include\handlers\objects\Object.h" />
-    <ClInclude Include="Engine\include\handlers\objects\ScreenButton.h" />
-    <ClInclude Include="Engine\include\handlers\SpriteHandler.h" />
-    <ClInclude Include="Engine\include\handlers\sprites\Sprites.h" />
-    <ClInclude Include="Engine\include\TaffyEngine.h" />
-    <ClInclude Include="Engine\include\utils\Camera.h" />
-    <ClInclude Include="Engine\include\utils\CropInfo.h" />
-    <ClInclude Include="Engine\include\utils\Image.h" />
-    <ClInclude Include="Engine\include\utils\Math.h" />
-    <ClInclude Include="Engine\include\utils\RGBA.h" />
-    <ClInclude Include="Engine\include\utils\Shader.h" />
-    <ClInclude Include="Engine\include\utils\Timer.h" />
-    <ClInclude Include="Engine\include\utils\Utils.h" />
+    <ClInclude Include="include\base\controls\Controls.h" />
+    <ClInclude Include="include\base\controls\Trigger.h" />
+    <ClInclude Include="include\base\EngineBase.h" />
+    <ClInclude Include="include\base\Input.h" />
+    <ClInclude Include="include\base\Win32Render.h" />
+    <ClInclude Include="include\base\Win32Window.h" />
+    <ClInclude Include="include\handlers\EventHandler.h" />
+    <ClInclude Include="include\handlers\events\ConditionalEvent.h" />
+    <ClInclude Include="include\handlers\events\Event.h" />
+    <ClInclude Include="include\handlers\events\EventHeader.h" />
+    <ClInclude Include="include\handlers\events\InstantEvent.h" />
+    <ClInclude Include="include\handlers\events\ParallelDeadline.h" />
+    <ClInclude Include="include\handlers\events\ParallelEvent.h" />
+    <ClInclude Include="include\handlers\events\ParallelRace.h" />
+    <ClInclude Include="include\handlers\events\RepeatEvent.h" />
+    <ClInclude Include="include\handlers\events\RunEvent.h" />
+    <ClInclude Include="include\handlers\events\SequentialEvent.h" />
+    <ClInclude Include="include\handlers\events\WaitUntil.h" />
+    <ClInclude Include="include\handlers\ObjectHandler.h" />
+    <ClInclude Include="include\handlers\objects\Object.h" />
+    <ClInclude Include="include\handlers\objects\ScreenButton.h" />
+    <ClInclude Include="include\handlers\SpriteHandler.h" />
+    <ClInclude Include="include\handlers\sprites\Sprites.h" />
+    <ClInclude Include="TaffyEngine.h" />
+    <ClInclude Include="include\utils\Camera.h" />
+    <ClInclude Include="include\utils\CropInfo.h" />
+    <ClInclude Include="include\utils\Image.h" />
+    <ClInclude Include="include\utils\Math.h" />
+    <ClInclude Include="include\utils\RGBA.h" />
+    <ClInclude Include="include\utils\Shader.h" />
+    <ClInclude Include="include\utils\Timer.h" />
+    <ClInclude Include="include\utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Engine\TODO.txt" />
+    <Text Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,19 @@
+12/31
+
+Rendering
+- Optimize rendering that's better than current per-pixel rendering
+- optimize RGBA calculations
+
+General
+- (low priority) Consider changing from const char* to std::string
+
+Controls
+- (low priority) Make it cleaner ig? (it's sorta annoying to add a trigger)
+
+
+Object and ObjectHandler
+- (low priority) consider separting addObject from object constructor
+
+
+
+

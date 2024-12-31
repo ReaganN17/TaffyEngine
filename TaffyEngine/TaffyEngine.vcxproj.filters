@@ -60,221 +60,200 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\events\ConditionalEvent.cpp">
+    <ClCompile Include="cpp\handlers\events\ConditionalEvent.cpp">
       <Filter>Engine\cpp\handler\events</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\events\Event.cpp">
+    <ClCompile Include="cpp\handlers\events\Event.cpp">
       <Filter>Engine\cpp\handler\events</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\events\InstantEvent.cpp">
+    <ClCompile Include="cpp\handlers\events\InstantEvent.cpp">
       <Filter>Engine\cpp\handler\events</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\events\ParallelDeadline.cpp">
+    <ClCompile Include="cpp\handlers\events\ParallelDeadline.cpp">
       <Filter>Engine\cpp\handler\events</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\events\ParallelEvent.cpp">
+    <ClCompile Include="cpp\handlers\events\ParallelEvent.cpp">
       <Filter>Engine\cpp\handler\events</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\events\ParallelRace.cpp">
+    <ClCompile Include="cpp\handlers\events\ParallelRace.cpp">
       <Filter>Engine\cpp\handler\events</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\events\RepeatEvent.cpp">
+    <ClCompile Include="cpp\handlers\events\RepeatEvent.cpp">
       <Filter>Engine\cpp\handler\events</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\events\RunEvent.cpp">
+    <ClCompile Include="cpp\handlers\events\RunEvent.cpp">
       <Filter>Engine\cpp\handler\events</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\events\SequentialEvent.cpp">
+    <ClCompile Include="cpp\handlers\events\SequentialEvent.cpp">
       <Filter>Engine\cpp\handler\events</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\events\WaitUntil.cpp">
+    <ClCompile Include="cpp\handlers\events\WaitUntil.cpp">
       <Filter>Engine\cpp\handler\events</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\sprites\Sprite.cpp">
+    <ClCompile Include="cpp\handlers\sprites\Sprite.cpp">
       <Filter>Engine\cpp\handler\sprites</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\EventHandler.cpp">
+    <ClCompile Include="cpp\handlers\EventHandler.cpp">
       <Filter>Engine\cpp\handler</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\ObjectHandler.cpp">
+    <ClCompile Include="cpp\handlers\ObjectHandler.cpp">
       <Filter>Engine\cpp\handler</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\SpriteHandler.cpp">
+    <ClCompile Include="cpp\handlers\SpriteHandler.cpp">
       <Filter>Engine\cpp\handler</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\base\EngineBase.cpp">
+    <ClCompile Include="cpp\base\EngineBase.cpp">
       <Filter>Engine\cpp\base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\base\Input.cpp">
+    <ClCompile Include="cpp\base\Input.cpp">
       <Filter>Engine\cpp\base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\base\Win32Render.cpp">
+    <ClCompile Include="cpp\base\Win32Render.cpp">
       <Filter>Engine\cpp\base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\base\Win32Window.cpp">
+    <ClCompile Include="cpp\base\Win32Window.cpp">
       <Filter>Engine\cpp\base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\utils\Camera.cpp">
+    <ClCompile Include="cpp\utils\Camera.cpp">
       <Filter>Engine\cpp\utils</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\utils\CropInfo.cpp">
+    <ClCompile Include="cpp\utils\CropInfo.cpp">
       <Filter>Engine\cpp\utils</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\utils\Image.cpp">
+    <ClCompile Include="cpp\utils\Image.cpp">
       <Filter>Engine\cpp\utils</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\utils\Math.cpp">
+    <ClCompile Include="cpp\utils\Math.cpp">
       <Filter>Engine\cpp\utils</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\utils\RGBA.cpp">
+    <ClCompile Include="cpp\utils\RGBA.cpp">
       <Filter>Engine\cpp\utils</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\utils\Shader.cpp">
+    <ClCompile Include="cpp\utils\Shader.cpp">
       <Filter>Engine\cpp\utils</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\utils\STBI_image.cpp">
+    <ClCompile Include="cpp\utils\STBI_image.cpp">
       <Filter>Engine\cpp\utils</Filter>
     </ClCompile>
-    <ClCompile Include="GameExample.cpp">
+    <ClCompile Include="cpp\base\controls\Trigger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\base\controls\Trigger.cpp">
+    <ClCompile Include="cpp\base\controls\Controls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\base\controls\Controls.cpp">
+    <ClCompile Include="cpp\handlers\objects\Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\cpp\handlers\objects\Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\objects\Object.cpp">
+    <ClCompile Include="cpp\utils\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameExample\MoveBackground.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameExample\LogoIntro.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameExample\GameLobby.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\cpp\utils\Timer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\cpp\handlers\objects\ScreenButton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameExample\MyButton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameExample\MoveObject.cpp">
+    <ClCompile Include="cpp\handlers\objects\ScreenButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\include\handlers\events\ConditionalEvent.h">
+    <ClInclude Include="include\handlers\events\ConditionalEvent.h">
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\events\Event.h">
+    <ClInclude Include="include\handlers\events\Event.h">
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\events\EventHeader.h">
+    <ClInclude Include="include\handlers\events\EventHeader.h">
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\events\InstantEvent.h">
+    <ClInclude Include="include\handlers\events\InstantEvent.h">
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\events\ParallelDeadline.h">
+    <ClInclude Include="include\handlers\events\ParallelDeadline.h">
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\events\ParallelEvent.h">
+    <ClInclude Include="include\handlers\events\ParallelEvent.h">
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\events\ParallelRace.h">
+    <ClInclude Include="include\handlers\events\ParallelRace.h">
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\events\RepeatEvent.h">
+    <ClInclude Include="include\handlers\events\RepeatEvent.h">
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\events\RunEvent.h">
+    <ClInclude Include="include\handlers\events\RunEvent.h">
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\events\SequentialEvent.h">
+    <ClInclude Include="include\handlers\events\SequentialEvent.h">
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\events\WaitUntil.h">
+    <ClInclude Include="include\handlers\events\WaitUntil.h">
       <Filter>Engine\include\handler\events</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\sprites\Sprites.h">
+    <ClInclude Include="include\handlers\sprites\Sprites.h">
       <Filter>Engine\include\handler\sprites</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\EventHandler.h">
+    <ClInclude Include="include\handlers\EventHandler.h">
       <Filter>Engine\include\handler</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\ObjectHandler.h">
+    <ClInclude Include="include\handlers\ObjectHandler.h">
       <Filter>Engine\include\handler</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\SpriteHandler.h">
+    <ClInclude Include="include\handlers\SpriteHandler.h">
       <Filter>Engine\include\handler</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\base\EngineBase.h">
+    <ClInclude Include="include\base\EngineBase.h">
       <Filter>Engine\include\base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\base\Input.h">
+    <ClInclude Include="include\base\Input.h">
       <Filter>Engine\include\base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\base\Win32Render.h">
+    <ClInclude Include="include\base\Win32Render.h">
       <Filter>Engine\include\base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\base\Win32Window.h">
+    <ClInclude Include="include\base\Win32Window.h">
       <Filter>Engine\include\base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\utils\Camera.h">
+    <ClInclude Include="include\utils\Camera.h">
       <Filter>Engine\include\utils</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\utils\CropInfo.h">
+    <ClInclude Include="include\utils\CropInfo.h">
       <Filter>Engine\include\utils</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\utils\Image.h">
+    <ClInclude Include="include\utils\Image.h">
       <Filter>Engine\include\utils</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\utils\Math.h">
+    <ClInclude Include="include\utils\Math.h">
       <Filter>Engine\include\utils</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\utils\RGBA.h">
+    <ClInclude Include="include\utils\RGBA.h">
       <Filter>Engine\include\utils</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\utils\Shader.h">
+    <ClInclude Include="include\utils\Shader.h">
       <Filter>Engine\include\utils</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\TaffyEngine.h">
+    <ClInclude Include="TaffyEngine.h">
       <Filter>Engine\include</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\utils\Utils.h">
+    <ClInclude Include="include\utils\Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\base\controls\Trigger.h">
+    <ClInclude Include="include\base\controls\Trigger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\base\controls\Controls.h">
+    <ClInclude Include="include\base\controls\Controls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\objects\Object.h">
+    <ClInclude Include="include\handlers\objects\Object.h">
       <Filter>Engine\include\handler\objects</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\utils\Timer.h">
+    <ClInclude Include="include\utils\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\include\handlers\objects\ScreenButton.h">
+    <ClInclude Include="include\handlers\objects\ScreenButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Engine\TODO.txt">
+    <Text Include="TODO.txt">
       <Filter>Engine</Filter>
     </Text>
   </ItemGroup>

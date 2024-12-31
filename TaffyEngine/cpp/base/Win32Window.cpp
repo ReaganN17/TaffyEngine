@@ -133,10 +133,6 @@ void Win32Window::run(void (*init)(), void(*loop)()) {
 	}
 }
 
-void Win32Window::end() {
-	running = false;
-}
-
 float Win32Window::getDT() {
 	return delta_time;
 }

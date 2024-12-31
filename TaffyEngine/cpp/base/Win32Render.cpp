@@ -8,7 +8,7 @@ float Win32Render::render_scale;
 
 void* Win32Render::memory;
 
-float Win32Render::aspect_ratio = 16 / 9.f;
+float Win32Render::aspect_ratio = 4 / 3.f;
 int Win32Render::coord_height = 540;
 
 void Win32Render::updateValues() {
@@ -36,15 +36,6 @@ void Win32Render::clearScreen(u32 color) {
 		u32* pixel = (u32*)memory + screenOffset + y * Win32Window::window_width;
 		for (int x = 0; x < screenWidth; x++) {
 			*pixel++ = color;
-		}
-	}
-}
-
-void Win32Render::renderFillerBG() {
-	for (int i = 0; i < screenHeight; i++) {
-		u32* pixel = (u32*)memory + screenOffset + i * Win32Window::window_width;
-		for (int x = 0; x < screenWidth; x++) {
-			*pixel++ = x;
 		}
 	}
 }

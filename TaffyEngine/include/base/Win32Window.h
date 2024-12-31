@@ -39,9 +39,6 @@ private:
 public:
 	static LPCWSTR window_name;
 
-	//Ends and destroys the Window
-	static void end();
-
 	/**
 	* Returns time between frames
 	* Used for consistent object movement

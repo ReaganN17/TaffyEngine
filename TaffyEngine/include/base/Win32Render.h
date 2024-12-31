@@ -84,7 +84,4 @@ public:
 	static void draw_number(int number, float x, float y, float size);
 	static void draw_digit(int digit, float x, float y, float size);
 
-	//Renders a filler BG I use; delete soon
-	static void renderFillerBG();
-
 };

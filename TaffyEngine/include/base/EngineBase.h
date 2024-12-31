@@ -21,12 +21,14 @@ private:
 
     //Disables construction
     EngineBase() = delete;
-public:
+
     //Initializes the Engine; ie initializes Window, Controls, etc
     static void initialize();
 
     //Engine loop method; ie renders objects, run events, update controls, etc
     static void execute();
+
+public:
 
     /**Starts and runs the engine
     *
@@ -34,4 +36,7 @@ public:
     * @param loop method
     */
     static void run(std::function<void()> init, std::function<void()> loop);
+
+    //Ends the Engine and closes out the Window
+    static void end();
 };

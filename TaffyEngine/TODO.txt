@@ -5,6 +5,7 @@ Rendering
 - optimize RGBA calculations
 
 General
+- (low priority) organize Win32Window and Win32Render variables
 - (low priority) Consider changing from const char* to std::string
 
 Controls

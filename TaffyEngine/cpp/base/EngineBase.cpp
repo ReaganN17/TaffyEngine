@@ -27,3 +27,7 @@ void EngineBase::run(std::function<void()> init, std::function<void()> loop) {
     loop_outside = loop;
     Win32Window::run(initialize, execute);
 }
+
+void EngineBase::end() {
+    Win32Window::running = false;
+}

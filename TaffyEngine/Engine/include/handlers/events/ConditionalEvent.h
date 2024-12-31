@@ -1,13 +1,15 @@
 #pragma once
 
-#include "EventHeader.h"
+#include "../../utils/Utils.h"
+
+#include "Event.h"
 
 /*
 ConditionalEvent Class; inherits Event Class
 
 Given two events and a condition, will check condition upon initialization and select one of the events based on the condition
 */
-class ConditionalEvent final : Event {
+class ConditionalEvent final : public Event {
 public:
 
 	/**

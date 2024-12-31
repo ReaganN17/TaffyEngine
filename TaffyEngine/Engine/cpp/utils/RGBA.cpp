@@ -1,4 +1,4 @@
-#include "../../include/utils/Utils.h"
+#include "../../include/utils/RGBA.h"
 
 #define ALPHA(rgb) (u8)(rgb >> 24)
 #define RED(rgb)   (u8)(rgb >> 16)
@@ -7,7 +7,8 @@
 
 #define BLEND(back, front, alpha) (u8) (((front * alpha) + (back * (255 - alpha))) / 255)
 
-//rgba class
+RGBA::RGBA() {}
+
 RGBA::RGBA(u8 r, u8 g, u8 b, u8 a = 255) : r(r), g(g), b(b), a(a) {}
 
 RGBA::RGBA(u32 hex) {
@@ -17,11 +18,11 @@ RGBA::RGBA(u32 hex) {
 	b = hex;
 }
 
-RGBA::RGBA(u8* ImgData, u32 src, u8 size) {
-	r = (ImgData[src] & 0xff);
-	g = (ImgData[((size > 2) ? 1 : 0) + src] & 0xff);
-	b = (ImgData[((size > 2) ? 2 : 0) + src] & 0xff);
-	a = (size % 2 == 0) ? ImgData[src + ((size > 2) ? 3 : 1)] : 255;
+RGBA::RGBA(Image& image, u32 data_index) {
+	r = (image.data[data_index] & 0xff);
+	g = (image.data[((image.channels > 2) ? 1 : 0) + data_index] & 0xff);
+	b = (image.data[((image.channels > 2) ? 2 : 0) + data_index] & 0xff);
+	a = (image.channels % 2 == 0) ? image.data[data_index + ((image.channels > 2) ? 3 : 1)] : 255;
 }
 
 u32 RGBA::toHex(u32 back, u8 opac) {

@@ -165,6 +165,15 @@
     <ClCompile Include="Engine\cpp\utils\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\cpp\handlers\objects\ScreenButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameExample\MyButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameExample\MoveObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\include\handlers\events\ConditionalEvent.h">
@@ -258,6 +267,9 @@
       <Filter>Engine\include\handler\objects</Filter>
     </ClInclude>
     <ClInclude Include="Engine\include\utils\Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\include\handlers\objects\ScreenButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

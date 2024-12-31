@@ -3,17 +3,17 @@
 //Header file for all the Events
 
 //Forward Declarations
-struct Event;
-struct WaitUntil;
-struct ParallelRace;
-struct ParallelDeadline;
-struct ParallelEvent;
-struct SequentialEvent;
-struct ConditionalEvent;
-struct RepeatEvent;
-struct FunctionalEvent;
-struct InstantEvent;
-struct RunEvent;
+class Event;
+class WaitUntil;
+class ParallelRace;
+class ParallelDeadline;
+class ParallelEvent;
+class SequentialEvent;
+class ConditionalEvent;
+class RepeatEvent;
+class FunctionalEvent;
+class InstantEvent;
+class RunEvent;
 
 //Include files
 #include "Event.h"

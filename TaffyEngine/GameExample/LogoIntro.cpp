@@ -11,14 +11,14 @@ struct LogoIntro : Event {
 
 	void init() {
 		new (&logo) Object(0, 0, Win32Render::coord_width, Win32Render::coord_height, "Taffy_Logo", Z_MIDDLE);
-		logo.setShader(0);
+		logo.setOpacity(0);
 	}
 
 	void loop() {
-		opacity += (flip) ? -125 * Win32Window::delta_time : 125 * Win32Window::delta_time;
+		opacity += (flip) ? -125 * Win32Window::getDT() : 125 * Win32Window::getDT();
 
 		if (opacity >= 255) flip = true;
-		logo.setShader(math::clamp(0, opacity, 255));
+		logo.setOpacity(math::clamp(0, opacity, 255));
 
 		if (Input::is_pressed(VK_RETURN)) flip = true;
 	}
@@ -28,9 +28,9 @@ struct LogoIntro : Event {
 	}
 
 	void end(bool interrupted) {
-		logo.setShader(0);
+		logo.setOpacity(0);
 		logo.getSprite()->unload();
-		ObjectHandler::getInstance().removeObject(&logo);
+		ObjectHandler::removeObject(&logo);
 	}
 
 };

@@ -1,9 +1,10 @@
 #pragma once
 
 #include "../utils/Utils.h"
-#include "../base/Win32Window.h"
-#include "../base/Win32Render.h"
+#include "Win32Window.h"
+#include "Win32Render.h"
 
+//Button State Union
 union Button_State {
 	u8 byte = 0;
 	struct {
@@ -19,7 +20,7 @@ Input Class
 Manages the keybaord and mouse inputs
 */
 class Input final {
-	friend Win32Window;
+	friend class Win32Window;
 
 private:
 	static Button_State buttons[255];
@@ -32,7 +33,7 @@ private:
 	* 
 	* @param Window Handle
 	*/
-	static void updateMouse(HWND window);
+	static void updateMouse();
 
 	/**
 	* processes buttons and updates their status
@@ -41,6 +42,14 @@ private:
 	* @param associated status
 	*/
 	static void processButtons(u32 vkcode, bool d);
+
+	/**
+	* Processes mouse buttons and updates their status
+	* Separate from keyboard buttons for some reason
+	* 
+	* @param Button to check
+	*/
+	static void processMouseButtons(u32 vkcode);
 
 	//Disables Construction
 	Input() = delete;

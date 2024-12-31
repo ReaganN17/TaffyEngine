@@ -1,8 +1,17 @@
 #include "../../include/base/Input.h"
 
+Button_State Input::buttons[255];
+POINT Input::mouse;
+
 void Input::processButtons(u32 vk, bool d) {
 	buttons[vk].changed = d != buttons[vk].down;
 	buttons[vk].down = d;
+}
+
+void Input::processMouseButtons(u32 vk) {
+	buttons[vk].changed = GetAsyncKeyState(vk) != buttons[vk].down;
+	buttons[vk].down = GetAsyncKeyState(vk);
+
 }
 
 void Input::setKeyUnchanged() {
@@ -11,9 +20,9 @@ void Input::setKeyUnchanged() {
 		buttons[i].changed = false;
 	}
 }
-void Input::updateMouse(HWND window) {
+void Input::updateMouse() {
 	GetCursorPos(&mouse);
-	ScreenToClient(window, &mouse);
+	ScreenToClient(Win32Window::window, &mouse);
 	mouse.y = Win32Render::coord_height * 0.5f - (mouse.y - Win32Render::yOffset) * (Win32Render::coord_height / (float)Win32Render::screenHeight);
 	mouse.x = (mouse.x - (Win32Window::window_width * 0.5f)) * (Win32Render::coord_height / (float)Win32Render::screenHeight);
 	mouse.x = math::clamp(-Win32Render::coord_width * 0.5, (float)mouse.x, Win32Render::coord_width * 0.5f);

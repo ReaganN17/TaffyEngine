@@ -1,12 +1,14 @@
 #pragma once
-#include "EventHeader.h"
+
+#include "../../utils/Utils.h"
+#include "Event.h"
 
 /*
 RunEvent Class; inherits Event Class
 
 Given a method, will run it on loop until event is cancelled externally
 */
-class RunEvent final : Event {
+class RunEvent final : public Event {
 public:
 	/**
 	* Constructor

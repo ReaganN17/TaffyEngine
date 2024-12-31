@@ -1,5 +1,7 @@
 #pragma once
-#include "EventHeader.h"
+
+#include "../../utils/Utils.h"
+#include "Event.h"
 
 /*
 ParallelRace Class; inherits Event Class
@@ -7,7 +9,7 @@ ParallelRace Class; inherits Event Class
 Runs multiple Events at the same time
 When the first Event ends, the rest of the events will cancel
 */
-class ParallelRace : Event {
+class ParallelRace : public Event {
 public:
 
 	//Default constructor for inheritance

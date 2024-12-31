@@ -1,5 +1,7 @@
 #pragma once
-#include "EventHeader.h"
+#include "../../utils/Utils.h"
+
+#include "Event.h"
 
 /*
 ParallelDeadLine Class; inherits Event Class
@@ -7,7 +9,7 @@ ParallelDeadLine Class; inherits Event Class
 Runs multiple Events at the same time, but runs one of the as a deadline
 When the deadline Event ends, all the Events still running will cancel
 */
-struct ParallelDeadline : Event {
+class ParallelDeadline :public Event {
 public:
 	//Default Constructor for inheritance
 	ParallelDeadline();

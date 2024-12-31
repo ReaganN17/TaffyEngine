@@ -1,8 +1,8 @@
 #pragma once
 
-#include "events/EventHeader.h"
+#include "../utils/Utils.h"
 #include "objects/Object.h"
-#include "../base/EngineBase.h"
+#include "events/Event.h"
 
 /*
 Event Handler Class
@@ -10,7 +10,8 @@ Event Handler Class
 Contains, manages and runs Events;
 */
 class EventHandler final {
-	friend Event;
+	friend class Event;
+	friend class EngineBase;
 
 private:
 	/**
@@ -33,6 +34,9 @@ private:
 
 	//Disable Construction
 	EventHandler() = delete;
+
+	//Runs the scheduled Events
+	static void runEvents();
 public:
 	/**
 	* Schedules the Event to start running
@@ -70,9 +74,6 @@ public:
 	* @param Vector List of Objects to check
 	*/
 	static void cancelRequirements(std::vector<Object*> objects);
-
-	//Runs the scheduled Events
-	static void runEvents();
 
 	//Cancels all scheduled Events and clears the list
 	static void clearEvents();

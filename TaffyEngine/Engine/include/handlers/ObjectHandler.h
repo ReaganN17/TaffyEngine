@@ -1,7 +1,8 @@
 #pragma once
 
-#include "SpriteHandler.h"
 #include "objects/Object.h"
+#include "../utils/Utils.h"
+
 
 /*
 ObjectHandler Class
@@ -10,7 +11,8 @@ Contains and manages all registered objects
 */
 class ObjectHandler final {
 
-	friend SpriteHandler;
+	friend class SpriteHandler;
+	friend class EngineBase;
 
 private:
 	static std::vector<Object*> FarBack_0;

@@ -2,9 +2,6 @@
 
 #include "../utils/Utils.h"
 #include "Win32Window.h"
-#include "../handlers/objects/Object.h"
-#include "EngineBase.h"
-#include "Input.h"
 
 /*
 Win32Render Class
@@ -12,16 +9,15 @@ Win32Render Class
 Contains window render methods and properties
 */
 class Win32Render final {
-	friend Win32Window;
-	friend Object;
-	friend EngineBase;
-	friend Input;
+	friend class Win32Window;
+	friend class Object;
+	friend class EngineBase;
+	friend class Input;
 
 private:
 	static int screenWidth, screenHeight;
 	static int screenOffset, yOffset, xOffset;
-	static float render_scale, aspect_ratio;
-	static int coord_height, coord_width;
+	static float render_scale;
 
 	static void* memory;
 
@@ -33,7 +29,7 @@ private:
 
 	/**
 	* clears ENTIRE screen, used for when window size changes
-	* 
+	*
 	* @param color to clear screen with
 	*/
 	static void clearEntireScreen(u32 color);
@@ -47,7 +43,7 @@ private:
 
 	/**
 	* Renders a basic rectangle
-	* 
+	*
 	* @param x, y Location
 	* @param w, h Dimensions
 	* @param Color of Rectangle
@@ -66,16 +62,20 @@ private:
 	static void renderImage(Image& img, float x, float y, float w, float h, Shader& shade);
 
 public:
+
+	static int coord_height, coord_width;
+	static float aspect_ratio;
+
 	/**
 	* Returns the coordinate height of the render window
-	* 
+	*
 	* @return int value of the coordinate height
 	*/
 	static int getCoordHeight();
 
 	/**
 	* Returns the coordinate width of the render window
-	* 
+	*
 	* @return int value of the coordinate width
 	*/
 	static int getCoordWidth();
@@ -86,4 +86,5 @@ public:
 
 	//Renders a filler BG I use; delete soon
 	static void renderFillerBG();
+
 };

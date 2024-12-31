@@ -1,6 +1,7 @@
 #pragma once
 
-namespace math {
-	int clamp(int min, int val, int max);
-	float clamp(float min, float val, float max);
-}
+//Math Utilities
+struct math final {
+	static int clamp(int min, int val, int max);
+	static float clamp(float min, float val, float max);
+};

@@ -1,4 +1,4 @@
-#include "../../include/utils/Utils.h"
+#include "../../include/utils/Timer.h"
 
 Timer::Timer() {}
 
@@ -8,4 +8,8 @@ void Timer::start() {
 
 long Timer::getTime() {
 	return GetTickCount() - start_time;
+}
+
+bool Timer::hasElapsed(long time) {
+	return getTime() >= time;
 }

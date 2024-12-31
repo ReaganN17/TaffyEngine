@@ -1,10 +1,14 @@
 #pragma once
 
+
 #include "../../utils/Utils.h"
+
+class Sprite;
 #include "../sprites/Sprites.h"
 
+
 //Z value layers for the Object rendering
-enum zLayer :u8 {
+enum zLayer : u8 {
 	Z_FARBACK, //Furthest Back Layer
 	Z_BACK, //Back Layer
 	Z_MIDDLE, //Middle Layer
@@ -20,7 +24,8 @@ Contains basic Object properties: position, sprite, shader
 Either a rectangle, a sprite, or nothing
 */
 class Object {
-	friend ObjectHandler;
+	friend class ObjectHandler;
+	friend class ScreenButton;
 
 private:
 	Sprite* sprite = nullptr;
@@ -33,6 +38,15 @@ private:
 
 	float x = 0, y = 0, w = 0, h = 0;
 
+	//Renders the object
+	void render();
+
+	//Updates the object
+	virtual void update();
+
+protected:
+	//Runs periodically
+	virtual void periodic();
 public:
 	//Default Constructor
 	Object();
@@ -83,11 +97,8 @@ public:
 	*/
 	Object(float x, float y, float w, float h, u32 c, zLayer z);
 
-	//Renders the object
-	virtual void render();
-
-	//Updates the object
-	virtual void update();
+	//Deconstructor
+	~Object();
 
 	/**
 	* Sets the x and y position of the object

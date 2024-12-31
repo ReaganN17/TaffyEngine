@@ -1,4 +1,5 @@
 #include "../../../include/handlers/events/RepeatEvent.h"
+#include "../../../include/handlers/events/WaitUntil.h"
 
 RepeatEvent::RepeatEvent(Event* event) {
 	this->event = event;

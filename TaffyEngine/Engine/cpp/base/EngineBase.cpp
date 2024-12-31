@@ -1,7 +1,7 @@
 #include "../../include/base/EngineBase.h"
 
-std::function<void()> init_outside = []() {};
-std::function<void()> loop_outside = []() {};
+std::function<void()> EngineBase::init_outside = []() {};
+std::function<void()> EngineBase::loop_outside = []() {};
 
 void EngineBase::initialize() {
     Win32Render::updateValues();
@@ -17,10 +17,10 @@ void EngineBase::execute() {
     Controls::update();
     ObjectHandler::updateAllObjects();
 	EventHandler::runEvents();
-    SpriteHandler::handleSprites();
+    SpriteHandler::handleSprites(1000);
 	ObjectHandler::renderAllObjects();
 
-    Win32Render::draw_number(Win32Window::delta_time * 10000, 0, 0, 50);
+    //Win32Render::draw_number(Input::is_down(VK_LBUTTON), 0, 0, 50);
 }
 void EngineBase::run(std::function<void()> init, std::function<void()> loop) {
     init_outside = init;

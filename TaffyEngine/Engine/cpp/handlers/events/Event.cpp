@@ -1,5 +1,7 @@
 #include "../../../include/handlers/events/Event.h"
 
+#include "../../../include/handlers/events/EventHeader.h"
+
 Event::Event() {}
 
 void Event::destruct() { if (linked) delete this; }

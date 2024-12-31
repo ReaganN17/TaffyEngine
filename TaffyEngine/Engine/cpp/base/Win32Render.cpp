@@ -1,5 +1,13 @@
 #include "../../include/base/Win32Render.h"
 
+
+int Win32Render::screenWidth, Win32Render::screenHeight;
+int Win32Render::screenOffset, Win32Render::yOffset, Win32Render::xOffset;
+int Win32Render::coord_width;
+float Win32Render::render_scale;
+
+void* Win32Render::memory;
+
 float Win32Render::aspect_ratio = 16 / 9.f;
 int Win32Render::coord_height = 540;
 
@@ -87,7 +95,7 @@ void Win32Render::renderImage(Image& img, float x, float y, float w, float h, Sh
 			u32* pixel = (u32*)memory + x0 + offsetLeft + screenOffset + ((size_y - 1) - i + y0) * Win32Window::window_width;
 			for (int j = offsetLeft; j < size_x - offsetRight; j++) {
 				src = img.channels * ((int)(j / wscale) + img.w * (int)(i / hscale));
-				*pixel++ = RGBA(img.data, src, img.channels).shade(shade.shade_color, shade.shade_scale).toHex(*pixel, shade.opacity);
+				*pixel++ = RGBA(img, src).shade(shade.shade_color, shade.shade_scale).toHex(*pixel, shade.opacity);
 			}
 		}
 	}
@@ -97,7 +105,7 @@ int Win32Render::getCoordHeight() {
 	return coord_height;
 }
 
-int Win32Render::getCoordHeight() {
+int Win32Render::getCoordWidth() {
 	return coord_width;
 }
 

@@ -146,6 +146,7 @@
     <ClCompile Include="Engine\cpp\handlers\events\WaitUntil.cpp" />
     <ClCompile Include="Engine\cpp\handlers\ObjectHandler.cpp" />
     <ClCompile Include="Engine\cpp\handlers\objects\Object.cpp" />
+    <ClCompile Include="Engine\cpp\handlers\objects\ScreenButton.cpp" />
     <ClCompile Include="Engine\cpp\handlers\SpriteHandler.cpp" />
     <ClCompile Include="Engine\cpp\handlers\sprites\Sprite.cpp" />
     <ClCompile Include="Engine\cpp\utils\Camera.cpp" />
@@ -180,6 +181,18 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GameExample\MoveObject.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GameExample\MyButton.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +216,7 @@
     <ClInclude Include="Engine\include\handlers\events\WaitUntil.h" />
     <ClInclude Include="Engine\include\handlers\ObjectHandler.h" />
     <ClInclude Include="Engine\include\handlers\objects\Object.h" />
+    <ClInclude Include="Engine\include\handlers\objects\ScreenButton.h" />
     <ClInclude Include="Engine\include\handlers\SpriteHandler.h" />
     <ClInclude Include="Engine\include\handlers\sprites\Sprites.h" />
     <ClInclude Include="Engine\include\TaffyEngine.h" />

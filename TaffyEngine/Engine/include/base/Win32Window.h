@@ -1,8 +1,9 @@
 #pragma once
 
 #include "../utils/Utils.h"
+
 #include "Win32Render.h"
-#include "EngineBase.h"
+#include "Input.h"
 
 /*
 Win32Window Class
@@ -10,9 +11,9 @@ Win32Window Class
 Contains Window methods and properites
 */
 class Win32Window final {
-	friend Win32Render;
-	friend Input;
-	friend EngineBase;
+	friend class Win32Render;
+	friend class Input;
+	friend class EngineBase;
 
 private:
 	static HWND window;

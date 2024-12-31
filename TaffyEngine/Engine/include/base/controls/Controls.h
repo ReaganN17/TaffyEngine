@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../../base/controls/Trigger.h"
+#include "Trigger.h"
+#include "../../utils/Utils.h"
 
 /*
 Controls Class

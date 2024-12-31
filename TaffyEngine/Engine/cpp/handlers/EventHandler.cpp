@@ -1,5 +1,7 @@
 #include "../../include/handlers/EventHandler.h"
 
+std::vector<Event*> EventHandler::events;
+
 bool EventHandler::addEvent(Event* event) {
 	auto key = std::find(events.begin(), events.end(), event);
 	if (key == events.end()) {

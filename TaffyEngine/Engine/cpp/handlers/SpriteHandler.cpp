@@ -1,5 +1,8 @@
 #include "../../include/handlers/SpriteHandler.h"
+#include "../../include/handlers/ObjectHandler.h"
 
+std::map<const char*, Sprite*> SpriteHandler::sprites;
+Timer SpriteHandler::handle_frequency;
 
 void SpriteHandler::addSprite(const char* sprite_name, Sprite* sprite) {
 	sprites[sprite_name] = sprite;
@@ -23,18 +26,22 @@ Sprite* SpriteHandler::getSprite(const char* sprite_name) {
 	return sprites[sprite_name];
 }
 
-void SpriteHandler::handleSprites() {
-	for (auto sprite : sprites) {
-		bool double_break = false;
-		for (auto it : ObjectHandler::objects) {
-			for (auto object : *it) {
-				if (object->getSprite() == sprite.second) {
-					double_break = true;
-					break;
+void SpriteHandler::handleSprites(long frequency) {
+	if (handle_frequency.hasElapsed(frequency)) {
+		for (auto sprite : sprites) {
+			bool double_break = false;
+			for (auto it : ObjectHandler::objects) {
+				for (auto object : *it) {
+					if (object->getSprite() == sprite.second) {
+						double_break = true;
+						break;
+					}
 				}
+				if (double_break) break;
 			}
-			if (double_break) break;
+			if (!double_break) sprite.second->unload();
 		}
-		if (!double_break) sprite.second->unload();
+
+		handle_frequency.start();
 	}
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../base/controls/Controls.h"
 #include "../../utils/Utils.h"
+#include "../../handlers/events/EventHeader.h"
 
 //Trigger Types
 enum TriggerType : u8 {
@@ -20,9 +20,9 @@ Trigger Class
 Allows an event to be scheduled based on condition activity
 */
 class Trigger final {
-	friend Controls;
+	friend class Controls;
 
-	std::function<Event*()> factory = []() {return new WaitUntil((long)0); };
+	std::function<Event* ()> factory = []() {return (Event*) new WaitUntil((long)0); };
 	std::function<bool()> condition = []() {return false; };
 	Event* event = nullptr;
 	TriggerType type = ON_CHANGE;

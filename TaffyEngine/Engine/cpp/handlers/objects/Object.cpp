@@ -1,4 +1,7 @@
-#include "../../../include/TaffyEngine.h"
+#include "../../../include/handlers/objects/Object.h"
+#include "../../../include/handlers/ObjectHandler.h"
+#include "../../../include/handlers/SpriteHandler.h"
+#include "../../../include/base/Win32Render.h"
 
 Object::Object() {
 	x = 0;
@@ -6,7 +9,7 @@ Object::Object() {
 }
 
 Object::Object(float x, float y, zLayer z) : x(x), y(y), z_layer(z) {
-	ObjectHandler::addObject(this, z);
+	ObjectHandler::addObject(this);
 	instance = true;
 }
 Object::Object(float x, float y, float w, float h, zLayer z) : Object(x, y, z) {
@@ -35,6 +38,11 @@ Object::Object(float x, float y, float w, float h, u32 c, zLayer z) : Object(x, 
 	this->h = h;
 }
 
+Object::~Object() {
+	ObjectHandler::removeObject(this);
+	instance = false;
+}
+
 void Object::render() {
 	if (hidden || !camera->isActivated()) return;
 
@@ -56,6 +64,10 @@ void Object::render() {
 	}
 }
 void Object::update() {
+	periodic();
+}
+
+void Object::periodic() {
 
 }
 

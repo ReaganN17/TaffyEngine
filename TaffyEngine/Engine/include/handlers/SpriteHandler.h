@@ -1,15 +1,21 @@
 #pragma once
-
 #include "../utils/Utils.h"
-#include "../base/EngineBase.h"
+#include "sprites/Sprites.h"
 
+/*
+SpriteHandler Class
+
+Manages all the Sprites and their corresponding names
+*/
 class SpriteHandler final {
-	friend EngineBase;
+	friend class EngineBase;
 
 private:
 	static std::map<const char*, Sprite*> sprites;
+	static Timer handle_frequency;
 
-	static void handleSprites();
+	//Handles the Sprite; makes unused Sprites unload
+	static void handleSprites(long frequency);
 
 	//Disables Construction
 	SpriteHandler() = delete;

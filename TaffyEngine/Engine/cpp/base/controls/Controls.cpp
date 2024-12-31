@@ -1,5 +1,8 @@
 #include "../../../include/base/controls/Controls.h"
 
+
+std::vector<Trigger*> Controls::triggers;
+
 void Controls::initialize() {
 	for (auto trigger : triggers) {
 		trigger->initialize();

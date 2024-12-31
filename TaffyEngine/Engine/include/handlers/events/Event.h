@@ -1,6 +1,7 @@
 #pragma once
 
-#include "EventHeader.h"
+
+#include "../objects/Object.h"
 #include "../EventHandler.h"
 
 /*
@@ -10,13 +11,13 @@ Events hold 4 required methods: init, loop, end, and isFinished
 User can create Event, by class inheritance, to wrap methods to be called in more advanced ways,
 */
 class Event {
-	friend ParallelRace;
-	friend ParallelEvent;
-	friend ParallelDeadline;
-	friend SequentialEvent;
-	friend RepeatEvent;
-	friend ConditionalEvent;
-	friend EventHandler;
+	friend class ParallelRace;
+	friend class ParallelEvent;
+	friend class ParallelDeadline;
+	friend class SequentialEvent;
+	friend class RepeatEvent;
+	friend class ConditionalEvent;
+	friend class EventHandler;
 
 public:
 	//Default Constructor

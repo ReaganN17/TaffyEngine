@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../utils/Utils.h"
-#include "../../include/base/controls/Controls.h"
-#include "../../include/base/Win32Render.h"
-#include "../../include/base/Win32Window.h"
-#include "../../include/handlers/EventHandler.h"
-#include "../../include/handlers/ObjectHandler.h"
-#include "../../include/handlers/SpriteHandler.h"
+#include "Win32Render.h"
+#include "Win32Window.h"
+#include "controls/Controls.h"
+#include "../handlers/EventHandler.h"
+#include "../handlers/ObjectHandler.h"
+#include "../handlers/SpriteHandler.h"
 
 /*
 EngineBase Class
@@ -29,9 +29,9 @@ public:
     static void execute();
 
     /**Starts and runs the engine
-    * 
+    *
     * @param initialize method
     * @param loop method
     */
     static void run(std::function<void()> init, std::function<void()> loop);
-}
+};

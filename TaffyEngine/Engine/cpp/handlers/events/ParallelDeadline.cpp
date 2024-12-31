@@ -1,4 +1,5 @@
 #include "../../../include/handlers/events/ParallelDeadline.h"
+#include "../../../include/handlers/events/WaitUntil.h"
 
 ParallelDeadline::ParallelDeadline() {};
 
@@ -24,7 +25,7 @@ void ParallelDeadline::setDeadline(Event* deadline) {
 }
 
 void ParallelDeadline::init() {
-	if (deadline == nullptr) deadline == new WaitUntil((long)0);
+	if (deadline == nullptr) deadline = new WaitUntil((long)0);
 
 	deadline->init();
 	deadline->setRunning(true);

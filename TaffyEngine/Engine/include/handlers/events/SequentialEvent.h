@@ -1,5 +1,7 @@
 #pragma once
-#include "EventHeader.h"
+
+#include "../../utils/Utils.h"
+#include "Event.h"
 
 /*
 SequentialEvent Class; inherits Event Class
@@ -7,7 +9,7 @@ SequentialEvent Class; inherits Event Class
 Group of events that are scheduled one after the other in a sequence
 Avoid using non self-terminating Events
 */
-class SequentialEvent : Event {
+class SequentialEvent : public Event {
 public:
 	//Default constructor for inheritance
 	SequentialEvent();

@@ -2,6 +2,14 @@
 
 bool Win32Window::running = false;
 
+HWND Win32Window::window;
+MONITORINFO Win32Window::mi;
+BITMAPINFO Win32Window::bitmap_info;
+int Win32Window::window_width, Win32Window::window_height, Win32Window::window_sizeInBits;
+float Win32Window::delta_time = 0.016666f;
+
+LPCWSTR Win32Window::window_name;
+
 LRESULT CALLBACK Win32Window::window_callback(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	LRESULT result = 0;
 	switch (uMsg) {
@@ -80,17 +88,11 @@ void Win32Window::run(void (*init)(), void(*loop)()) {
 	while (running) {
 		MSG message;
 		
-		Input::updateMouse(window);
+		Input::updateMouse();
 		Input::setKeyUnchanged();
 
 		while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
 			switch (message.message) {
-			//case WM_LBUTTONDOWN:
-			//case WM_LBUTTONUP:
-			//case WM_RBUTTONDOWN:
-			//case WM_RBUTTONUP:
-			//case WM_MBUTTONDOWN:
-			//case WM_MBUTTONUP:
 			case WM_KEYUP:
 			case WM_KEYDOWN: {
 				Input::processButtons((u32)message.wParam, ((message.lParam & (1 << 31)) == 0));
@@ -107,6 +109,14 @@ void Win32Window::run(void (*init)(), void(*loop)()) {
 			}
 			}
 		}
+
+
+		//TODO: figure out how to get rid of this
+		Input::processMouseButtons(VK_LBUTTON);
+		Input::processMouseButtons(VK_RBUTTON);
+		Input::processMouseButtons(VK_MBUTTON);
+		Input::processMouseButtons(VK_XBUTTON1);
+		Input::processMouseButtons(VK_XBUTTON2);
 
 		// Simulate
 		loop();

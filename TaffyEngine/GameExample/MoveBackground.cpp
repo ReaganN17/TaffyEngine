@@ -1,13 +1,13 @@
 
-struct MoveBackground : Event {
+class MoveBackground : public Event {
 	Object bg;
 	Timer timer;
 
 	float time = 4;
-	float change_time = 2;
-
+	u8 bg_num = 0;
+public:
 	MoveBackground() {}
-
+private:
 	void init() {
 		new (&bg) Object(0, 0, "Moving_BG_0", Z_FARBACK);
 		bg.setSize(Win32Render::coord_width * 2, Win32Render::coord_height * 2);
@@ -17,23 +17,32 @@ struct MoveBackground : Event {
 	}
 
 	void loop() {
-		if (timer.getTime() > change_time * 3 * 1000) { timer.start(); bg.setSprite("Moving_BG_0"); }
-		else if (timer.getTime() > change_time * 2 * 1000) {bg.setSprite("Moving_BG_1");}
-		else if (timer.getTime() > change_time * 1000) { bg.setSprite("Moving_BG_2"); }
+		if (timer.hasElapsed(6000)) { 
+			timer.start(); 
+			bg.setSprite("Moving_BG_0"); 
+			bg_num = 0; 
+		}
+		else if (timer.hasElapsed(4000)) {
+			if (bg_num != 1) { bg.setSprite("Moving_BG_1"); bg_num = 1; }
+			
+		}
+		else if (timer.hasElapsed(2000)) { 
+			if (bg_num != 2) { bg.setSprite("Moving_BG_2"); bg_num = 2; }
+		}
 
 		bg.setPos(
 			fmod(
 				bg.getX() 
-				- Win32Render::coord_width * Win32Window::delta_time / time
+				- Win32Render::coord_width * Win32Window::getDT() / time
 				- Win32Render::coord_width/2, Win32Render::coord_width) + Win32Render::coord_width / 2,
 			fmod(
 				bg.getY() 
-				- Win32Render::coord_height * Win32Window::delta_time / time 
+				- Win32Render::coord_height * Win32Window::getDT()/ time 
 				- Win32Render::coord_height/2, Win32Render::coord_height) + Win32Render::coord_height/2);
 	}
 
 	void end(bool interrupted) {
-		ObjectHandler::getInstance().removeObject(&bg);
+		ObjectHandler::removeObject(&bg);
 	
 	}
 

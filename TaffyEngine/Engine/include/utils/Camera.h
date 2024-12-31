@@ -27,7 +27,7 @@ public:
 	* Point amd zoom Constructor
 	*
 	* @param x, y coordinate
-	* @param zoom
+	* @param zoom > 0
 	*/
 	Camera(float x, float y, float z);
 
@@ -47,7 +47,7 @@ public:
 	/**
 	* Sets the zoom of the camera
 	* 
-	* @param Zoom
+	* @param Zoom > 0
 	*/
 	void setZoom(float zoom);
 

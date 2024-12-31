@@ -1,12 +1,14 @@
 #pragma once
-#include "EventHeader.h"
+
+#include "../../utils/Utils.h"
+#include "Event.h"
 
 /**
 * WaitUntil Class; inherits Event Class
 * 
 * Event that waits until a condition is true or a certain time has pass before self-terminating
 */
-class WaitUntil final : Event   {
+class WaitUntil final : public Event   {
 public:
 	/**
 	* Constructor for time Event

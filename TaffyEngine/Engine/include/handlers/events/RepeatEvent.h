@@ -1,5 +1,5 @@
 #pragma once
-#include "EventHeader.h"
+#include "Event.h"
 
 /*
 RepeatEvent Class; inherits Event Class
@@ -7,7 +7,7 @@ RepeatEvent Class; inherits Event Class
 Given an Event, will repeat it when it ends
 Will only end with external call of cancel()
 */
-class RepeatEvent final : Event {
+class RepeatEvent final : public Event {
 public:
 	/**
 	* Constructor

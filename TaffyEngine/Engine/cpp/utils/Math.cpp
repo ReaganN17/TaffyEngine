@@ -1,4 +1,4 @@
-#include "../../include/utils/Utils.h"
+#include "../../include/utils/Math.h"
 
 int math::clamp(int min, int val, int max) {
 	if (val < min) return min;

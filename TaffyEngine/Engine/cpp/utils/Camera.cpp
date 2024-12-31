@@ -6,7 +6,7 @@ Camera::Camera() {}
 
 Camera::Camera(float x, float y) : x(x), y(y) {}
 
-Camera::Camera(float x, float y, float zoom) : x(x), y(y), zoom(zoom) {}
+Camera::Camera(float x, float y, float zoom) : Camera(x, y) { setZoom(zoom); }
 
 void Camera::setPos(float x, float y) {
 	this->x = x;
@@ -22,6 +22,7 @@ void Camera::deactivate() {
 }
 
 void Camera::setZoom(float zoom) {
+	if (zoom <= 0) return;
 	this->zoom = zoom;
 }
 

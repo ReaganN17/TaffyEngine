@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <map>
 #include <functional>
+#include <string>
 
 //Typedefs
 typedef char s8;

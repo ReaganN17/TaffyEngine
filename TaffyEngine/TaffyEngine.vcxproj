@@ -149,6 +149,7 @@
     <ClCompile Include="cpp\handlers\objects\ScreenButton.cpp" />
     <ClCompile Include="cpp\handlers\SpriteHandler.cpp" />
     <ClCompile Include="cpp\handlers\sprites\Sprite.cpp" />
+    <ClCompile Include="cpp\handlers\sprites\TextSprite.cpp" />
     <ClCompile Include="cpp\utils\Camera.cpp" />
     <ClCompile Include="cpp\utils\CropInfo.cpp" />
     <ClCompile Include="cpp\utils\Image.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="include\handlers\objects\ScreenButton.h" />
     <ClInclude Include="include\handlers\SpriteHandler.h" />
     <ClInclude Include="include\handlers\sprites\Sprites.h" />
+    <ClInclude Include="include\handlers\sprites\TextSprite.h" />
     <ClInclude Include="TaffyEngine.h" />
     <ClInclude Include="include\utils\Camera.h" />
     <ClInclude Include="include\utils\CropInfo.h" />

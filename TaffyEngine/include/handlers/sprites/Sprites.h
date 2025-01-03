@@ -6,13 +6,27 @@ Sprite Class
 
 Contains properties of the sprite such as its image, file location, etc
 */
-class Sprite final{
+class Sprite {
+	friend class SpriteHandler;
+	friend class Object;
+	friend class TextSprite;
+
 private:
 	const char* sprite_sheet;
 	CropInfo ci;
 
 	Image sprite_image;
+
+protected:
+	//Loads the Image bitmap into memory
+	virtual void load();
+
+	//Unloads the Image bitmap from memory
+	virtual void unload();
 public:
+	//Default Constructor
+	Sprite();
+
 	/**
 	* Sprite Constructor
 	* 
@@ -30,12 +44,6 @@ public:
 
 	//Deconstructor
 	~Sprite();
-
-	//Loads the Image bitmap into memory
-	void load();
-
-	//Unloads the Image bitmap from memory
-	void unload();
 
 	//@return Sprite Width
 	float getW();

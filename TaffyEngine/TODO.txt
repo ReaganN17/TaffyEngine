@@ -1,4 +1,8 @@
-12/31
+1/3
+Finished base for now
+
+Text
+- Add custom font plugin
 
 Rendering
 - Optimize rendering that's better than current per-pixel rendering

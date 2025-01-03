@@ -1,5 +1,10 @@
 #include "../../../include/handlers/sprites/Sprites.h"
 
+Sprite::Sprite() { 
+	sprite_sheet = ""; 
+	ci = CropInfo(0, 0, -1, -1); 
+}
+
 Sprite::Sprite(const char* sprite) {
 	sprite_sheet = sprite;
 	ci = CropInfo(0, 0, -1, -1);
@@ -37,3 +42,4 @@ bool Sprite::isLoaded() {
 Image& Sprite::getImage() {
 	return sprite_image;
 }
+

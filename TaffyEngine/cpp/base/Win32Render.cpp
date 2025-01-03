@@ -8,7 +8,7 @@ float Win32Render::render_scale;
 
 void* Win32Render::memory;
 
-float Win32Render::aspect_ratio = 4 / 3.f;
+float Win32Render::aspect_ratio = 16 / 9.f;
 int Win32Render::coord_height = 540;
 
 void Win32Render::updateValues() {
@@ -85,7 +85,7 @@ void Win32Render::renderImage(Image& img, float x, float y, float w, float h, Sh
 		for (int i = offsetTop; i < size_y - offsetBottom; i++) {
 			u32* pixel = (u32*)memory + x0 + offsetLeft + screenOffset + ((size_y - 1) - i + y0) * Win32Window::window_width;
 			for (int j = offsetLeft; j < size_x - offsetRight; j++) {
-				src = img.channels * ((int)(j / wscale) + img.w * (int)(i / hscale));
+				src = ((int)(j / wscale) + img.w * (int)(i / hscale));
 				*pixel++ = RGBA(img, src).shade(shade.shade_color, shade.shade_scale).toHex(*pixel, shade.opacity);
 			}
 		}

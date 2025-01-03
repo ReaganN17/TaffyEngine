@@ -19,21 +19,21 @@ RGBA::RGBA(u32 hex) {
 }
 
 RGBA::RGBA(Image& image, u32 data_index) {
-	r = (image.data[data_index] & 0xff);
-	g = (image.data[((image.channels > 2) ? 1 : 0) + data_index] & 0xff);
-	b = (image.data[((image.channels > 2) ? 2 : 0) + data_index] & 0xff);
-	a = (image.channels % 2 == 0) ? image.data[data_index + ((image.channels > 2) ? 3 : 1)] : 255;
+	r = (image.data[data_index * image.channels] & 0xff);
+	g = (image.data[((image.channels > 2) ? 1 : 0) + data_index * image.channels] & 0xff);
+	b = (image.data[((image.channels > 2) ? 2 : 0) + data_index * image.channels] & 0xff);
+	a = (image.channels % 2 == 0) ? image.data[data_index * image.channels + ((image.channels > 2) ? 3 : 1)] : 255;
 }
 
 u32 RGBA::toHex(u32 back, u8 opac) {
-	if (a == 255 && opac == 255) return 0 << 24 | r << 16 | g << 8 | b;
+	if (a == 255 && opac == 255) return toHex();
 	if (a == 0 || opac == 0) return back;
 
-	return 0 << 24 | BLEND(RED(back), r, a * opac / 255.f) << 16 | BLEND(GREEN(back), g, a * opac / 255.f) << 8 | BLEND(BLUE(back), b, a * opac / 255.f);
+	return (u8)(a * opac / 255.f) << 24 | BLEND(RED(back), r, a * opac / 255.f) << 16 | BLEND(GREEN(back), g, a * opac / 255.f) << 8 | BLEND(BLUE(back), b, a * opac / 255.f);
 }
 
 u32 RGBA::toHex() {
-	return 0 << 24 | r << 16 | g << 8 | b;
+	return a << 24 | r << 16 | g << 8 | b;
 }
 
 RGBA& RGBA::shade(u32 shade, u8 scale) {

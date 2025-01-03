@@ -21,3 +21,4 @@
 #include "include/handlers/events/EventHeader.h"
 
 #include "include/handlers/sprites/Sprites.h"
+#include "include/handlers/sprites/TextSprite.h"

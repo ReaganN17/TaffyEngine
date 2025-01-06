@@ -15,12 +15,10 @@ void EngineBase::execute() {
     loop_outside();
 
     Controls::update();
-    ObjectHandler::updateAllObjects();
-	EventHandler::runEvents();
     SpriteHandler::handleSprites(1000);
+    EventHandler::runEvents();
+    ObjectHandler::updateAllObjects();
 	ObjectHandler::renderAllObjects();
-
-    Win32Render::draw_number(EventHandler::events.size(), 0, 0, 50);
 }
 void EngineBase::run(std::function<void()> init, std::function<void()> loop) {
     init_outside = init;

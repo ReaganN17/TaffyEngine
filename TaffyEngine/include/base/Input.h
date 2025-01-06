@@ -9,7 +9,7 @@ union Button_State {
 	u8 byte = 0;
 	struct {
 		bool down : 1;
-		bool changed : 1;
+		bool previous : 1;
 		u8 space : 6;
 	};
 };

@@ -62,7 +62,6 @@ private:
 	static void renderImage(Image& img, float x, float y, float w, float h, Shader& shade);
 
 public:
-
 	static int coord_height, coord_width;
 	static float aspect_ratio;
 

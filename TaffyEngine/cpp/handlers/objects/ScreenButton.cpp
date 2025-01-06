@@ -9,8 +9,7 @@ ScreenButton::ScreenButton(Object object, ButtonType type) : Object(object) {
 }
 
 void ScreenButton::update() {
-	bool previous = state.down;
-	state.changed = false;
+	state.previous = state.down;
 
 	if (!disabled) {
 		switch (type) {
@@ -40,16 +39,14 @@ void ScreenButton::update() {
 			state.down = is_hovered();
 		} break;
 		}
-
-		state.changed = previous != state.down;
 	}
 	
 	periodic();
 }
 
 bool ScreenButton::is_down() { return state.down; }
-bool ScreenButton::is_pressed() { return state.down && state.changed; }
-bool ScreenButton::is_released() { return !state.down && state.changed; }
+bool ScreenButton::is_pressed() { return state.down && state.down != state.previous; }
+bool ScreenButton::is_released() { return !state.down && state.down != state.previous; }
 bool ScreenButton::is_hovered() {
 	return
 		Input::getMouse().x > getX() - getW() / 2 &&

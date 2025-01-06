@@ -9,6 +9,26 @@ void SpriteHandler::addSprite(const char* sprite_name, Sprite* sprite) {
 	sprites[sprite_name] = sprite;
 }
 
+void SpriteHandler::updateSprite(const char* sprite_name, Sprite* sprite)
+{
+	std::vector<Object*> objects;
+
+	for (auto it : ObjectHandler::objects) {
+		for (auto object : *it) {
+			if (object->getSprite() == getSprite(sprite_name)) {
+				objects.push_back(object);
+			}
+		}
+	}
+
+	addSprite(sprite_name, sprite);
+
+	for (Object* obj : objects) {
+		obj->setSprite(sprite_name);
+	}
+
+}
+
 void SpriteHandler::loadSprite(const char* sprite) {
 	if (sprites[sprite] != nullptr) sprites[sprite]->load();
 }

@@ -118,7 +118,7 @@ std::map<char, Image> TextSprite::character_map =
 		1, 0, 1, 0,
 		0, 1, 0, 1}) },
 
-	{ '\`', Image(1, 6, 1, new u8[6] {
+	{ '\'', Image(1, 6, 1, new u8[6] {
 		1,
 		1,
 		0,

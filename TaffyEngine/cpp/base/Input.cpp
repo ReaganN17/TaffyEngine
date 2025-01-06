@@ -4,20 +4,16 @@ Button_State Input::buttons[255];
 POINT Input::mouse;
 
 void Input::processButtons(u32 vk, bool d) {
-	buttons[vk].changed = d != buttons[vk].down;
 	buttons[vk].down = d;
 }
 
 void Input::processMouseButtons(u32 vk) {
-	buttons[vk].changed = (GetAsyncKeyState(vk) & 0x8000) != buttons[vk].down;
 	buttons[vk].down = GetAsyncKeyState(vk) & 0x8000;
-
 }
 
 void Input::setKeyUnchanged() {
-	//note for later - figure out why "for each in" loop doesnt work and this one does
 	for (int i = 0; i < 255; i++) {
-		buttons[i].changed = false;
+		buttons[i].previous = buttons[i].down;
 	}
 }
 void Input::updateMouse() {
@@ -33,10 +29,10 @@ bool Input::is_down(u8 button) {
 	return buttons[button].down;
 }
 bool Input::is_pressed(u8 button) {
-	return buttons[button].down && Input::buttons[button].changed;
+	return buttons[button].down && buttons[button].down != buttons[button].previous;
 }
 bool Input::is_released(u8 button) {
-	return !buttons[button].down && Input::buttons[button].changed;
+	return !buttons[button].down && buttons[button].down != buttons[button].previous;
 }
 
 POINT& Input::getMouse() {

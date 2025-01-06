@@ -31,6 +31,14 @@ public:
 	static void addSprite(const char* sprite_name, Sprite* sprite);
 
 	/**
+	* Updates Sprite for objects using the sprite
+	* 
+	* @param String name to update
+	* @param Update to
+	*/
+	static void updateSprite(const char* sprite_name, Sprite* sprite);
+
+	/**
 	* Loads the Sprite bitmap into memory
 	* 
 	* @param String name for the Sprite

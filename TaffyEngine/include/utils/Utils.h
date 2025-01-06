@@ -22,8 +22,6 @@ typedef unsigned u32;
 typedef long s64;
 typedef unsigned long u64;
 
-#define internal static
-#define global_var static
 #define NULL 0
 
 //Lambda Factory
